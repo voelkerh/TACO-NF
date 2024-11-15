@@ -1,0 +1,229 @@
+Nov-14 16:27:37.883 [main] DEBUG nextflow.cli.Launcher - $> nextflow run accessionFetcher.nf -with-singularity 'https://depot.galaxyproject.org/singularity/sra-tools%3A3.1.0--h9f5acd7_0'
+Nov-14 16:27:37.929 [main] DEBUG nextflow.cli.CmdRun - N E X T F L O W  ~  version 24.04.4
+Nov-14 16:27:37.942 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; embedded=false; plugins-dir=/Users/davidkirchner/.nextflow/plugins; core-plugins: nf-amazon@2.5.3,nf-azure@1.6.1,nf-cloudcache@0.4.1,nf-codecommit@0.2.1,nf-console@1.1.3,nf-ga4gh@1.3.0,nf-google@1.13.2-patch1,nf-tower@1.9.1,nf-wave@1.4.2-patch1
+Nov-14 16:27:37.948 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
+Nov-14 16:27:37.949 [main] INFO  o.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
+Nov-14 16:27:37.951 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.12.0 in 'deployment' mode
+Nov-14 16:27:37.958 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
+Nov-14 16:27:37.970 [main] DEBUG nextflow.config.ConfigBuilder - Found config local: /Users/davidkirchner/Documents/Code/uni/sem4/htwpipe/nextflow/ground_truth/nextflow.config
+Nov-14 16:27:37.972 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /Users/davidkirchner/Documents/Code/uni/sem4/htwpipe/nextflow/ground_truth/nextflow.config
+Nov-14 16:27:37.991 [main] DEBUG n.secret.LocalSecretsProvider - Secrets store: /Users/davidkirchner/.nextflow/secrets/store.json
+Nov-14 16:27:37.993 [main] DEBUG nextflow.secret.SecretsLoader - Discovered secrets providers: [nextflow.secret.LocalSecretsProvider@6d64b553] - activable => nextflow.secret.LocalSecretsProvider@6d64b553
+Nov-14 16:27:37.996 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `standard`
+Nov-14 16:27:38.232 [main] DEBUG nextflow.config.ConfigBuilder - Enabling execution in Singularity container as requested by command-line option `-with-singularity null`
+Nov-14 16:27:38.239 [main] DEBUG nextflow.cli.CmdRun - Applied DSL=2 from script declaration
+Nov-14 16:27:38.248 [main] DEBUG nextflow.cli.CmdRun - Launching `accessionFetcher.nf` [lonely_sinoussi] DSL2 - revision: 0ff5bdfbf2
+Nov-14 16:27:38.249 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
+Nov-14 16:27:38.249 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins resolved requirement=[]
+Nov-14 16:27:38.277 [main] DEBUG nextflow.Session - Session UUID: 4e085520-a227-46a1-aa32-525cb4bf55fb
+Nov-14 16:27:38.278 [main] DEBUG nextflow.Session - Run name: lonely_sinoussi
+Nov-14 16:27:38.278 [main] DEBUG nextflow.Session - Executor pool size: 12
+Nov-14 16:27:38.282 [main] DEBUG nextflow.file.FilePorter - File porter settings maxRetries=3; maxTransfers=50; pollTimeout=null
+Nov-14 16:27:38.296 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 24.04.4 build 5917
+  Created: 01-08-2024 07:05 UTC (09:05 CEST)
+  System: Mac OS X 15.0.1
+  Runtime: Groovy 4.0.21 on OpenJDK 64-Bit Server VM 22.0.1+8-16
+  Encoding: UTF-8 (UTF-8)
+  Process: 72970@mpd.local [127.0.0.1]
+  CPUs: 12 - Mem: 32 GB (1.1 GB) - Swap: 0 (0) - Virtual threads ON
+Nov-14 16:27:38.304 [main] DEBUG nextflow.Session - Work-dir: /Users/davidkirchner/Documents/Code/uni/sem4/htwpipe/nextflow/ground_truth/work [Mac OS X]
+Nov-14 16:27:38.305 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /Users/davidkirchner/Documents/Code/uni/sem4/htwpipe/nextflow/ground_truth/bin
+Nov-14 16:27:38.311 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
+Nov-14 16:27:38.319 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Nov-14 16:27:38.332 [main] DEBUG nextflow.cache.CacheFactory - Using Nextflow cache factory: nextflow.cache.DefaultCacheFactory
+Nov-14 16:27:38.336 [main] DEBUG nextflow.util.CustomPoolFactory - Creating virtual thread pool
+Nov-14 16:27:38.366 [main] DEBUG nextflow.Session - Session start
+Nov-14 16:27:38.545 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Nov-14 16:27:38.602 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Nov-14 16:27:38.602 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Nov-14 16:27:38.605 [main] DEBUG nextflow.executor.Executor - [warm up] executor > local
+Nov-14 16:27:38.608 [main] DEBUG n.processor.LocalPollingMonitor - Creating local task monitor for executor 'local' > cpus=12; memory=32 GB; capacity=12; pollInterval=100ms; dumpInterval=5m
+Nov-14 16:27:38.609 [main] DEBUG n.processor.TaskPollingMonitor - >>> barrier register (monitor: local)
+Nov-14 16:27:38.650 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Nov-14 16:27:38.650 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Nov-14 16:27:38.658 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Nov-14 16:27:38.658 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Nov-14 16:27:38.660 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Nov-14 16:27:38.660 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Nov-14 16:27:38.662 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Nov-14 16:27:38.662 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Nov-14 16:27:38.669 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Nov-14 16:27:38.669 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Nov-14 16:27:38.673 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Nov-14 16:27:38.673 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Nov-14 16:27:38.675 [main] DEBUG nextflow.Session - Workflow process names [dsl2]: parseTXT, mergeFastq, mergeGroundtruth, fasterq, reader, fetch, groundtruth_gen
+Nov-14 16:27:38.675 [main] DEBUG nextflow.Session - Igniting dataflow network (9)
+Nov-14 16:27:38.678 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > parseTXT
+Nov-14 16:27:38.678 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > fetch
+Nov-14 16:27:38.678 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > fasterq
+Nov-14 16:27:38.678 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > reader
+Nov-14 16:27:38.678 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > groundtruth_gen
+Nov-14 16:27:38.678 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > mergeFastq
+Nov-14 16:27:38.678 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > mergeGroundtruth
+Nov-14 16:27:38.679 [main] DEBUG nextflow.script.ScriptRunner - Parsed script files:
+  Script_73eab2111eefd34a: /Users/davidkirchner/Documents/Code/uni/sem4/htwpipe/nextflow/ground_truth/accessionFetcher.nf
+Nov-14 16:27:38.679 [main] DEBUG nextflow.script.ScriptRunner - > Awaiting termination 
+Nov-14 16:27:38.679 [main] DEBUG nextflow.Session - Session await
+Nov-14 16:27:38.713 [Actor Thread 14] WARN  nextflow.container.SingularityCache - Singularity cache directory has not been defined -- Remote image will be stored in the path: /Users/davidkirchner/Documents/Code/uni/sem4/htwpipe/nextflow/ground_truth/work/singularity -- Use the environment variable NXF_SINGULARITY_CACHEDIR to specify a different location
+Nov-14 16:27:38.714 [Actor Thread 14] INFO  nextflow.container.SingularityCache - Pulling Singularity image https://depot.galaxyproject.org/singularity/sra-tools%3A3.1.0--h9f5acd7_0 [cache /Users/davidkirchner/Documents/Code/uni/sem4/htwpipe/nextflow/ground_truth/work/singularity/depot.galaxyproject.org-singularity-sra-tools%3A3.1.0--h9f5acd7_0.img]
+Nov-14 16:27:38.722 [Actor Thread 12] DEBUG nextflow.processor.TaskProcessor - Handling unexpected condition for
+  task: name=parseTXT (1); work-dir=null
+  error [java.lang.IllegalStateException]: java.lang.IllegalStateException: Failed to pull singularity image
+  command: singularity pull  --name depot.galaxyproject.org-singularity-sra-tools%3A3.1.0--h9f5acd7_0.img.pulling.1731598058714 https://depot.galaxyproject.org/singularity/sra-tools%3A3.1.0--h9f5acd7_0 > /dev/null
+  status : 127
+  hint   : Try and increase singularity.pullTimeout in the config (current is "20m")
+  message:
+    bash: singularity: command not found
+
+Nov-14 16:27:38.728 [Actor Thread 12] ERROR nextflow.processor.TaskProcessor - Error executing process > 'parseTXT (1)'
+
+Caused by:
+  Failed to pull singularity image
+    command: singularity pull  --name depot.galaxyproject.org-singularity-sra-tools%3A3.1.0--h9f5acd7_0.img.pulling.1731598058714 https://depot.galaxyproject.org/singularity/sra-tools%3A3.1.0--h9f5acd7_0 > /dev/null
+    status : 127
+    hint   : Try and increase singularity.pullTimeout in the config (current is "20m")
+    message:
+      bash: singularity: command not found
+
+
+java.lang.IllegalStateException: java.lang.IllegalStateException: Failed to pull singularity image
+  command: singularity pull  --name depot.galaxyproject.org-singularity-sra-tools%3A3.1.0--h9f5acd7_0.img.pulling.1731598058714 https://depot.galaxyproject.org/singularity/sra-tools%3A3.1.0--h9f5acd7_0 > /dev/null
+  status : 127
+  hint   : Try and increase singularity.pullTimeout in the config (current is "20m")
+  message:
+    bash: singularity: command not found
+
+	at nextflow.container.SingularityCache.getCachePathFor(SingularityCache.groovy:356)
+	at nextflow.container.ContainerHandler.createSingularityCache(ContainerHandler.groovy:108)
+	at nextflow.container.ContainerHandler.normalizeImageName(ContainerHandler.groovy:75)
+	at nextflow.container.resolver.DefaultContainerResolver.resolveImage0(DefaultContainerResolver.groovy:49)
+	at nextflow.container.resolver.DefaultContainerResolver.resolveImage(DefaultContainerResolver.groovy:42)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at nextflow.processor.TaskRun.containerInfo0(TaskRun.groovy:685)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:343)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:328)
+	at groovy.lang.MetaClassImpl.doInvokeMethod(MetaClassImpl.java:1333)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1088)
+	at org.codehaus.groovy.runtime.ScriptBytecodeAdapter.invokeMethodOnCurrentN(ScriptBytecodeAdapter.java:96)
+	at nextflow.processor.TaskRun.this$dist$invoke$1(TaskRun.groovy)
+	at nextflow.processor.TaskRun$4.methodMissing(TaskRun.groovy)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:343)
+	at groovy.lang.MetaClassImpl.invokeMissingMethod(MetaClassImpl.java:924)
+	at groovy.lang.MetaClassImpl.invokePropertyOrMissing(MetaClassImpl.java:1413)
+	at groovy.lang.MetaClassImpl.doInvokeMethod(MetaClassImpl.java:1335)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1088)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1007)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at nextflow.processor.TaskRun$4.apply(TaskRun.groovy:670)
+	at nextflow.processor.TaskRun$4.apply(TaskRun.groovy)
+	at java.base/java.util.concurrent.ConcurrentHashMap.computeIfAbsent(ConcurrentHashMap.java:1710)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at nextflow.processor.TaskRun.containerInfo(TaskRun.groovy:667)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at nextflow.processor.TaskRun.getContainer(TaskRun.groovy:693)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at nextflow.processor.TaskRun.isContainerEnabled(TaskRun.groovy:738)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at nextflow.processor.TaskProcessor.createTaskHashKey(TaskProcessor.groovy:2193)
+	at org.codehaus.groovy.vmplugin.v8.IndyInterface.fromCache(IndyInterface.java:321)
+	at nextflow.processor.TaskProcessor.invokeTask(TaskProcessor.groovy:659)
+	at nextflow.processor.InvokeTaskAdapter.call(InvokeTaskAdapter.groovy:52)
+	at groovyx.gpars.dataflow.operator.DataflowOperatorActor.startTask(DataflowOperatorActor.java:120)
+	at groovyx.gpars.dataflow.operator.ForkingDataflowOperatorActor.access$001(ForkingDataflowOperatorActor.java:35)
+	at groovyx.gpars.dataflow.operator.ForkingDataflowOperatorActor$1.run(ForkingDataflowOperatorActor.java:58)
+	at java.base/java.util.concurrent.ThreadPerTaskExecutor$TaskRunner.run(ThreadPerTaskExecutor.java:314)
+	at java.base/java.lang.Thread.run(Thread.java:1570)
+Caused by: java.lang.IllegalStateException: Failed to pull singularity image
+  command: singularity pull  --name depot.galaxyproject.org-singularity-sra-tools%3A3.1.0--h9f5acd7_0.img.pulling.1731598058714 https://depot.galaxyproject.org/singularity/sra-tools%3A3.1.0--h9f5acd7_0 > /dev/null
+  status : 127
+  hint   : Try and increase singularity.pullTimeout in the config (current is "20m")
+  message:
+    bash: singularity: command not found
+
+	at nextflow.container.SingularityCache.runCommand(SingularityCache.groovy:308)
+	at nextflow.container.SingularityCache.downloadContainerImage0(SingularityCache.groovy:275)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:343)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:328)
+	at groovy.lang.MetaClassImpl.doInvokeMethod(MetaClassImpl.java:1333)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1088)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1007)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokePogoMethod(InvokerHelper.java:645)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethod(InvokerHelper.java:628)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethodSafe(InvokerHelper.java:82)
+	at nextflow.container.SingularityCache$_downloadContainerImage_closure1.doCall(SingularityCache.groovy:243)
+	at nextflow.container.SingularityCache$_downloadContainerImage_closure1.call(SingularityCache.groovy)
+	at nextflow.file.FileMutex.lock(FileMutex.groovy:106)
+	at nextflow.container.SingularityCache.downloadContainerImage(SingularityCache.groovy:243)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:343)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:328)
+	at groovy.lang.MetaClassImpl.doInvokeMethod(MetaClassImpl.java:1333)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1088)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1007)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokePogoMethod(InvokerHelper.java:645)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethod(InvokerHelper.java:628)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethodSafe(InvokerHelper.java:82)
+	at nextflow.container.SingularityCache$_getLazyImagePath_closure2.doCall(SingularityCache.groovy:333)
+	at nextflow.container.SingularityCache$_getLazyImagePath_closure2.call(SingularityCache.groovy)
+	at groovyx.gpars.dataflow.LazyDataflowVariable$1.run(LazyDataflowVariable.java:70)
+	... 2 common frames omitted
+Nov-14 16:27:38.730 [Actor Thread 12] DEBUG nextflow.Session - Session aborted -- Cause: java.lang.IllegalStateException: Failed to pull singularity image
+  command: singularity pull  --name depot.galaxyproject.org-singularity-sra-tools%3A3.1.0--h9f5acd7_0.img.pulling.1731598058714 https://depot.galaxyproject.org/singularity/sra-tools%3A3.1.0--h9f5acd7_0 > /dev/null
+  status : 127
+  hint   : Try and increase singularity.pullTimeout in the config (current is "20m")
+  message:
+    bash: singularity: command not found
+
+Nov-14 16:27:38.737 [Actor Thread 12] DEBUG nextflow.Session - The following nodes are still active:
+[process] parseTXT
+  status=ACTIVE
+  port 0: (queue) closed; channel: accession
+  port 1: (cntrl) -     ; channel: $
+
+[process] fetch
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: sra_cleaned
+  port 1: (cntrl) -     ; channel: $
+
+[process] fasterq
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: accessions
+  port 1: (cntrl) -     ; channel: $
+
+[process] reader
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: fastq
+  port 1: (cntrl) -     ; channel: $
+
+[process] groundtruth_gen
+  status=ACTIVE
+  port 0: (queue) OPEN  ; channel: fastq
+  port 1: (cntrl) -     ; channel: $
+
+[process] mergeFastq
+  status=ACTIVE
+  port 0: (value) OPEN  ; channel: infastq
+  port 1: (cntrl) -     ; channel: $
+
+[process] mergeGroundtruth
+  status=ACTIVE
+  port 0: (value) OPEN  ; channel: accessiontxt
+  port 1: (cntrl) -     ; channel: $
+
+Nov-14 16:27:38.738 [main] DEBUG nextflow.Session - Session await > all processes finished
+Nov-14 16:27:38.738 [main] DEBUG nextflow.Session - Session await > all barriers passed
+Nov-14 16:27:38.738 [Task monitor] DEBUG n.processor.TaskPollingMonitor - <<< barrier arrives (monitor: local) - terminating tasks monitor poll loop
+Nov-14 16:27:38.739 [Actor Thread 4] DEBUG nextflow.processor.TaskProcessor - Handling unexpected condition for
+  task: name=parseTXT; work-dir=null
+  error [java.lang.InterruptedException]: java.lang.InterruptedException
+Nov-14 16:27:38.741 [main] DEBUG n.trace.WorkflowStatsObserver - Workflow completed > WorkflowStats[succeededCount=0; failedCount=0; ignoredCount=0; cachedCount=0; pendingCount=0; submittedCount=0; runningCount=0; retriesCount=0; abortedCount=0; succeedDuration=0ms; failedDuration=0ms; cachedDuration=0ms;loadCpus=0; loadMemory=0; peakRunning=0; peakCpus=0; peakMemory=0; ]
+Nov-14 16:27:38.944 [main] DEBUG nextflow.cache.CacheDB - Closing CacheDB done
+Nov-14 16:27:38.974 [main] DEBUG nextflow.script.ScriptRunner - > Execution complete -- Goodbye
