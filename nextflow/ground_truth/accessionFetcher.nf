@@ -17,7 +17,6 @@ process parseTXT {
     """
     awk '{print \$1}' $accession | tail -n +2 | sed 's/,//' > sra_cleaned.txt   
     """
-
 }
 
 //takes sra_cleaned accesssion and downloads the accesssions using sra_tools and outputs
@@ -25,6 +24,8 @@ process parseTXT {
 process fetch {
   container "https://depot.galaxyproject.org/singularity/sra-tools%3A3.1.0--h9f5acd7_0"
 // storeDir params.storeDir
+// granular mit storeDir arbeiten. fetch sollte für jede accession arbeiten. (nicht paralellisieren wegen api anfragen) 
+// vorteil weil storedir jede datei checken kann
 
   input:
     file sra_cleaned
@@ -64,6 +65,7 @@ process reader {
   output:
     path "${fastq.baseName}_sampled.fastq"
   script:
+  // store dir
     """
     fastq_name=${fastq}
     accession=\${fastq_name%_*}
@@ -74,9 +76,10 @@ process reader {
 }
 
 
-process groundtruth_gen{
+process groundtruth_gen {
 container "https://depot.galaxyproject.org/singularity/entrez-direct%3A22.1--he881be0_0"
 
+  //stor dir
   input:
     path fastq
   output:
@@ -91,13 +94,12 @@ container "https://depot.galaxyproject.org/singularity/entrez-direct%3A22.1--he8
     taxid=`cat accession.xml | grep -hnr "tax_id" | grep -o 'tax_id="[0-9]*"' | sed 's/tax_id="//; s/"//' | head -n 1`
     numreads=`cat ${params.in} | tail -n +2 | grep \$accession | cut -d , -f 2`
     echo \$taxid, \$numreads > \${accession}_groundtruth.txt
-
-    
-    
     """
 }
 process mergeFastq {
   container "https://depot.galaxyproject.org/singularity/sra-tools%3A3.1.0--h9f5acd7_0"
+
+
   input:
     path infastq
   output:
@@ -107,7 +109,7 @@ process mergeFastq {
   cat *.fastq >> sampled.fastq
   """
 }
-process mergeGroundtruth{
+process mergeGroundtruth {
   container "https://depot.galaxyproject.org/singularity/sra-tools%3A3.1.0--h9f5acd7_0"
   publishDir launchDir
   input:
@@ -148,7 +150,4 @@ workflow {
   groundtruth_out = groundtruth_gen(fasterq_out)
   mergeFastq(reader_out.collect())
   mergeGroundtruth(groundtruth_out.collect())
-
 }
-
-   
