@@ -1,8 +1,6 @@
 nextflow.enable.dsl=2
 params.groundtruth_in = launchDir+'/sra_accession.txt'
 params.groundtruth_storeDir = launchDir + '/cache/'
-accessiontext = channel.fromPath('sra_accession.txt')
-// taucht nur einmal auf?
 
 
 // This process takes the contents of sra_accessions.txt 
@@ -29,10 +27,10 @@ process fetch {
   maxForks 1
 
   input:
-    val accession
+    tuple val(accession), val(numreads)
 
   output:
-    path "${accession}.sra"
+    tuple path("${accession}.sra"), val(numreads)
 
   script:
     """
@@ -47,10 +45,10 @@ process fasterq {
   storeDir params.groundtruth_storeDir
 
   input:
-    path srafile
+    tuple path(srafile), val(numreads)
 
   output:
-    path "${srafile.getSimpleName()}.fastq"
+    tuple path("${srafile.getSimpleName()}.fastq"), val(numreads)
 
   script:
     """
@@ -64,18 +62,15 @@ process fasterq {
 //to a new fastq_sampled.fastq file. 
 process reader {
   container "https://depot.galaxyproject.org/singularity/sra-tools%3A3.1.0--h9f5acd7_0"
+  storeDir params.groundtruth_storeDir
   input:
-    path fastq
-    path infile
+    tuple path(fastq), val(numreads)
   output:
-    path "${fastq.baseName}_sampled.fastq"
+    tuple path("${fastq.baseName}_sampled_${numreads}.fastq"), val(numreads)
   script:
   // store dir
     """
-    fastq_name=${fastq}
-    accession=\${fastq_name%_*}
-    numreads=`cat ${infile} | tail -n +2 | grep \$accession | cut -d , -f 2`
-    head -n \$((4*numreads)) ${fastq} > ${fastq.baseName}_sampled.fastq
+    head -n \$((4*${numreads})) ${fastq} > ${fastq.baseName}_sampled_${numreads}.fastq
     """
     //4*numreads because one read in fastq file contains 4 lines
 }
@@ -84,21 +79,18 @@ process reader {
 process groundtruth_gen {
 container "https://depot.galaxyproject.org/singularity/entrez-direct%3A22.1--he881be0_0"
 
-  //stor dir
+  storeDir params.groundtruth_storeDir
   input:
-    path fastq
+    tuple path(fastq), val(numreads)
   output:
-    path "*.txt"
+    path "${fastq.getSimpleName()}_${numreads}_groundtruth.txt"
 
   script:
     """
-    fastq_name=${fastq}
-    accession=\${fastq_name%_*}
-    #echo \$accession 
+    accession=${fastq.getSimpleName()}
     efetch -db sra -id \$accession -format xml > accession.xml
     taxid=`cat accession.xml | grep -hnr "tax_id" | grep -o 'tax_id="[0-9]*"' | sed 's/tax_id="//; s/"//' | head -n 1`
-    numreads=`cat ${params.in} | tail -n +2 | grep \$accession | cut -d , -f 2`
-    echo \$taxid, \$numreads > \${accession}_groundtruth.txt
+    echo \$taxid, $numreads > \${accession}_${numreads}_groundtruth.txt
     """
 }
 process mergeFastq {
@@ -134,12 +126,12 @@ workflow groundtruth_workflow {
 
   main:
     output = parseTXT(Channel.fromPath(infile))
-    sra_cleaned = output.splitText(by: 1).map {v -> v.replaceAll("\\s","")}.filter { v -> !(v.isAllWhitespace()) }
+    sra_cleaned = Channel.fromPath(infile).splitCsv(header: true, strip: true)
     fetch_out = fetch(sra_cleaned)
     fasterq_out = fasterq(fetch_out)
-    reader_out = reader(fasterq_out, Channel.fromPath(infile))
+    reader_out = reader(fasterq_out)
     groundtruth_out = groundtruth_gen(fasterq_out)
-    merged_fastq = mergeFastq(reader_out.collect())
+    merged_fastq = mergeFastq(reader_out.map {v -> v[0]}.collect())
     merged_groundtruth = mergeGroundtruth(groundtruth_out.collect())
 
   emit:
@@ -149,9 +141,5 @@ workflow groundtruth_workflow {
 }
 
 workflow {
-//  if(!(new File(params.in).exists())) {
-//    println("File " + params.in + " does not exist, please provide an existing file.")
-//    exit(1)
-//  }
   groundtruth_workflow(params.groundtruth_in)
 }
