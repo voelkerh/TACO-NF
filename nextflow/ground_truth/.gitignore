@@ -1,0 +1,6 @@
+.nextflow*
+*.swp
+work/*
+cache/*
+singularity_cache/*
+
