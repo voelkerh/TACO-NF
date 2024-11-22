@@ -1,6 +1,7 @@
 nextflow.enable.dsl=2
-params.in = launchDir+'/sra_accessions.txt'
-accessiontext = channel.fromPath('sra_accessions.txt')
+params.groundtruth_in = launchDir+'/sra_accession.txt'
+params.groundtruth_storeDir = launchDir + '/cache/'
+accessiontext = channel.fromPath('sra_accession.txt')
 // taucht nur einmal auf?
 
 
@@ -9,13 +10,13 @@ accessiontext = channel.fromPath('sra_accessions.txt')
 process parseTXT {
   container "https://depot.galaxyproject.org/singularity/sra-tools%3A3.1.0--h9f5acd7_0"
   input: 
-    path("accession")
+    path accession
 
   output:
-    file "sra_cleaned.txt"
+    path "sra_cleaned.txt"
   script:
     """
-    awk '{print \$1}' $accession | tail -n +2 | sed 's/,//' > sra_cleaned.txt   
+    awk '{print \$1}' ${accession} | tail -n +2 | sed 's/,//' > sra_cleaned.txt   
     """
 }
 
@@ -23,35 +24,38 @@ process parseTXT {
 //it to accessions folder
 process fetch {
   container "https://depot.galaxyproject.org/singularity/sra-tools%3A3.1.0--h9f5acd7_0"
-// storeDir params.storeDir
-// granular mit storeDir arbeiten. fetch sollte für jede accession arbeiten. (nicht paralellisieren wegen api anfragen) 
-// vorteil weil storedir jede datei checken kann
+  storeDir params.groundtruth_storeDir
+  // Make sure that only one download runs in parallel so NCBI does not blacklist us
+  maxForks 1
 
   input:
-    file sra_cleaned
+    val accession
 
   output:
-    path 'accessions/*'
+    path "${accession}.sra"
 
   script:
     """
-    prefetch --option-file $sra_cleaned -O accessions
+    prefetch ${accession}
+    mv ${accession}/${accession}.sra .
     """
 }
 //dumps the fastq files from the prefetched runs. Runs are a compressed sra format which contains
 //sequences and tools neccesary to convert them to fastq
 process fasterq {
   container "https://depot.galaxyproject.org/singularity/sra-tools%3A3.1.0--h9f5acd7_0"
+  storeDir params.groundtruth_storeDir
 
   input:
-    path accessions
+    path srafile
 
   output:
-    path 'fasterqs/*_1.fastq'
+    path "${srafile.getSimpleName()}.fastq"
 
   script:
     """
-    fasterq-dump ${accessions} -O fasterqs
+    fasterq-dump ${srafile} -O outdir
+    cat outdir/*.fastq > ${srafile.getSimpleName()}.fastq
     """
 }
 
@@ -62,6 +66,7 @@ process reader {
   container "https://depot.galaxyproject.org/singularity/sra-tools%3A3.1.0--h9f5acd7_0"
   input:
     path fastq
+    path infile
   output:
     path "${fastq.baseName}_sampled.fastq"
   script:
@@ -69,7 +74,7 @@ process reader {
     """
     fastq_name=${fastq}
     accession=\${fastq_name%_*}
-    numreads=`cat ${params.in} | tail -n +2 | grep \$accession | cut -d , -f 2`
+    numreads=`cat ${infile} | tail -n +2 | grep \$accession | cut -d , -f 2`
     head -n \$((4*numreads)) ${fastq} > ${fastq.baseName}_sampled.fastq
     """
     //4*numreads because one read in fastq file contains 4 lines
@@ -124,13 +129,15 @@ process mergeGroundtruth {
 }
 
 workflow groundtruth_workflow {
-  //take:
+  take:
+    infile
 
   main:
-    output = parseTXT(Channel.fromPath(params.in))
-    fetch_out = fetch(output)
-    fasterq_out = fasterq(fetch_out.flatten())
-    reader_out = reader(fasterq_out)
+    output = parseTXT(Channel.fromPath(infile))
+    sra_cleaned = output.splitText(by: 1).map {v -> v.replaceAll("\\s","")}.filter { v -> !(v.isAllWhitespace()) }
+    fetch_out = fetch(sra_cleaned)
+    fasterq_out = fasterq(fetch_out)
+    reader_out = reader(fasterq_out, Channel.fromPath(infile))
     groundtruth_out = groundtruth_gen(fasterq_out)
     merged_fastq = mergeFastq(reader_out.collect())
     merged_groundtruth = mergeGroundtruth(groundtruth_out.collect())
@@ -142,12 +149,9 @@ workflow groundtruth_workflow {
 }
 
 workflow {
-  //parseTXT(params.in) | fetch | flatten | fasterq | reader | collect | mergeFastq
-  sra_cleaned = parseTXT(Channel.fromPath(params.in))
-  fetch_out = fetch(sra_cleaned)
-  fasterq_out = fasterq(fetch_out.flatten())
-  reader_out = reader(fasterq_out)
-  groundtruth_out = groundtruth_gen(fasterq_out)
-  mergeFastq(reader_out.collect())
-  mergeGroundtruth(groundtruth_out.collect())
+//  if(!(new File(params.in).exists())) {
+//    println("File " + params.in + " does not exist, please provide an existing file.")
+//    exit(1)
+//  }
+  groundtruth_workflow(params.groundtruth_in)
 }
