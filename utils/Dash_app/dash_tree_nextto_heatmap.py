@@ -44,8 +44,20 @@ def get_max_indent(combined_df):
 def filter_dataframe_by_level(df, level):
     if level == None:
         return filter_dataframe_all_leaves(df)
-    df_filtered = df[df.index.map(lambda x: (len(x) - len(x.lstrip(' '))) // 2 == level)]
-    return df_filtered
+    
+    levels = df.index.map(lambda x: (len(x) - len(x.lstrip(' '))) // 2)
+    df_filter = []
+
+    for idx, label in enumerate(df.index):
+        if levels[idx] == level:
+            df_filter.append(label)
+            continue
+        if idx < len(levels) - 1:
+            if levels[idx] > levels[idx+1] and levels[idx] < level:
+                df_filter.append(label)
+                continue
+
+    return df.loc[df_filter]
 
 def filter_dataframe_all_leaves(df):
     labels = df.index
@@ -193,7 +205,7 @@ def update_empty_heatmap():
 def update_heatmap(df_level_filtered):
     num_rows = df_level_filtered.shape[0]
     fig_height = max(800, num_rows * 40)    
-    clades_labels = df_level_filtered.index
+    clades_labels = [label.strip() for label in df_level_filtered.index]
     fig_heatmap = go.Figure(data=go.Heatmap(
         z=df_level_filtered.values,
         x=df_level_filtered.columns,
