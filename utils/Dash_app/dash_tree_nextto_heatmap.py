@@ -1,17 +1,10 @@
-from dash import Dash, dcc, html, Input, Output
+import sys
 import numpy as np 
 import pandas as pd 
 
-from pathlib import Path
-import sys
-
-path_root = Path(__file__).parents[0]
-sys.path = [str(path_root) + '/local_plotly/packages/python/plotly/'] + sys.path
-
+from dash import Dash, dcc, html, Input, Output
 import plotly.graph_objects as go
-import plotly.figure_factory as ff
-
-import sys
+from phylotree import create_phylogenetic_tree
 
 def get_newick_string():
     newick_path = sys.argv[1]
@@ -132,8 +125,7 @@ app.layout = html.Div(
                         className='footer-text',
                         children=[
                             html.P('Projektstudium: Analyse von Genomsequenzierungsdaten zur Diagnostik von Infektionskrankheiten'),
-                            html.P('Sommersemester 2024'),
-                            html.P('Billy Andersson, Benjamin Riedl, Henriette Voelker')
+                            html.P('Wintersemester 2024/25'),
                         ],
                     ),
                     html.Img(
@@ -157,7 +149,7 @@ def filter_tree_heatmap(selected_files, selected_level, show_all):
         display_level = np.inf
     else:
         display_level = selected_level
-    fig_tree = ff.create_phylogenetic_tree(newick_str, display_level)
+    fig_tree = create_phylogenetic_tree(newick_str, display_level)
 
     fig_tree.update_layout({
         'title': 'Taxonomic Information',
