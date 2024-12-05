@@ -10,7 +10,6 @@ import re
 from pathlib import Path
 
 import ete3
-import toytree
 
 __all__ = [
     'KrakenSummary']
@@ -59,10 +58,6 @@ class KrakenSummary(object):
     @property
     def newick(self):
         return self.tree.write(format=1) # Format 1 keeps the internal node names, manually added
-
-    @property
-    def toytree(self):
-        return toytree.tree(self.newick)
 
     def __repr__(self):
         return (
