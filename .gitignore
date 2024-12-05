@@ -1,2 +1,5 @@
 .DS_Store
 *.pdf
+utils/Database/.DS_Store
+utils/Dash_app/.DS_Store
+utils/.DS_Store
