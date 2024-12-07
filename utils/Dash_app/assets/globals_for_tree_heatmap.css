@@ -51,19 +51,22 @@ html {
 }
 
 header {
-    padding: 12px;
+    padding: 24px;
     background-color: #F5F5F5;
+}
+
+header nav {
     width: 100%;
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
 }
 
 h1 {
-    font-size: 24px;
+    font-size: 32px;
     text-align: center;
-    padding: 8px;
-    margin-bottom: 24px;
+    padding: 16px;
+    margin-bottom: 32px;
 }
 
 /* className selektor .className */
@@ -109,15 +112,24 @@ h1 {
     bottom: -2px; /* Positionierung der Punkte auf der Spur */
 }
 
+.filesIncluded {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    gap: 16px;
+    padding-bottom: 18px;
+}
+
+.checklist {
+    display: inline-block !important;
+    margin-right: 10px !important;
+}
+
 .content-wrapper {
     width: 100%;
     display: flex;
     position: relative;
     justify-content: center;
-}
-
-#tree .js-plotly-plot {
-    width: 10px;
 }
 
 footer {
