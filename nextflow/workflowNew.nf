@@ -1,10 +1,10 @@
 nextflow.enable.dsl=2
-include {groundtruth_workflow} from './groundtruth/accessionFetcher.nf'
-include {fastp_multiqc_workflow} from './projektstudium_1_dataprocessing/processFasta.nf'
-include {kraken_workflow} from './b34-taxonomic-classification-kraken2/kraken_workflowDSL2.nf'
-include {mapping} from './mapping/main_namedworkflow.nf'
-include {gt_converter} from './gtConverter.nf'
-include {visualize} from './newickdash.nf'
+include {groundtruth_workflow} from './ground_truth/accessionFetcher.nf'
+include {fastp_multiqc_workflow} from './dataprocessing/processFasta.nf'
+include {kraken_workflow} from './taxonomy_tools/kraken/kraken_workflowDSL2.nf'
+include {mapping} from './taxonomy_tools/bowtie2/main_namedworkflow.nf'
+include {gt_converter} from './gt_converter/gtConverter.nf'
+include {visualize} from './newick_dash/newickdash.nf'
 
 params.inputDir = "input/"
 inputChannel = Channel.fromPath(params.inputDir+'*.fq')
