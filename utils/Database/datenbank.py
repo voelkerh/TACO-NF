@@ -3,7 +3,13 @@ import sqlite3
 import csv
 import pandas as pd
 import argparse
-
+# Muss refactored werden TODO
+# store dir -> gucke https://www.nextflow.io/docs/latest/reference/process.html#storedir
+# prozess 1 -> dmps runterladen wenn nicht vorhanden (Kein Input, läuft immer) entpackt sie. Gibt 3 dumps aus
+# prozess 2 -> Nimmt 3 dmps (OUTPUT Channle von P1 als input für P2) verwendet dabei store dir
+#        rufe die datenbank auf mit create zeil 158
+#           liest die ganzen dmps ein und erstellt die sqlite db (mit sotre dir, damit wenn bereits vorhanden übersprungen wird)
+#
 # Datenbankpfad
 db_file = '/Users/benjamin/Desktop/Uni/4.Semester/Projektstudium/database.db'
 

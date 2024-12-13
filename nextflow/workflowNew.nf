@@ -8,7 +8,7 @@ include {visualize} from './newickdash.nf'
 
 params.inputDir = "input/"
 inputChannel = Channel.fromPath(params.inputDir+'*.fq')
-params.groundtruth = "ground_truth/groundtruth.txt"
+params.groundtruth = "ground_truth/sra_accession.txt"
 
 
 workflow{
