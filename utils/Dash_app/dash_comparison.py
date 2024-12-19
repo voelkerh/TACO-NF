@@ -64,6 +64,18 @@ global_files = process_program_arguments()
 global_dataframe = prepare_combined_dataframe(global_files)
 global_max_indent = get_max_indent(global_dataframe)
 global_newick_str = get_newick_string()
+rank_marks = {
+    0: "Root",
+    1: "Domain",
+    2: "Kingdom",
+    3: "Phylum",
+    4: "Class",
+    5: "Order",
+    6: "Family",
+    7: "Genus",
+    8: "Species"
+}
+
 
 app = Dash(__name__)
 
@@ -74,12 +86,14 @@ app.layout = html.Div(
             html.Div(
                 className='treeLevel',
                 children=[
-                    html.P("Tree level:"),
+                    html.P("Taxonomic rank:"),
                     dcc.Slider(
                         id='hierarchy-level-slider',
                         min=0,
-                        max=global_max_indent,
-                        marks={i: f'{i}' for i in range(0, global_max_indent + 1, 2)},
+                        # max=global_max_indent,
+                        # marks={i: f'{i}' for i in range(0, global_max_indent + 1, 2)},
+                        max=len(rank_marks)-1,
+                        marks=rank_marks,
                         value=0,
                         step=1,
                         className='slider'
@@ -93,21 +107,6 @@ app.layout = html.Div(
                 dcc.Graph(id="tree"),
             ],
         ),
-        html.Footer(
-            children=[
-                html.Span(
-                    className='footer-text',
-                    children=[
-                        html.P('Projektstudium: Analyse von Genomsequenzierungsdaten zur Diagnostik von Infektionskrankheiten'),
-                        html.P('Wintersemester 2024/25'),
-                    ],
-                ),
-                html.Img(
-                    className='footer-logo',
-                    src='https://upload.wikimedia.org/wikipedia/commons/7/7e/Logo_HTW_Berlin.svg',
-                ),
-            ],
-        )
     ],
 )
 
@@ -133,7 +132,7 @@ def update_tree(selected_level):
     """
     Updates the phylogenetic tree.
     """
-    fig_tree = create_phylogenetic_tree(global_newick_str, selected_level)
+    fig_tree = create_phylogenetic_tree(global_newick_str, selected_level, show_labels=False)
     for i in range(len(fig_tree["data"])):
         fig_tree["data"][i]["xaxis"] = "x"
     return fig_tree
@@ -160,7 +159,7 @@ def update_heatmap(df_level_filtered):
     """
     Updates the heatmap.
     """
-    heatmap_labels = [label.strip() for label in df_level_filtered.index]
+    heatmap_labels = format_labels(df_level_filtered.index)
     fig_heatmap = go.Heatmap(
         x=df_level_filtered.columns,
         y=heatmap_labels,
@@ -169,9 +168,19 @@ def update_heatmap(df_level_filtered):
         text=df_level_filtered.values,
         texttemplate="%{text}",
         showscale=False,
-        xaxis='x2'
+        xaxis='x2',
     )
     return fig_heatmap, heatmap_labels
+
+def format_labels(heatmap_labels):
+    stripped_labels = [label.strip() for label in heatmap_labels]
+    max_label_length = max(len(label) for label in stripped_labels)
+    formatted_labels = []
+    for label in stripped_labels:
+        while len(label) < max_label_length:
+            label = '-'+label
+        formatted_labels.append(label)
+    return formatted_labels
 
 def combine_figures(fig_tree, fig_heatmap):
     """
@@ -193,34 +202,40 @@ def update_layout(fig, tick_labels):
         {
             'showlegend': False,
             'hovermode': 'closest',
-            'plot_bgcolor': 'white'
+            'plot_bgcolor': 'white',
+            'font': {
+                'family': 'Anonymous Pro, monospace'
+            }
         }
     )
-    # x-axis
+
+    # x-axes
     fig.update_layout(
         xaxis={
-            'domain': [0, 0.5],  # Tree area - 50%
+            'domain': [0, 0.6],  # Tree area - 50%
             'showticklabels': False,
-        }
-    )
-    # x2-axis
-    fig.update_layout(
+        },
         xaxis2={
-            'domain': [0.5, 1],  # Heatmap area - 50%
+            'domain': [0.6, 1],  # Heatmap area - 50%
             'side': 'top',
             'ticktext': global_dataframe.columns,
             'showticklabels': True,
             'ticks': '',
         }
     )
-    # y-axis
+
+    # y-axes
     fig.update_layout(
         yaxis={
             'showticklabels': True,
             'ticktext': tick_labels,
             'ticks': '',
-            'position': 1,
-        }
+            'tickvals': list(range(len(tick_labels))),
+            'position': 0.6,
+            'side': 'left',
+            'autorange': 'reversed',
+            # 'fixedrange' : True
+        },
     )
     return fig
 
