@@ -1,49 +1,9 @@
-
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, 
-figure, figcaption, footer, header, hgroup, 
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-size: 100%;
-	font: inherit;
-	vertical-align: baseline;
-}
-/* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure, 
-footer, header, hgroup, menu, nav, section {
-	display: block;
-}
+/* am unspezifischsten: tag-selektor */
 body {
 	line-height: 1;
-}
-ol, ul {
-	list-style: none;
-}
-blockquote, q {
-	quotes: none;
-}
-blockquote:before, blockquote:after,
-q:before, q:after {
-	content: '';
-	content: none;
-}
-table {
-	border-collapse: collapse;
-	border-spacing: 0;
+    height: 100%;
 }
 
-/* am unspezifischsten: tag-selektor */
 html {
     font-family: 'Source Sans Pro', sans-serif;
     background-color: #f0f0f0;
@@ -51,9 +11,10 @@ html {
 }
 
 header {
+    height: 12vh;
     padding: 12px;
     background-color: #F5F5F5;
-    width: 100%;
+    width: 100vw;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -110,32 +71,14 @@ h1 {
 }
 
 .content-wrapper {
+    height: 88vh;
     width: 100%;
-    display: flex;
-    position: relative;
-    justify-content: center;
-}
-
-#tree .js-plotly-plot {
-    width: 10px;
-}
-
-footer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 24px;
-}
-
-.footer-text {
-    flex-grow: 1;
-}
-
-.footer-logo {
-    flex-shrink: 0;
-    height: 100px;
-    padding-right: 150px;
 }
 
 /* Id - Selector #id */
+#tree {
+    width: 100%;
+    height: 100%;
+}
+
 /* inline css überschreibt alles. (außer important) */
