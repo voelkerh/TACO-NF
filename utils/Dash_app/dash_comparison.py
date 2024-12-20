@@ -64,18 +64,17 @@ global_files = process_program_arguments()
 global_dataframe = prepare_combined_dataframe(global_files)
 global_max_indent = get_max_indent(global_dataframe)
 global_newick_str = get_newick_string()
-rank_marks = {
-    0: "Root",
-    1: "Domain",
-    2: "Kingdom",
-    3: "Phylum",
-    4: "Class",
-    5: "Order",
-    6: "Family",
-    7: "Genus",
-    8: "Species"
-}
-
+# rank_marks = {
+#     0: "Root",
+#     1: "Domain",
+#     2: "Kingdom",
+#     3: "Phylum",
+#     4: "Class",
+#     5: "Order",
+#     6: "Family",
+#     7: "Genus",
+#     8: "Species"
+# }
 
 app = Dash(__name__)
 
@@ -90,10 +89,10 @@ app.layout = html.Div(
                     dcc.Slider(
                         id='hierarchy-level-slider',
                         min=0,
-                        # max=global_max_indent,
-                        # marks={i: f'{i}' for i in range(0, global_max_indent + 1, 2)},
-                        max=len(rank_marks)-1,
-                        marks=rank_marks,
+                        max=global_max_indent,
+                        marks={i: f'{i}' for i in range(0, global_max_indent + 1, 2)},
+                        # max=len(rank_marks)-1,
+                        # marks=rank_marks,
                         value=0,
                         step=1,
                         className='slider'
