@@ -81,11 +81,11 @@ app = Dash(__name__)
 app.layout = html.Div(
     children=[
         html.Header([
-            html.H1('Comparison of Taxonomic Classification Tools for WGS Data'),
+            html.H1('Comparison of Taxonomic Binning Tools for WGS Data'),
             html.Div(
                 className='treeLevel',
                 children=[
-                    html.P("Taxonomic rank:"),
+                    html.P("Tree level:"),
                     dcc.Slider(
                         id='hierarchy-level-slider',
                         min=0,
