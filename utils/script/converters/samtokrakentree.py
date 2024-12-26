@@ -1,23 +1,73 @@
 #!/usr/bin/python3
-
 import sys
+sys.path.append('/Users/arturmeshalkin/Documents/GitHub/htwpipe/utils')
+from Database.taxDBsqlite import TaxDBsqlite
 import sqlite3
-
-from TaxDB import TaxDB 
+from Database.taxdb import TaxDB 
+from script.abstract_converter import AbstractConverter
+import os
 
 # Positionalparameter: SAM Datei, Gesamtzahl der Reads
-sam_file = sys.argv[1]
-total_reads = int(sys.argv[2])
-database_path = "database.db"
+#sam_file = sys.argv[1]
+#total_reads = int(sys.argv[2])
+database_path = "Database/database.db"
 
-class SAMConverter:
+class SAMConverter(AbstractConverter):
 
     def __init__(self, taxdb : TaxDB):
         self.taxdb = taxdb
 
+    def can_convert(self, filename: str) -> bool:
+        with open(filename, 'r') as f:
+            flag = False
+            
+            for i in range(30):
+                line  = f.readline() 
+                if not line:  # Falls die Datei weniger als 30 Zeilen hat
+                    break
+                try:
+                    col1,col2,col3,col4 = line.split("\t")[:4]
+                    col2 = int(col2)
+                    col4 = int(col4)
+                    if isinstance(col1,str) and isinstance(col2,int) and isinstance(col4,int):
+                        flag = True
+                except(ValueError, IndexError):
+                    continue
+        return flag
+    
+    def convert(self, filename: str) -> str:
+        if not self.can_convert(filename):
+            raise ValueError(f"The file {filename} cannot be converted. It isn't a sam file.")
+
+        lines = self.read_sam_file_to_lines(filename)
+        total = self.count_numreads(filename)
+        accession_numbers = self.extract_accession_numbers_from_sam_lines(lines)
+        accession_counts_by_taxid = self.count_alignments_per_taxid_from_lines(lines, accession_numbers)
+        classified_reads = self.calculate_classified_reads(accession_counts_by_taxid)
+        unclassified_reads = self.calculate_unclassified_reads(accession_counts_by_taxid,total)
+        percentage_of_unclassified_reads = self.calculate_percentage_of_reads(unclassified_reads,total)
+        
+        tree = self.build_tree(accession_numbers, accession_counts_by_taxid)
+        self.create_output_file(tree, accession_counts_by_taxid, unclassified_reads, percentage_of_unclassified_reads,total)
+        
+        return "Conversion successful. Output created in 'results/sam.report'."
+
+
     def read_sam_file_to_lines(self, sam_file):
         with open(sam_file, 'r') as file:
             return file.readlines()
+    
+    def count_numreads(self,sam_file:str) -> int:
+        numreads = 0
+        with open(sam_file, 'r') as infile:
+            for line in infile:
+                try:
+                    if not(line.startswith('@')):
+                        numreads += 1 
+                except ValueError as e:
+                    print(f"Error processing line: {line.strip()} - {e}")
+                    continue
+        return numreads
 
     def extract_accession_numbers_from_sam_lines(self, lines):
         accession_numbers_from_file = []
@@ -58,10 +108,10 @@ class SAMConverter:
             classified_reads += accession_counts[accession]
         return classified_reads
 
-    def calculate_unclassified_reads(self, accession_counts):
+    def calculate_unclassified_reads(self, accession_counts,total_reads):
         return total_reads - self.calculate_classified_reads(accession_counts)
 
-    def calculate_percentage_of_reads(self, number_of_reads):
+    def calculate_percentage_of_reads(self, number_of_reads,total_reads):
         return round((number_of_reads / total_reads * 100), 2)
 
     def load_names_from_taxonomic_data(self, taxid):
@@ -159,28 +209,43 @@ class SAMConverter:
                         add_new_nodes_to_tree = True
         return root
 
-    def write_data_for_nodes_in_branch(self, file, node, accession_counts_by_taxid, level=0):
+    def write_data_for_nodes_in_branch(self, file, node, accession_counts_by_taxid,total_reads, level=0):
         indent = '  ' * level
         reads_per_taxid = accession_counts_by_taxid.get(node.taxid, 0)
-        percentage = self.calculate_percentage_of_reads(node.cumulative_reads)
-        file.write(f"{percentage}\t{node.cumulative_reads}\t{reads_per_taxid}\t{node.rank}\t{node.taxid}\t{indent}{node.name}\n")
+        percentage = self.calculate_percentage_of_reads(node.cumulative_reads,total_reads)
+        file.write(f"{percentage:<6}\t{node.cumulative_reads:<15}\t{reads_per_taxid:<15}\t{node.rank:<4}\t{node.taxid:<8}\t{indent}{node.name}\n")
         for child in node.children:
-            self.write_data_for_nodes_in_branch(file, child, accession_counts_by_taxid, level + 1)
+            self.write_data_for_nodes_in_branch(file, child, accession_counts_by_taxid,total_reads, level + 1)
 
-    def create_output_file(self, tree, accession_counts_by_taxid, unclassified_reads, percentage_of_unclassified_reads):
-        with open('samtokraken.txt', 'w') as file:
-            file.write(f"{percentage_of_unclassified_reads}\t{unclassified_reads}\t{unclassified_reads}\tU\t0\tunclassified\n")
-            self.write_data_for_nodes_in_branch(file, tree, accession_counts_by_taxid)
+    def create_output_file(self, tree, accession_counts_by_taxid, unclassified_reads, percentage_of_unclassified_reads,total_reads):
+        # 1. Den absoluten Pfad des Skripts (datei.py) ermitteln
+        script_directory = os.path.dirname(os.path.abspath(__file__))
 
-from taxDBsqlite import TaxDBsqlite
+        # 2. Den Pfad zum übergeordneten Verzeichnis 'script' ermitteln
+        parent_directory = os.path.dirname(script_directory)
 
-taxdb_instance = TaxDBsqlite(database_path)
-converter = SAMConverter(taxdb_instance)
-lines = converter.read_sam_file_to_lines(sam_file)
-accession_numbers = converter.extract_accession_numbers_from_sam_lines(lines)
-accession_counts_by_taxid = converter.count_alignments_per_taxid_from_lines(lines, accession_numbers)
-classified_reads = converter.calculate_classified_reads(accession_counts_by_taxid)
-unclassified_reads = converter.calculate_unclassified_reads(accession_counts_by_taxid)
-percentage_of_unclassified_reads = converter.calculate_percentage_of_reads(unclassified_reads)
-tree = converter.build_tree(accession_numbers, accession_counts_by_taxid)
-converter.create_output_file(tree, accession_counts_by_taxid, unclassified_reads, percentage_of_unclassified_reads)
+        # 3. Den Pfad zum 'results'-Verzeichnis erstellen
+        results_directory = os.path.join(parent_directory, 'results')
+        if not os.path.exists(results_directory):
+            os.makedirs(results_directory)
+        output_file = os.path.join(results_directory, f"sam.report")
+
+        with open(output_file, 'w') as file:
+            file.write(f"{percentage_of_unclassified_reads:<6}\t{unclassified_reads:<15}\t{unclassified_reads:<15}\t{'U':<4}\t{'0':<8}\tunclassified\n")
+            self.write_data_for_nodes_in_branch(file, tree, accession_counts_by_taxid,total_reads)
+
+from Database.taxDBsqlite import TaxDBsqlite
+
+if __name__ == '__main__':
+    pass
+    # taxdb_instance = TaxDBsqlite(database_path)
+    # converter = SAMConverter(taxdb_instance)
+    # lines = converter.read_sam_file_to_lines("mappingresult.sam")
+    # total = converter.count_numreads("mappingresult.sam")
+    # accession_numbers = converter.extract_accession_numbers_from_sam_lines(lines)
+    # accession_counts_by_taxid = converter.count_alignments_per_taxid_from_lines(lines, accession_numbers)
+    # classified_reads = converter.calculate_classified_reads(accession_counts_by_taxid)
+    # unclassified_reads = converter.calculate_unclassified_reads(accession_counts_by_taxid,total)
+    # percentage_of_unclassified_reads = converter.calculate_percentage_of_reads(unclassified_reads,total)
+    # tree = converter.build_tree(accession_numbers, accession_counts_by_taxid)
+    # converter.create_output_file(tree, accession_counts_by_taxid, unclassified_reads, percentage_of_unclassified_reads,total)
