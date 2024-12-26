@@ -19,7 +19,12 @@ def process_program_arguments():
     return tree_files
 
 def get_tree_from_file(file):
-    return Phylo.read(file, 'newick')
+    newick = ''
+    with open(file, 'r') as file:
+        newick = file.read()
+    newick_str = newick.replace(" ", "_")
+    handle = StringIO(newick_str)
+    return Phylo.read(handle, "newick")
 
 def merge_two_trees(base_tree, additional_tree):
     merged_tree = deepcopy(base_tree)
@@ -27,20 +32,20 @@ def merge_two_trees(base_tree, additional_tree):
     return merged_tree
 
 def merge_clades(base_clade, additional_clade):
-    for additional_child in additional_clade.clades:
-        found = False
-        for base_child in base_clade.clades:
-            if base_child.name == additional_child.name:
+    reference_clades = {clade.name: clade for clade in base_clade.clades}
+    if reference_clades:
+        for additional_child in additional_clade.clades:
+            if additional_child.name not in reference_clades:
+                base_clade.clades.append(deepcopy(additional_child))
+                continue
+            else:
+                base_child = reference_clades[additional_child.name]
                 merge_clades(base_child, additional_child)
-                found = True
-                break
-        if not found:
-            base_clade.clades.append(deepcopy(additional_child))
 
 def merge_trees(trees):
     merged_tree = trees[0]
-    for tree in range(1, len(trees)):
-        merged_tree = merge_two_trees(merged_tree, trees[tree])
+    for idx, _ in enumerate(trees):
+        merged_tree = merge_two_trees(merged_tree, trees[idx])
     return merged_tree
 
 def tree_to_newick_no_distance(tree):
