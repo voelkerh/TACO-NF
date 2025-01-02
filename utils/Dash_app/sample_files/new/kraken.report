@@ -1,0 +1,18 @@
+0.0   	0              	0              	U   	0       	unclassified
+1.0   	2100000        	0              	    	1       	root
+1.0   	2100000        	0              	?   	131567  	  biota
+1.0   	2100000        	0              	    	2       	    Bacteria
+0.95  	2000000        	0              	1   	1783272 	      Terrabacteria group
+0.95  	2000000        	0              	P   	201174  	        Actinobacteraeota Oren et al. 2015
+0.95  	2000000        	0              	C   	1760    	          Actinobacteria Stackebrandt et al. 1997
+0.95  	2000000        	0              	O   	85007   	            Corynebacteriales Goodfellow and Jones 2015
+0.95  	2000000        	0              	F   	1762    	              Mycobacteriaceae Chester 1897 (Approved Lists 1980) emend. Gupta et al. 2018
+0.95  	2000000        	0              	G   	1763    	                Mycobacterium Lehmann and Neumann 1896 (Approved Lists 1980) emend. Gupta et al. 2018
+0.95  	2000000        	0              	G1  	77643   	                  Mycobacterium complex
+0.95  	2000000        	2000000        	S   	1773    	                    Bacillus tuberculosis
+0.05  	100000         	0              	P   	1224    	      Alphaproteobacteriota
+0.05  	100000         	0              	C   	1236    	        Gammaproteobacteria Garrity et al. 2005 emend. Williams and Kelly 2013
+0.05  	100000         	0              	O   	91347   	          Enterobacterales Adeolu et al. 2016
+0.05  	100000         	0              	F   	543     	            Enterobacteraceae (ex Lapage 1979) Lapage 1982
+0.05  	100000         	0              	G   	561     	              Escherichia Castellani and Chalmers 1919
+0.05  	100000         	100000         	S   	562     	                Achromobacter sp. ATCC 35328
