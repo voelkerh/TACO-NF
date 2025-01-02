@@ -37,7 +37,6 @@ def merge_clades(base_clade, additional_clade):
         for additional_child in additional_clade.clades:
             if additional_child.name not in reference_clades:
                 base_clade.clades.append(deepcopy(additional_child))
-                continue
             else:
                 base_child = reference_clades[additional_child.name]
                 merge_clades(base_child, additional_child)
