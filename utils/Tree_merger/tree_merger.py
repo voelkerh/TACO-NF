@@ -44,8 +44,8 @@ def merge_clades(base_clade, additional_clade):
 
 def merge_trees(trees):
     merged_tree = trees[0]
-    for idx, _ in enumerate(trees):
-        merged_tree = merge_two_trees(merged_tree, trees[idx])
+    for tree in trees[1:]:
+        merged_tree = merge_two_trees(merged_tree, tree)
     return merged_tree
 
 def tree_to_newick_no_distance(tree):
