@@ -1,5 +1,6 @@
 """
-This script compares the taxonomic classification results of different tools.
+This script creates a Dash app to compare the taxonomic classification results
+of different taxonomic binning tools.
 It is based on Dash and Plotly as well as the phylotree Plotly extension.
 
 Usage:
