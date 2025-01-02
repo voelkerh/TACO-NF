@@ -1,7 +1,9 @@
-# Description: Merges two or more Newick strings (trees) into one Newick string without distance values
-# Input: Two or more Newick strings as .txt files
-# Output: .txt files with 1 Newick string without distance values
-# Use: after conversion to kraken-formats, before visualization in Dash
+"""
+Description: Merges two or more Newick strings (trees) into one Newick string without distance values
+Input: Two or more Newick strings as .txt files (python tree_merger.py tree1.txt tree2.txt ...)
+Output: .txt file with 1 Newick string without distance values (merged_tree.txt)
+Usage in pipeline: after conversion to kraken-formats, before visualization in Dash
+"""
 
 import sys
 import re
