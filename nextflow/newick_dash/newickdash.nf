@@ -3,7 +3,7 @@ nextflow.enable.dsl=2
 params.input = '/var/tmp/projekt/kraken_output_files/converted_out/converted.report'
  
 process newickToKraken {
-container '/var/tmp/projekt/singularity_containers/my-python-container.sif'
+container params.python_container_path
 
     input:
       path input  
@@ -17,7 +17,7 @@ container '/var/tmp/projekt/singularity_containers/my-python-container.sif'
 }
 
 process samToKraken{
-container '/var/tmp/projekt/singularity_containers/my-python-container.sif'
+container params.python_container_path
 
     input:
       path Bowtie2
@@ -31,7 +31,7 @@ container '/var/tmp/projekt/singularity_containers/my-python-container.sif'
 }
 
 process dashToTree{
-container '/var/tmp/projekt/singularity_containers/my-python-container.sif'
+container params.python_container_path
     input:
       path Kraken2
       path Bowtie2
