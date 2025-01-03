@@ -1,4 +1,7 @@
 nextflow.enable.dsl=2
+
+println "Project directory: ${projectDir}"
+
 include {groundtruth_workflow} from './ground_truth/accessionFetcher.nf'
 include {fastp_multiqc_workflow} from './dataprocessing/processFasta.nf'
 include {kraken_workflow} from './taxonomy_tools/kraken/kraken_workflowDSL2.nf'
@@ -22,4 +25,3 @@ workflow{
     plot = visualize(kraken_output, mapping_output, KrakenGT) 
 
 }
-  
