@@ -1,0 +1,32 @@
+BootStrap: docker
+From: python:3.8-slim
+
+%post
+    # Update package list and install necessary build tools
+    apt-get update && apt-get install -y \
+        build-essential \
+        libssl-dev \
+        libffi-dev \
+        python3-dev \
+        git \
+        && apt-get clean
+
+    # Install Python packages
+    pip install --no-cache-dir \
+        pandas \
+        dash \
+        numpy \
+        plotly \
+        ete3 \
+        toytree \
+        nextflow
+
+    # Install TaxDB package from local directory
+
+%environment
+    export PATH=$PATH:/usr/local/bin
+
+%runscript
+    # This will be the default command when the container is run
+    exec python3 "$@"
+
