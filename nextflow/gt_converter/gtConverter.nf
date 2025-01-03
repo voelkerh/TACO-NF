@@ -1,10 +1,10 @@
 nextflow.enable.dsl=2
 
-params.input_file = 'groundtruth.txt'
+params.input_file = '.ground_truth/ground_truth.txt'
 params.output_dir = 'kraken_output_files'
 
 process convertToKraken {
-container '/var/tmp/projekt/singularity_containers/my-python-container.sif'
+container params.python_container_path
 publishDir params.output_dir
 
     input:
@@ -15,7 +15,7 @@ publishDir params.output_dir
 
     script:
     """
-    python /var/tmp/projekt/gtConverter.py ${input_file} converted_out ${baseDir}/database.db
+    python ${projectDir}/gt_converter/gtConverter.py ${input_file} converted_out ${baseDir}/database.db
     """
 }
 
@@ -26,5 +26,3 @@ workflow gt_converter{
   emit:
     gtkraken
 }
-
-
