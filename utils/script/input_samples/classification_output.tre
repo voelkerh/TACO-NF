@@ -1,0 +1,9 @@
+unclassified	-	-	unclassified	0	0	0	15	93.75000
+root	1	1	root	0	0	1	1	6.25000
+superkingdom	2	1|2	Bacteria	0	0	1	1	6.25000
+phylum	1224	1|2|1224	Pseudomonadota	0	0	1	1	6.25000
+class	1236	1|2|1224|1236	Gammaproteobacteria	0	0	1	1	6.25000
+order	91347	1|2|1224|1236|91347	Enterobacterales	0	0	1	1	6.25000
+family	543	1|2|1224|1236|91347|543	Enterobacteriaceae	0	0	1	1	6.25000
+genus	561	1|2|1224|1236|91347|543|561	Escherichia	0	0	1	1	6.25000
+species	562	1|2|1224|1236|91347|543|561|562	Escherichia coli	0	0	1	1	6.25000

@@ -1,0 +1,23 @@
+2.02	2	2	U	0	unclassified
+97.98	97	0	 	1	root
+97.98	97	0	?	131567	  biota
+97.98	97	0	 	2	    Bacteria
+40.4	40	0	P	1224	      Alphaproteobacteriota
+12.12	12	0	C	1236	        Gammaproteobacteria Garrity et al. 2005 emend. Williams and Kelly 2013
+12.12	12	0	O	72274	          gamma-3 proteobacteria
+12.12	12	0	F	468	            Acinetobacteraceae
+12.12	12	0	G	469	              Acinetobacter Brisou and Prevot 1954
+12.12	12	0	?	909768	                Acinetobacter calcoaceticus/baumannii complex
+12.12	12	12	S	470	                  Acinetobacter baumannii Bouvet and Grimont 1986
+28.28	28	0	C	28211	        "Alphabacteria" Cavalier-Smith 1992
+28.28	28	0	O	204458	          Caulobacterales Henrici and Johnson 1935
+28.28	28	0	F	76892	            Caulobacteraceae Henrici and Johnson 1935
+28.28	28	0	G	75	              Caulobacter Henrici and Johnson 1935 (Approved Lists 1980) emend. Abraham et al. 1999
+28.28	28	28	S	366602	                Caulobacter sp. K31
+57.58	57	0	?	1783272	      Terrabacteria group
+57.58	57	0	P	1239	        "Bacillaeota" Oren et al. 2015
+57.58	57	0	C	91061	          Bacilli Ludwig et al. 2010
+57.58	57	0	O	1385	            Bacillales Prevot 1953 (Approved Lists 1980)
+57.58	57	0	F	186822	              Paenibacillaceae De Vos et al. 2010
+57.58	57	0	G	44249	                Bacillus polymyxa group
+57.58	57	57	S	1406	                  "Aerobacillus polymyxa" (Prazmowski 1880) Donker 1926

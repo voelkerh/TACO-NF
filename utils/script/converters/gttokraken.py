@@ -211,7 +211,7 @@ class GTConverter(AbstractConverter):
         percentage = self.calculate_percentage_of_reads(
             node.cumulative_reads, total_reads)
         file.write(
-            f"{percentage:<6}\t{node.cumulative_reads:<15}\t{reads_per_taxid:<15}\t{node.rank:<4}\t{node.taxid:<8}\t{indent}{node.name}\n")
+            f"{percentage}\t{node.cumulative_reads}\t{reads_per_taxid}\t{node.rank}\t{node.taxid}\t{indent}{node.name}\n")
         for child in node.children:
             self.write_data_for_nodes_in_branch(
                 file, child, accession_counts_by_taxid, total_reads, level + 1)
@@ -232,7 +232,7 @@ class GTConverter(AbstractConverter):
         with open(output_file, 'w') as file:
             file.write(
                 # f"{percentage_of_unclassified_reads:<6}\t{unclassified_reads:<15}\t{unclassified_reads:<15}\t{'U':<4}\t{'0':<8}\tunclassified\n")
-                f"{0.0:<6}\t{0:<15}\t{0:<15}\t{'U':<4}\t{0:<8}\tunclassified\n")
+                f"{0.0}\t{0}\t{0}\t{'U'}\t{0}\tunclassified\n")
             self.write_data_for_nodes_in_branch(
                 file, tree, accession_counts_by_taxid, total_reads)
 
@@ -244,7 +244,7 @@ if __name__ == '__main__':
     # #dbfile = sys.argv[3]
     # #convert_to_kraken(input_file, output_dir, dbfile)
 
-    # taxdb_insta = TaxDBsqlite(database_path)nce
+    # taxdb = TaxDBsqlite(database_path)
     # converter = GTConverter(taxdb_instance)
     # total_reads = converter.count_numreads(gt_file)
     # lines = converter.read_gt_file_to_lines(gt_file)

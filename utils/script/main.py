@@ -1,6 +1,6 @@
 import sys
 import os
-sys.path.append('/Users/arturmeshalkin/Documents/GitHub/htwpipe/utils')
+#sys.path.append('/Users/arturmeshalkin/Documents/GitHub/htwpipe/utils')
 import importlib
 from script.abstract_converter import AbstractConverter
 from Database.taxDBsqlite import TaxDBsqlite
@@ -8,12 +8,12 @@ from Database.taxDBsqlite import TaxDBsqlite
 
 def import_converters(package: str, directory: str):
     """
-    Dynamisch alle Module in einem Verzeichnis importieren.
+    Dynamically import all modules in a directory.
     Args:
-        package (str): Der Python-Paketname (z. B. "converters").
-        directory (str): Der Verzeichnispfad, in dem die Module liegen.
+        package (str): The Python package name (e.g., "converters").
+        directory (str): The directory path where the modules are located.
     """
-    print(f"Inhalt des Verzeichnisses: {os.listdir(directory)}")
+    print(f"Contents of the directory: {os.listdir(directory)}")
     for filename in os.listdir(directory):
         if filename.endswith(".py") and filename != "__init__.py":
             module_name = f"{package}.{filename[:-3]}"
@@ -21,12 +21,12 @@ def import_converters(package: str, directory: str):
                 module = importlib.import_module(module_name)
                 #print(f"Importiert: {module_name}")
             except Exception as e:
-                print(f"Fehler beim Importieren von {module_name}: {e}")
+                print(f"Error importing {module_name}: {e}")
 
 
 def get_all_converters(taxdb):
     """
-    Instanziiert alle Unterklassen von AbstractConverter mit der TaxDB.
+    Instantiate all subclasses of AbstractConverter with the TaxDB.
     """
     converters = []
     for subclass in AbstractConverter.__subclasses__():
@@ -36,11 +36,13 @@ def get_all_converters(taxdb):
 
 def main():
     """
-    Im Terminal ausführen:
-    Ins Verzeichnis 'utils' wechseln
-    python -m script.main path_der_datei
-    Beispiel:
-    python -m script.main input_samples/ground_truth.txt
+    Execute in the terminal:
+        1.Change to the utils directory:
+        2.Run the script using Python:
+        python -m script.main path_to_file
+        
+        Example:
+        python -m script.main script/input_samples/ground_truth.txt
     """    
     current_dir = os.path.dirname(__file__)
     converters_dir = os.path.join(current_dir, "converters")
@@ -52,10 +54,11 @@ def main():
     converters = get_all_converters(taxdb)
     
     file = sys.argv[1]
-    #file = input("Gib den Dateipfad ein: ")
+    #file = input("Enter the full file path:")
     #file = ("script/input_samples/mappingresult.sam")
     #file = ("script/input_samples/ground_truth.txt")
     #file = ("script/input_samples/kraken_in.report")
+    #file = ("script/input_samples/classification_output.tre")
 
 
     for converter in converters:
@@ -64,10 +67,10 @@ def main():
                 result = converter.convert(file)
                 print(result)
             except Exception as e:
-                print(f"Fehler bei der Konvertierung von {file}: {e}")
+                print(f"Error converting {file}: {e}")
             break
     else:
-        print(f"Keine passende Konvertierung für {file} gefunden.")
+        print(f"No suitable conversion found for {file}.")
 
 if __name__ == "__main__":
     main()

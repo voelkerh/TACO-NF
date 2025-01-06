@@ -54,7 +54,7 @@ class KrakenConverter(AbstractConverter):
                  
                     name = updated_name
 
-                lines[i] = f"{perc_reads}\t{read_number}\t{reads}\t{rank}\t{tax_id:<8}\t{' ' * spaces_between}{name}\n"
+                lines[i] = f"{perc_reads}\t{read_number}\t{reads}\t{rank}\t{tax_id}\t{' ' * spaces_between}{name}\n"
 
             except ValueError as e:
                 # Fehlerbehandlung, wenn Zeile nicht korrekt ist

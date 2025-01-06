@@ -213,7 +213,7 @@ class SAMConverter(AbstractConverter):
         indent = '  ' * level
         reads_per_taxid = accession_counts_by_taxid.get(node.taxid, 0)
         percentage = self.calculate_percentage_of_reads(node.cumulative_reads,total_reads)
-        file.write(f"{percentage:<6}\t{node.cumulative_reads:<15}\t{reads_per_taxid:<15}\t{node.rank:<4}\t{node.taxid:<8}\t{indent}{node.name}\n")
+        file.write(f"{percentage}\t{node.cumulative_reads}\t{reads_per_taxid}\t{node.rank}\t{node.taxid}\t{indent}{node.name}\n")
         for child in node.children:
             self.write_data_for_nodes_in_branch(file, child, accession_counts_by_taxid,total_reads, level + 1)
 
@@ -231,7 +231,7 @@ class SAMConverter(AbstractConverter):
         output_file = os.path.join(results_directory, f"sam.report")
 
         with open(output_file, 'w') as file:
-            file.write(f"{percentage_of_unclassified_reads:<6}\t{unclassified_reads:<15}\t{unclassified_reads:<15}\t{'U':<4}\t{'0':<8}\tunclassified\n")
+            file.write(f"{percentage_of_unclassified_reads}\t{unclassified_reads}\t{unclassified_reads}\t{'U'}\t{'0'}\tunclassified\n")
             self.write_data_for_nodes_in_branch(file, tree, accession_counts_by_taxid,total_reads)
 
 from Database.taxDBsqlite import TaxDBsqlite
