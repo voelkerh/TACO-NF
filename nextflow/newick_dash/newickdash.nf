@@ -1,19 +1,21 @@
 nextflow.enable.dsl=2
 
-params.input = '/var/tmp/projekt/kraken_output_files/converted_out/converted.report'
+params.input = 'results/converted_out/converted.report'
  
 process newickToKraken {
-container params.python_container_path
+  container params.python_container_path
 
-    input:
+      input:
       path input  
-    output:
+
+      output:
       path newick
-    script:
-    """
-    python /var/tmp/projekt/krakentonewick.py ${input} 
-    mv newick.txt newick
-    """
+
+      script:
+      """
+      python ${projectDir}/newick_dash/krakentonewick.py ${input} 
+      mv newick.txt newick
+      """
 }
 
 process samToKraken{
@@ -25,7 +27,7 @@ container params.python_container_path
       path KrakenBowtie2
     script:
     """
-    python /var/tmp/projekt/samtokrakentree.py ${Bowtie2} 2100000 ${baseDir}/database.db
+    python ${projectDir}/newick_dash/samtokrakentree.py ${Bowtie2} 2100000 ${baseDir}/database.db
     mv samtokraken.txt KrakenBowtie2
     """
 }
@@ -42,7 +44,7 @@ container params.python_container_path
   
     script:
     """
-    python /var/tmp/projekt/dash_tree_nextto_heatmap.py ${GTNewick} ${Kraken2} ${Bowtie2} > plot
+    python ${projectDir}/newick_dash/dash_tree_nextto_heatmap.py ${GTNewick} ${Kraken2} ${Bowtie2} > plot
     """
 }
 workflow{

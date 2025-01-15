@@ -12,9 +12,10 @@ process parseTXT {
 
   output:
     path "sra_cleaned.txt"
+
   script:
     """
-    awk '{print \$1}' ${accession} | tail -n +2 | sed 's/,//' > sra_cleaned.txt   
+    awk '{print \$1}' ${accession} | tail -n +2 | sed 's/,//' > sra_cleaned.txt
     """
 }
 
@@ -125,8 +126,8 @@ workflow groundtruth_workflow {
     infile
 
   main:
-    output = parseTXT(Channel.fromPath(infile))
-    sra_cleaned = Channel.fromPath(infile).splitCsv(header: true, strip: true)
+    output = parseTXT(infile)
+    sra_cleaned = output.splitCsv(header: true, strip: true)
     fetch_out = fetch(sra_cleaned)
     fasterq_out = fasterq(fetch_out)
     reader_out = reader(fasterq_out)

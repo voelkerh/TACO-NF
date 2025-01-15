@@ -18,7 +18,7 @@ workflow{
 
   main:
     KrakenGT = gt_converter()
-    groundtruth_workflow_out = groundtruth_workflow(params.groundtruth)
+    groundtruth_workflow_out = groundtruth_workflow(Channel.fromPath(params.groundtruth))
     fastp_output = fastp_multiqc_workflow(groundtruth_workflow_out.fastq)
     kraken_output = kraken_workflow(fastp_output.fastq)
     mapping_output = mapping(fastp_output.fastq)

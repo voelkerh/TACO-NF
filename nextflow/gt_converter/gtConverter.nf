@@ -5,6 +5,7 @@ params.output_dir = 'kraken_output_files'
 
 process convertToKraken {
 container params.python_container_path
+containerOptions "--bind ${projectDir}:${projectDir}"
 publishDir params.output_dir
 
     input:

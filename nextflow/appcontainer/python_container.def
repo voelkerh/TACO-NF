@@ -19,12 +19,17 @@ From: python:3.8-slim
         plotly \
         ete3 \
         toytree \
-        nextflow
+        nextflow \
 
     # Install TaxDB package from local directory
 
+%files
+    /home/davidkirchner/code/htwpipe/nextflow/appcontainer/pythonfiles /opt/pythonfiles
+
 %environment
     export PATH=$PATH:/usr/local/bin
+    export PYTHONPATH=$PYTHONPATH:/opt/pythonfiles
+
 
 %runscript
     # This will be the default command when the container is run
