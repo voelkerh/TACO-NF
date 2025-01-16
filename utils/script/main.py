@@ -1,9 +1,9 @@
 import sys
 import os
-#sys.path.append('/Users/arturmeshalkin/Documents/GitHub/htwpipe/utils')
 import importlib
 from script.abstract_converter import AbstractConverter
 from Database.taxDBsqlite import TaxDBsqlite
+
 
 
 def import_converters(package: str, directory: str):
@@ -19,7 +19,8 @@ def import_converters(package: str, directory: str):
             module_name = f"{package}.{filename[:-3]}"
             try:
                 module = importlib.import_module(module_name)
-                #print(f"Importiert: {module_name}")
+                print(f"Imported: {module_name}")
+
             except Exception as e:
                 print(f"Error importing {module_name}: {e}")
 
@@ -43,23 +44,22 @@ def main():
         
         Example:
         python -m script.main script/input_samples/ground_truth.txt
-    """    
+    """
     current_dir = os.path.dirname(__file__)
     converters_dir = os.path.join(current_dir, "converters")
     import_converters("script.converters", converters_dir)
 
     database_path = "Database/database.db"
     taxdb = TaxDBsqlite(database_path)
-    
-    converters = get_all_converters(taxdb)
-    
-    file = sys.argv[1]
-    #file = input("Enter the full file path:")
-    #file = ("script/input_samples/mappingresult.sam")
-    #file = ("script/input_samples/ground_truth.txt")
-    #file = ("script/input_samples/kraken_in.report")
-    #file = ("script/input_samples/classification_output.tre")
 
+    converters = get_all_converters(taxdb)
+
+    file = sys.argv[1]
+    # file = input("Enter the full file path:")
+    # file = ("script/input_samples/mappingresult.sam")
+    # file = ("script/input_samples/ground_truth.txt")
+    # file = ("script/input_samples/kraken_in.report")
+    # file = ("script/input_samples/classification_output.tre")
 
     for converter in converters:
         if converter.can_convert(file):
@@ -71,6 +71,7 @@ def main():
             break
     else:
         print(f"No suitable conversion found for {file}.")
+
 
 if __name__ == "__main__":
     main()

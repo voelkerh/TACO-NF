@@ -4,8 +4,6 @@ import sys
 import sqlite3
 import os
 from Database.taxdb import TaxDB
-# database_path = "Database/database.db"
-# gt_file = sys.argv[1]
 
 
 class GTConverter(AbstractConverter):
@@ -82,17 +80,8 @@ class GTConverter(AbstractConverter):
 
         return accession_counts
 
-    # def calculate_classified_reads(self, accession_counts):
-    #     classified_reads = 0
-    #     for accession in accession_counts:
-    #         classified_reads += accession_counts[accession]
-    #     return classified_reads
-
-    # def calculate_unclassified_reads(self, accession_counts,total_reads):
-    #     return total_reads - self.calculate_classified_reads(accession_counts)
-
     def calculate_percentage_of_reads(self, number_of_reads, total_reads):
-        return round((number_of_reads / total_reads*100), 2)
+        return round((number_of_reads / total_reads * 100), 2)
 
     def load_names_from_taxonomic_data(self, taxid):
         return self.taxdb.load_names_from_taxonomic_data(taxid)
@@ -173,7 +162,6 @@ class GTConverter(AbstractConverter):
     def build_tree(self, accession_counts_by_taxid):
         root = self.Node('root', 1, ' ', None, 0)
         for id in accession_counts_by_taxid:
-            # taxid = self.get_parent_taxid_from_taxonomic_data(id)
             taxid = id
             if taxid == "NOT FOUND":
                 continue
@@ -227,7 +215,7 @@ class GTConverter(AbstractConverter):
         results_directory = os.path.join(parent_directory, 'results')
         if not os.path.exists(results_directory):
             os.makedirs(results_directory)
-        output_file = os.path.join(results_directory, f"gt.report")
+        output_file = os.path.join(results_directory, f"kraken_in.report")
 
         with open(output_file, 'w') as file:
             file.write(
@@ -239,21 +227,3 @@ class GTConverter(AbstractConverter):
 
 if __name__ == '__main__':
     pass
-    # input_file = sys.argv[1]
-    # output_dir = sys.argv[2]
-    # #dbfile = sys.argv[3]
-    # #convert_to_kraken(input_file, output_dir, dbfile)
-
-    # taxdb = TaxDBsqlite(database_path)
-    # converter = GTConverter(taxdb_instance)
-    # total_reads = converter.count_numreads(gt_file)
-    # lines = converter.read_gt_file_to_lines(gt_file)
-    # accession_numbers = converter.extract_accession_numbers_from_sam_lines(lines)
-    # accession_counts_by_taxid = converter.count_alignments_per_taxid_from_lines(
-    #     lines)
-    # #print(accession_counts_by_taxid)
-    # classified_reads = converter.calculate_classified_reads(accession_counts_by_taxid)
-    # unclassified_reads = converter.calculate_unclassified_reads(accession_counts_by_taxid,total_reads)
-    # percentage_of_unclassified_reads = converter.calculate_percentage_of_reads(unclassified_reads,total_reads)
-    # tree = converter.build_tree(accession_counts_by_taxid)
-    # converter.create_output_file(tree, accession_counts_by_taxid, unclassified_reads, percentage_of_unclassified_reads,total_reads)
