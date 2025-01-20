@@ -21,9 +21,11 @@ publishDir params.output_dir
 }
 
 workflow gt_converter{
+  take:
+    infile
   main:
-    input_file = file(params.input_file)
-    gtkraken = convertToKraken(input_file)
+    //input_file = file(params.input_file)
+    gtkraken = convertToKraken(infile)
   emit:
     gtkraken
 }

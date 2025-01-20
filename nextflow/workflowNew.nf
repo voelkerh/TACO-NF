@@ -17,8 +17,8 @@ params.groundtruth = "ground_truth/sra_accession.txt"
 workflow{
 
   main:
-    KrakenGT = gt_converter()
     groundtruth_workflow_out = groundtruth_workflow(Channel.fromPath(params.groundtruth))
+    KrakenGT = gt_converter(groundtruth_workflow_out.groundtruth)
     fastp_output = fastp_multiqc_workflow(groundtruth_workflow_out.fastq)
     kraken_output = kraken_workflow(fastp_output.fastq)
     mapping_output = mapping(fastp_output.fastq)

@@ -127,7 +127,7 @@ workflow groundtruth_workflow {
 
   main:
     output = parseTXT(infile)
-    sra_cleaned = output.splitCsv(header: true, strip: true)
+    sra_cleaned = infile.splitCsv(header: true, strip: true)
     fetch_out = fetch(sra_cleaned)
     fasterq_out = fasterq(fetch_out)
     reader_out = reader(fasterq_out)
