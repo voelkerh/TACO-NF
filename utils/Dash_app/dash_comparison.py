@@ -1,6 +1,6 @@
 """
 This script creates a Dash app to compare the taxonomic classification results
-of different taxonomic binning tools.
+of different taxonomic classification tools.
 It is based on Dash and Plotly as well as the phylotree Plotly extension.
 
 Usage:
@@ -65,24 +65,13 @@ global_files = process_program_arguments()
 global_dataframe = prepare_combined_dataframe(global_files)
 global_max_indent = get_max_indent(global_dataframe)
 global_newick_str = get_newick_string()
-# rank_marks = {
-#     0: "Root",
-#     1: "Domain",
-#     2: "Kingdom",
-#     3: "Phylum",
-#     4: "Class",
-#     5: "Order",
-#     6: "Family",
-#     7: "Genus",
-#     8: "Species"
-# }
 
 app = Dash(__name__)
 
 app.layout = html.Div(
     children=[
         html.Header([
-            html.H1('Comparison of Taxonomic Binning Tools for WGS Data'),
+            html.H1('Comparison of Taxonomic Classification Tools for WGS Data'),
             html.Div(
                 className='treeLevel',
                 children=[
@@ -92,8 +81,6 @@ app.layout = html.Div(
                         min=0,
                         max=global_max_indent,
                         marks={i: f'{i}' for i in range(0, global_max_indent + 1, 2)},
-                        # max=len(rank_marks)-1,
-                        # marks=rank_marks,
                         value=0,
                         step=1,
                         className='slider'
@@ -161,10 +148,10 @@ def update_heatmap(df_level_filtered):
     """
     heatmap_labels = format_labels(df_level_filtered.index)
     fig_heatmap = go.Heatmap(
-        x=df_level_filtered.columns,
+        x=[str(column).split('/')[-1] for column in df_level_filtered.columns],
         y=heatmap_labels,
         z=df_level_filtered.values,
-        colorscale='darkmint',
+        colorscale='teal',
         text=df_level_filtered.values,
         texttemplate="%{text}",
         showscale=False,
