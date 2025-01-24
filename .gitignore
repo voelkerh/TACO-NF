@@ -1,8 +1,9 @@
-.DS_Store
-/.zed
+**/.DS_Store
+*.pdf
+**/__pycache__/
 nextflow/work**
+**/work
 *.sif
 .nextflow
 .nextflow/
 .nextflow.*
-work/

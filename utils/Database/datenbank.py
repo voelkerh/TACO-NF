@@ -4,16 +4,9 @@ import csv
 import pandas as pd
 import argparse
 
-# Muss refactored werden TODO
-# store dir -> gucke https://www.nextflow.io/docs/latest/reference/process.html#storedir
-# prozess 1 -> dmps runterladen wenn nicht vorhanden (Kein Input, läuft immer) entpackt sie. Gibt 3 dumps aus
-# prozess 2 -> Nimmt 3 dmps (OUTPUT Channle von P1 als input für P2) verwendet dabei store dir
-#        rufe die datenbank auf mit create zeil 158
-#           liest die ganzen dmps ein und erstellt die sqlite db (mit sotre dir, damit wenn bereits vorhanden übersprungen wird)
-#
-
+base_path = os.path.dirname(os.path.abspath(__file__))
 # Datenbankpfad
-db_file = '/Users/benjamin/Desktop/Uni/4.Semester/Projektstudium/database.db'
+db_file = os.path.join(base_path,'database.db')
 
 def create_db(db_file, csv_file):
     conn = sqlite3.connect(db_file)
@@ -21,7 +14,7 @@ def create_db(db_file, csv_file):
 
     cursor.execute('''
                    CREATE TABLE IF NOT EXISTS accession2taxid (
-                   accession TEXT,
+                   accession TEXT,clear
                    taxid TEXT
                    )
                    ''')
@@ -37,7 +30,7 @@ def create_db(db_file, csv_file):
     conn.close() 
 
 def nodesToCSV():
-    nodes_file = '/Users/benjamin/Desktop/Uni/4.Semester/Projektstudium/new_taxdump/nodes.dmp'
+    nodes_file = os.path.join(base_path, 'new_taxdump_2', 'nodes.dmp')
     df = pd.read_csv(nodes_file, sep='|', header=None, engine='python')
     df = df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
 
@@ -57,11 +50,11 @@ def nodesToCSV():
 
     print(df.head())
 
-    output_path = '/Users/benjamin/Desktop/Uni/4.Semester/Projektstudium/nodes.csv'
+    output_path = os.path.join(base_path, 'nodes.csv')
     df.to_csv(output_path, index=False, sep=';')
 
 def cut_nodes():
-    nodes_file = '/Users/benjamin/Desktop/Uni/4.Semester/Projektstudium/nodes.csv'
+    nodes_file = os.path.join(base_path, 'nodes.csv')
     df = pd.read_csv(nodes_file, sep=';')
 
     columns_to_keep = ['tax_id', 'parent_tax_id', 'rank', 'embl_code', 'division_id', 
@@ -85,7 +78,7 @@ def cut_nodes():
     print(f"Die CSV-Datei wurde mit den ausgewählten Spalten überschrieben: {nodes_file}")
 
 def namesToCSV():
-    names_file = '/Users/benjamin/Desktop/Uni/4.Semester/Projektstudium/new_taxdump/names.dmp'
+    names_file = os.path.join(base_path, 'new_taxdump_2', 'names.dmp')
     df = pd.read_csv(names_file, sep='|', header=None, engine='python')
     df = df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
 
@@ -99,11 +92,11 @@ def namesToCSV():
 
     print(df.head())
 
-    output_path = '/Users/benjamin/Desktop/Uni/4.Semester/Projektstudium/names.csv'
+    output_path = os.path.join(base_path, 'names.csv')
     df.to_csv(output_path, index=False, sep=';')
 
 def cut_names():
-    names_file = '/Users/benjamin/Desktop/Uni/4.Semester/Projektstudium/names.csv'
+    names_file = os.path.join(base_path, 'names.csv')
     df = pd.read_csv(names_file, sep=';')
 
     columns_to_keep = ['tax_id', 'name_txt', 'unique name', 'name class']
@@ -162,17 +155,16 @@ def main():
     parser.add_argument("action", choices=["create", "update"], help="Die Aktion, die ausgeführt werden soll: 'create' oder 'update'.")
 
     args = parser.parse_args()
+    names_csv_filename = os.path.join(base_path, 'names.csv')
+    nodes_csv_filename = os.path.join(base_path, 'nodes.csv')
+    input_file = os.path.join(base_path, 'nucl_gb.accession2taxid')
+    output_file = os.path.join(base_path, 'new_nucl_gb.accession2taxid.csv')
 
     if args.action == "create":
         if os.path.exists(db_file):
-            print(f"{db_file} wurde bereits gefunden")
-            names_table_name = 'names'
-            names_csv_filename = '/Users/benjamin/Desktop/Uni/4.Semester/Projektstudium/names.csv'  
-            create_table_from_csv(db_file, names_table_name, names_csv_filename)
-
-            nodes_table_name = 'nodes'
-            nodes_csv_filename = '/Users/benjamin/Desktop/Uni/4.Semester/Projektstudium/nodes.csv'
-            create_table_from_csv(db_file, nodes_table_name, nodes_csv_filename)
+            print(f"{db_file} wurde bereits gefunden") 
+            create_table_from_csv(db_file, 'names', names_csv_filename)
+            create_table_from_csv(db_file, 'nodes', nodes_csv_filename)
                 
         else:
             print(f"{db_file} wurde nicht gefunden. Erstelle die Datenbank...")
@@ -180,9 +172,6 @@ def main():
             namesToCSV()
             cut_nodes()
             cut_names()
-
-            input_file = '/Users/benjamin/Desktop/Uni/4.Semester/Projektstudium/nucl_gb.accession2taxid'
-            output_file = '/Users/benjamin/Desktop/Uni/4.Semester/Projektstudium/new_nucl_gb.accession2taxid.csv'
 
             with open(input_file, 'r') as f:
                 with open(output_file, 'w', newline='') as new_file:
@@ -192,10 +181,9 @@ def main():
                         selected_columns = [columns[0], columns[2]]
                         csv_writer.writerow(selected_columns)
 
-            csv_file = '/Users/benjamin/Desktop/Uni/4.Semester/Projektstudium/new_nucl_gb.accession2taxid.csv'
-            create_db(db_file, csv_file)
-            create_table_from_csv(db_file, 'names', '/Users/benjamin/Desktop/Uni/4.Semester/Projektstudium/names.csv')
-            create_table_from_csv(db_file, 'nodes', '/Users/benjamin/Desktop/Uni/4.Semester/Projektstudium/nodes.csv')
+            create_db(db_file, output_file)
+            create_table_from_csv(db_file, 'names', names_csv_filename)
+            create_table_from_csv(db_file, 'nodes', nodes_csv_filename)
 
     elif args.action == "update":
         if os.path.exists(db_file):
@@ -207,8 +195,8 @@ def main():
             cut_nodes()
             cut_names()
 
-            input_file = '/Users/benjamin/Desktop/Uni/4.Semester/Projektstudium/nucl_gb.accession2taxid'
-            output_file = '/Users/benjamin/Desktop/Uni/4.Semester/Projektstudium/new_nucl_gb.accession2taxid.csv'
+            #input_file = '/Users/benjamin/Desktop/Uni/4.Semester/Projektstudium/nucl_gb.accession2taxid'
+            #output_file = '/Users/benjamin/Desktop/Uni/4.Semester/Projektstudium/new_nucl_gb.accession2taxid.csv'
 
             with open(input_file, 'r') as f:
                 with open(output_file, 'w', newline='') as new_file:
@@ -218,10 +206,9 @@ def main():
                         selected_columns = [columns[0], columns[2]]
                         csv_writer.writerow(selected_columns)
 
-            csv_file = '/Users/benjamin/Desktop/Uni/4.Semester/Projektstudium/new_nucl_gb.accession2taxid.csv'
-            create_db(db_file, csv_file)
-            create_table_from_csv(db_file, 'names', '/Users/benjamin/Desktop/Uni/4.Semester/Projektstudium/names.csv')
-            create_table_from_csv(db_file, 'nodes', '/Users/benjamin/Desktop/Uni/4.Semester/Projektstudium/nodes.csv')
+            create_db(db_file, output_file)
+            create_table_from_csv(db_file, 'names', names_csv_filename)
+            create_table_from_csv(db_file, 'nodes', nodes_csv_filename)
 
 if __name__ == "__main__":
     main()

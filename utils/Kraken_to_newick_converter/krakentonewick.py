@@ -2,21 +2,19 @@ import sys
 
 """
 Script to convert Kraken output to Newick format.
-Taken from: https://github.com/sridhar0605/kraken-review (MIT License)
+Buildt on: https://github.com/sridhar0605/kraken-review (MIT License)
+Note: set ignore_unclassified to True in pipeline.
 """
 import csv
 import re
-
 from pathlib import Path
 
 import ete3
-import toytree
 
 __all__ = [
     'KrakenSummary']
 
-INDENT_UNIT = 4 #vorher 2
-
+INDENT_UNIT = 2 # Number of spaces in the indentation
 
 class KrakenSummary(object):
     def __init__(self, infile, ignore_unclassified=False):
@@ -42,8 +40,8 @@ class KrakenSummary(object):
                 if taxa_name == 'root':
                     continue
 
-                if not ignore_unclassified and taxa_name == 'unclassified':
-                    tree.add_child(name='unclassified')
+                if ignore_unclassified and taxa_name == 'unclassified':
+                    continue
 
                 if indent_size >= current_root_index:
                     parent = nodes[current_root_index]
@@ -59,10 +57,6 @@ class KrakenSummary(object):
     @property
     def newick(self):
         return self.tree.write(format=1) # Format 1 keeps the internal node names, manually added
-
-    @property
-    def toytree(self):
-        return toytree.tree(self.newick)
 
     def __repr__(self):
         return (
