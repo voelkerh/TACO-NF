@@ -1,5 +1,5 @@
 BootStrap: docker
-From: python:3.10-slim
+From: python:3.13-slim
 
 %post
     # Update package list and install necessary build tools
@@ -20,7 +20,7 @@ From: python:3.10-slim
         ete3 \
         toytree \
         nextflow \
-        bigtree
+        phylotree
 
     # Install TaxDB package from local directory
 

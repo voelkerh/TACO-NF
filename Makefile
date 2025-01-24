@@ -12,5 +12,5 @@ cleancontainers:
 	./$(CONTAINER_DIR)/build_containers.sh $(CONTAINER_DIR) clean
 
 # Clean and rebuild all containers
-cleanbuildcontainers: clean build
+cleanbuildcontainers: cleancontainers buildcontainers
 

@@ -19,35 +19,33 @@ process newickToKraken {
       """
 }
 
-process samToKraken{
+process toKraken{
 container params.python_container_path
+containerOptions "--bind ${projectDir}:${projectDir}"
 
     input:
-      path Bowtie2
+      path input
     output:
-      path KrakenBowtie2
+      path "${input.getSimpleName()}_converted.kraken"
     script:
     """
-    python ${projectDir}/newick_dash/samtokrakentree.py ${Bowtie2} 2100000 ${baseDir}/database.db
-    mv samtokraken.txt KrakenBowtie2
+    export PYTHONPATH=\$PYTHONPATH:${projectDir}/newick_dash && python ${projectDir}/newick_dash/script/main.py ${input} > ${input.getSimpleName()}_converted.kraken
     """
 }
 
 process dashToTree{
 container params.python_container_path
+containerOptions "--bind ${projectDir}:${projectDir}"
+
     input:
-      path Kraken2
-      path Bowtie2
-      //path GTNewick
-//path inputfiles
+      path input
 
     output:
       path plot
   
     script:
-//$inputfiles expands to " " separated list of files
     """
-    python ${projectDir}/newick_dash/dash_tree_nextto_heatmap.py ${Kraken2} ${Bowtie2} > plot
+    python ${projectDir}/newick_dash/Dash_app/dash_tree_nextto_heatmap.py ${input} > plot
     """
 }
 workflow{
@@ -56,19 +54,11 @@ workflow{
 
 workflow visualize{
   take:
-    Kraken2
-    Bowtie2
-    //input
+    input
   main:
-    //input_file = file(params.input)
-    //newick_output = newickToKraken(input)
-
-//convert all files here using new converter interface
-
-    samToKraken_out = samToKraken(Bowtie2)
-    //output = dashToTree(Kraken2, samToKraken_out , newick_output)
-    output = dashToTree(Kraken2, samToKraken_out )
-//output = dashToTree(converted.collect()) <- this will be used to handle multiple inputs without explicit declaration
+    input.view()
+    kraken = toKraken(input)
+    output = dashToTree(kraken.collect())
   emit:
     output
 }

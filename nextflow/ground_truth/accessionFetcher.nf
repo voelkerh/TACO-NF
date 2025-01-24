@@ -1,6 +1,6 @@
 nextflow.enable.dsl=2
 params.groundtruth_in = launchDir+'/sra_accession.txt'
-params.groundtruth_storeDir = launchDir + '/cache/'
+params.groundtruth_workflow_store_dir = launchDir + 'store/groundtruth_workflow/'
 
 
 // This process takes the contents of sra_accessions.txt 
@@ -23,12 +23,13 @@ process parseTXT {
 //it to accessions folder
 process fetch {
   container "https://depot.galaxyproject.org/singularity/sra-tools%3A3.1.0--h9f5acd7_0"
-  storeDir params.groundtruth_storeDir
+  storeDir params.groundtruth_workflow_store_dir + 'fetch'
   // Make sure that only one download runs in parallel so NCBI does not blacklist us
   maxForks 1
 
+
   input:
-    tuple val(accession), val(numreads)
+    tuple val(accession), val(numreads), val(refseq)
 
   output:
     tuple path("${accession}.sra"), val(numreads)
@@ -43,7 +44,7 @@ process fetch {
 //sequences and tools neccesary to convert them to fastq
 process fasterq {
   container "https://depot.galaxyproject.org/singularity/sra-tools%3A3.1.0--h9f5acd7_0"
-  storeDir params.groundtruth_storeDir
+  storeDir params.groundtruth_workflow_store_dir + 'fasterq'
 
   input:
     tuple path(srafile), val(numreads)
@@ -58,12 +59,12 @@ process fasterq {
     """
 }
 
-//takes one fastq file at a time and extracts the corresponding number of reads from 
+//takes one fastq file at a time and extracts the corresponding number of reads from
 //the sra_accessions.txt. Then it transfers the amount of reads denoted in sra_accessions.txt
-//to a new fastq_sampled.fastq file. 
+//to a new fastq_sampled.fastq file.
 process reader {
   container "https://depot.galaxyproject.org/singularity/sra-tools%3A3.1.0--h9f5acd7_0"
-  storeDir params.groundtruth_storeDir
+storeDir params.groundtruth_workflow_store_dir + 'reader'
   input:
     tuple path(fastq), val(numreads)
   output:
@@ -80,7 +81,7 @@ process reader {
 process groundtruth_gen {
 container "https://depot.galaxyproject.org/singularity/entrez-direct%3A22.1--he881be0_0"
 
-  storeDir params.groundtruth_storeDir
+  storeDir params.groundtruth_workflow_store_dir + 'groundtruth_gen'
   input:
     tuple path(fastq), val(numreads)
   output:
@@ -96,6 +97,7 @@ container "https://depot.galaxyproject.org/singularity/entrez-direct%3A22.1--he8
 }
 process mergeFastq {
   container "https://depot.galaxyproject.org/singularity/sra-tools%3A3.1.0--h9f5acd7_0"
+  storeDir params.groundtruth_workflow_store_dir + 'mergeFastq'
 
 
   input:
@@ -109,6 +111,7 @@ process mergeFastq {
 }
 process mergeGroundtruth {
   container "https://depot.galaxyproject.org/singularity/sra-tools%3A3.1.0--h9f5acd7_0"
+  storeDir params.groundtruth_workflow_store_dir + 'mergeGroundtruth'
   publishDir launchDir
   input:
     path accessiontxt

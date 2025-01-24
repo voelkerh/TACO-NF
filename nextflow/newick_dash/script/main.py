@@ -49,15 +49,15 @@ def main():
     converters_dir = os.path.join(current_dir, "converters")
     import_converters("script.converters", converters_dir)
 
-    database_path = "Database/database.db"
+    database_path = "../Database/database.db"
     taxdb = TaxDBsqlite(database_path)
 
     converters = get_all_converters(taxdb)
 
-    #file = sys.argv[1]
+    file = sys.argv[1]
     # file = input("Enter the full file path:")
     # file = ("script/input_samples/mappingresult.sam")
-    file = ("script/input_samples/ground_truth.txt")
+    # file = ("script/input_samples/ground_truth.txt")
     # file = ("script/input_samples/kraken_in.report")
     # file = ("script/input_samples/classification_output.tre")
 

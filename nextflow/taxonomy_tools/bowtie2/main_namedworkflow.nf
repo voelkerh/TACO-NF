@@ -26,7 +26,7 @@ process extractRefSeq {
 process AccessionsToFastas {
     container "https://depot.galaxyproject.org/singularity/entrez-direct%3A22.1--he881be0_0"
 
-    storeDir "${workflow.projectDir}/store"
+    storeDir "${workflow.projectDir}/store/AccessionsToFastas"
 
     input:
     val accession
@@ -43,6 +43,7 @@ process AccessionsToFastas {
 process MergeFastas {
     //container"/var/tmp/projekt/mapping/var/share/mapping-container.sif"
     container"https://depot.galaxyproject.org/singularity/bowtie2%3A2.5.4--he96a11b_5"
+    storeDir "${workflow.projectDir}/store/MergeFastas"
 
     input:
     path fastaFiles

@@ -2,6 +2,7 @@ nextflow.enable.dsl=2
 
 params.input_file = '.ground_truth/ground_truth.txt'
 params.output_dir = 'kraken_output_files'
+params.store_dir = launchDir + 'store/groundtruth_workflow/'
 
 process convertToKraken {
 container params.python_container_path
@@ -12,11 +13,11 @@ publishDir params.output_dir
     path input_file
 
     output:
-    path "converted_out"
+    path "converted_out/converted.report"
 
     script:
     """
-    python ${projectDir}/gt_converter/gtConverter.py ${input_file} converted_out ${baseDir}/database.db
+    python ${projectDir}/gt_converter/gtConverter.py ${input_file} converted_out ${baseDir}/newick_dash/Database/database.db
     """
 }
 

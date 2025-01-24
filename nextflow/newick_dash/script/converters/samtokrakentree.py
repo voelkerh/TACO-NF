@@ -23,6 +23,8 @@ class SAMConverter(AbstractConverter):
                     col1, col2, col3, col4 = line.split("\t")[:4]
                     col2 = int(col2)
                     col4 = int(col4)
+                    if col3.strip() == '*':
+                        continue
                     if isinstance(col1, str) and isinstance(col2, int) and isinstance(col4, int):
                         flag = True
                 except(ValueError, IndexError):
