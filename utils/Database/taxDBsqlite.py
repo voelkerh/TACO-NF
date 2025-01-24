@@ -1,4 +1,5 @@
-from TaxDB import TaxDB
+#!/usr/bin/env python3
+from .taxdb import TaxDB
 import sqlite3
 
 class TaxDBsqlite(TaxDB):
@@ -7,11 +8,14 @@ class TaxDBsqlite(TaxDB):
         self.sqlitefile = sqlitefile
         
     def load_taxid_from_accession_number(self, accession):
-        conn = sqlite3.connect(self.sqlitefile)
-        cursor = conn.cursor()
+        '''
+        Taxonomie-ID aus Zugangsnummer (Accession Number) laden
+        '''
+        conn = sqlite3.connect(self.sqlitefile)  # Verbindung zur SQLite-Datenbank herstellen.
+        cursor = conn.cursor()  # Cursor-Objekt erstellen, um Abfragen auszuführen.
         cursor.execute("SELECT taxid FROM accession2taxid WHERE accession = ?", (accession,))
-        result = cursor.fetchone()
-        conn.close()
+        result = cursor.fetchone()  # Ergebnis der Abfrage abrufen.
+        conn.close()  # Datenbankverbindung schließen.
         
         if result:
             return result[0]
@@ -19,6 +23,9 @@ class TaxDBsqlite(TaxDB):
             return "NOT FOUND"
     
     def load_names_from_taxonomic_data(self, taxid):
+        '''
+        Name aus Taxonomie-Daten laden
+        '''
         conn = sqlite3.connect(self.sqlitefile)
         cursor = conn.cursor()
         cursor.execute("SELECT name_txt FROM names WHERE tax_id = ?", (taxid,))
