@@ -17,11 +17,12 @@ params.groundtruth = "ground_truth/sra_accession.txt"
 workflow{
 
   main:
-    groundtruth_workflow_out = groundtruth_workflow(Channel.fromPath(params.groundtruth))
+    ground_truth_file = Channel.fromPath(params.groundtruth)
+    groundtruth_workflow_out = groundtruth_workflow(ground_truth_file)
     KrakenGT = gt_converter(groundtruth_workflow_out.groundtruth)
     fastp_output = fastp_multiqc_workflow(groundtruth_workflow_out.fastq)
     kraken_output = kraken_workflow(fastp_output.fastq)
-    mapping_output = mapping(fastp_output.fastq)
+    mapping_output = mapping(fastp_output.fastq, groundtruth_workflow_out.groundtruth)
     //plot = visualize(kraken_output, mapping_output, KrakenGT.gtkraken)
     plot = visualize(kraken_output, mapping_output)
 //concatonate the mapping outputs to enable easier adding of other tools

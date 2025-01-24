@@ -1,6 +1,6 @@
 nextflow.enable.dsl = 2
 
-params.accessions = launchDir+'/ground_truth/ground_truth.txt' // Pfad zur Accessions-Datei
+params.accessions = launchDir+'/ground_truth/sra_accession.txt' // Pfad zur Accessions-Datei
 params.readPath = "qc_output_data/"
 params.reads = "qc_output_data/"
 //params.indexFiles = "index_data/d60d78578a8ceeed296d3ae069e93208/Lactobacillus_acidophilus_index.1.bt2"
@@ -149,10 +149,11 @@ process MapReads {
 workflow mapping {
     take: 
     reads
+    ground_truth_file
     
 
     main:
-    refsq_out = extractRefSeq(params.accessions)
+    refsq_out = extractRefSeq(ground_truth_file)
     preparedFastaChannel = AccessionsToFastas(refsq_out.splitText() {it.trim()})
     mergedFastaChannel = MergeFastas(preparedFastaChannel.preparedFasta.collect())
 
