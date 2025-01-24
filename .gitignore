@@ -1,6 +1,3 @@
-.DS_Store
+**/.DS_Store
 *.pdf
-utils/Database/.DS_Store
-utils/Dash_app/.DS_Store
-utils/.DS_Store
-utils/Tree_merger/merged_tree.txt
+**/__pycache__/

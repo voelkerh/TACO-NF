@@ -1,17 +1,10 @@
-from dash import Dash, dcc, html, Input, Output
+import sys
 import numpy as np 
 import pandas as pd 
 
-from pathlib import Path
-import sys
-
-path_root = Path(__file__).parents[0]
-sys.path = [str(path_root) + '/local_plotly/packages/python/plotly/'] + sys.path
-
+from dash import Dash, dcc, html, Input, Output
 import plotly.graph_objects as go
-import plotly.figure_factory as ff
-
-import sys
+from phylotree import create_phylogenetic_tree
 
 def get_newick_string():
     newick_path = sys.argv[1]
@@ -49,8 +42,22 @@ def get_max_indent(combined_df):
     return max_indent
 
 def filter_dataframe_by_level(df, level):
-    df_filtered = df[df.index.map(lambda x: (len(x) - len(x.lstrip(' '))) // 2 == level)]
-    return df_filtered
+    if level == None:
+        return filter_dataframe_all_leaves(df)
+    
+    levels = df.index.map(lambda x: (len(x) - len(x.lstrip(' '))) // 2)
+    df_filter = []
+
+    for idx, label in enumerate(df.index):
+        if levels[idx] == level:
+            df_filter.append(label)
+            continue
+        if idx < len(levels) - 1:
+            if levels[idx] > levels[idx+1] and levels[idx] < level:
+                df_filter.append(label)
+                continue
+
+    return df.loc[df_filter]
 
 def filter_dataframe_all_leaves(df):
     labels = df.index
@@ -132,8 +139,7 @@ app.layout = html.Div(
                         className='footer-text',
                         children=[
                             html.P('Projektstudium: Analyse von Genomsequenzierungsdaten zur Diagnostik von Infektionskrankheiten'),
-                            html.P('Sommersemester 2024'),
-                            html.P('Billy Andersson, Benjamin Riedl, Henriette Voelker')
+                            html.P('Wintersemester 2024/25'),
                         ],
                     ),
                     html.Img(
@@ -152,101 +158,79 @@ app.layout = html.Div(
 
 def filter_tree_heatmap(selected_files, selected_level, show_all):
     
-    # Update Tree
-    if show_all:
-        display_level = np.inf
-    else:
-        display_level = selected_level
-    fig_tree = ff.create_phylogenetic_tree(newick_str, display_level)
+    fig_tree = update_tree(selected_level, show_all)
+    
+    if not selected_files:
+        return update_empty_heatmap(), fig_tree
 
+    combined_df = prepare_combined_dataframe(selected_files)
+    df_level_filtered = filter_dataframe_by_level(combined_df, None if show_all else selected_level)
+    fig_heatmap = update_heatmap(df_level_filtered)
+
+    return fig_heatmap, fig_tree
+
+def update_tree(selected_level, show_all):
+    if show_all:
+        fig_tree = create_phylogenetic_tree(newick_str)
+    else:
+        fig_tree = create_phylogenetic_tree(newick_str, selected_level)
+    
     fig_tree.update_layout({
         'title': 'Taxonomic Information',
         'title_x': 0.5,
-        'showlegend':False, 
-        'hovermode': 'closest',
         'plot_bgcolor': 'white',
-        'paper_bgcolor': 'white',
-        'xaxis': {
-            'showticklabels': False,
-            'showgrid': False,
-            'zeroline': False,
-            'automargin': True,
-        },
         'yaxis': {
             'showticklabels': False,
-            'showgrid': False,
-            'zeroline': False,
-            'automargin': True,
         }
     })
+    return fig_tree
 
-    # Update Heatmap
-    if not selected_files:
-        fig = go.Figure()
-        fig.add_annotation(
-            x=0.5,
-            y=0.5,
-            text="No files selected",
-            showarrow=False,
-            font=dict(size=20),
-            xref="paper",
-            yref="paper",
-            xanchor="center",
-            yanchor="middle"
-        )
-        fig.update_layout(
-            xaxis=dict(visible=False),
-            yaxis=dict(visible=False)
-        )
-        return fig, fig_tree
+def update_empty_heatmap():
+    fig_heatmap = go.Figure()
+    fig_heatmap.add_annotation(
+        x=0.5,
+        y=0.5,
+        text="No files selected",
+        xref="paper",
+        yref="paper",
+        showarrow=False
+    )
+    fig_heatmap.update_layout(
+        xaxis=dict(visible=False),
+        yaxis=dict(visible=False),
+        plot_bgcolor = 'white'
+    )
+    return fig_heatmap
 
-    combined_df = prepare_combined_dataframe(selected_files)
-    if not combined_df.empty:
-        # Filtere die Daten nach dem ausgewählten Level
-        if show_all:
-            df_level_filtered = filter_dataframe_all_leaves(combined_df)
-            num_rows = combined_df.shape[0]
-            fig_height = max(800, num_rows * 20)
-        else:
-            df_level_filtered = filter_dataframe_by_level(combined_df, selected_level)
-            num_rows = df_level_filtered.shape[0]
-            fig_height = max(800, num_rows * 40)
-        
-        clades_labels = df_level_filtered.index
-        clades_labels = clades_labels[::-1]
-
-        # Erstelle die Heatmap für den gefilterten DataFrame
-        fig = go.Figure(data=go.Heatmap(
-            z=df_level_filtered.values,
-            x=df_level_filtered.columns,
-            y=[label for label in clades_labels][::-1],
-            colorscale='darkmint',
-            text=df_level_filtered.values,
-            texttemplate="%{text}",
-            textfont={"size": 10}
-        ))
-        
-        fig.update_layout(
-            title_text='Classification Results',
-            title_x=0.5,
-            height=fig_height,
-            yaxis=dict(
-                tickmode='array',
-                tickvals=list(range(num_rows)),
-                ticktext=[str(label) for label in clades_labels][::-1],
-                tickfont=dict(size=10),
-                autorange='reversed'
-            ),
-            xaxis=dict(
-                tickmode='array',
-                tickvals=list(df_level_filtered.columns),
-                ticktext=list(df_level_filtered.columns),
-                tickfont=dict(size=10),
-                side='top'
-            )
+def update_heatmap(df_level_filtered):
+    num_rows = df_level_filtered.shape[0]
+    fig_height = max(800, num_rows * 40)    
+    clades_labels = [label.strip() for label in df_level_filtered.index]
+    fig_heatmap = go.Figure(data=go.Heatmap(
+        z=df_level_filtered.values,
+        x=df_level_filtered.columns,
+        y=clades_labels,
+        colorscale='darkmint',
+        text=df_level_filtered.values,
+        texttemplate="%{text}",
+        showscale=False
+    ))
+    
+    fig_heatmap.update_layout(
+        title_text='Classification Results',
+        title_x=0.5,
+        height=fig_height,
+        yaxis=dict(
+            ticktext=clades_labels,
+            autorange='reversed',
+            side='right'
+        ),
+        xaxis=dict(
+            ticktext=df_level_filtered.columns,
+            side='top'
         )
-        fig_tree.update_layout(height=fig_height) 
-        return fig, fig_tree
+    )
+    return fig_heatmap
 
 # Run app
 if __name__ == '__main__':
