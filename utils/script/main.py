@@ -19,7 +19,7 @@ def import_converters(package: str, directory: str):
             module_name = f"{package}.{filename[:-3]}"
             try:
                 module = importlib.import_module(module_name)
-                print(f"Imported: {module_name}")
+                #print(f"Imported: {module_name}")
 
             except Exception as e:
                 print(f"Error importing {module_name}: {e}")
@@ -54,10 +54,10 @@ def main():
 
     converters = get_all_converters(taxdb)
 
-    file = sys.argv[1]
+    #file = sys.argv[1]
     # file = input("Enter the full file path:")
     # file = ("script/input_samples/mappingresult.sam")
-    # file = ("script/input_samples/ground_truth.txt")
+    file = ("script/input_samples/ground_truth.txt")
     # file = ("script/input_samples/kraken_in.report")
     # file = ("script/input_samples/classification_output.tre")
 
