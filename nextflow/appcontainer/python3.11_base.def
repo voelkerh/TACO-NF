@@ -1,0 +1,22 @@
+BootStrap: docker
+From: python:3.11-slim
+
+%post
+
+
+    # Update package list and install necessary build tools
+    apt-get update && apt-get install -y \
+        build-essential \
+        libssl-dev \
+        libffi-dev \
+        python3-dev \
+        git \
+        curl \
+        wget \
+        && apt-get clean
+
+    # Install rust
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > bla.sh
+    sh bla.sh -y
+    mv $HOME/.cargo /usr/local/bin/cargo
+    export PATH=$PATH:/usr/local/bin:/usr/local/bin/cargo/bin

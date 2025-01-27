@@ -1,16 +1,7 @@
-BootStrap: docker
-From: python:3.13-slim
+Bootstrap: localimage
+From: python3.11_base.sif
 
 %post
-    # Update package list and install necessary build tools
-    apt-get update && apt-get install -y \
-        build-essential \
-        libssl-dev \
-        libffi-dev \
-        python3-dev \
-        git \
-        && apt-get clean
-
     # Install Python packages
     pip install --no-cache-dir \
         pandas \
@@ -20,9 +11,8 @@ From: python:3.13-slim
         ete3 \
         toytree \
         nextflow \
-        phylotree
-
-    # Install TaxDB package from local directory
+    wget https://files.pythonhosted.org/packages/96/26/e67015926da9e28018c1bff42b2fdbc8d4eeb275dc30d21057a5504d03de/phylotree-0.1.1-cp311-cp311-manylinux_2_28_x86_64.whl
+    pip install ./phylotree-0.1.1-cp311-cp311-manylinux_2_28_x86_64.whl
 
 %files
     /home/davidkirchner/code/htwpipe/nextflow/appcontainer/pythonfiles /opt/pythonfiles
