@@ -14,7 +14,7 @@ def create_db(db_file, csv_file):
 
     cursor.execute('''
                    CREATE TABLE IF NOT EXISTS accession2taxid (
-                   accession TEXT,clear
+                   accession TEXT,
                    taxid TEXT
                    )
                    ''')

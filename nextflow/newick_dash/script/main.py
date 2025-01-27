@@ -13,7 +13,7 @@ def import_converters(package: str, directory: str):
         package (str): The Python package name (e.g., "converters").
         directory (str): The directory path where the modules are located.
     """
-    print(f"Contents of the directory: {os.listdir(directory)}")
+    #print(f"Contents of the directory: {os.listdir(directory)}")
     for filename in os.listdir(directory):
         if filename.endswith(".py") and filename != "__init__.py":
             module_name = f"{package}.{filename[:-3]}"
@@ -49,7 +49,7 @@ def main():
     converters_dir = os.path.join(current_dir, "converters")
     import_converters("script.converters", converters_dir)
 
-    database_path = "../Database/database.db"
+    database_path = sys.argv[2]
     taxdb = TaxDBsqlite(database_path)
 
     converters = get_all_converters(taxdb)
@@ -63,11 +63,11 @@ def main():
 
     for converter in converters:
         if converter.can_convert(file):
-            try:
-                result = converter.convert(file)
-                print(result)
-            except Exception as e:
-                print(f"Error converting {file}: {e}")
+            #try:
+            result = converter.convert(file)
+            #print(result)
+#             except Exception as e:
+#                 print(f"Error converting {file}: {e}")
             break
     else:
         print(f"No suitable conversion found for {file}.")

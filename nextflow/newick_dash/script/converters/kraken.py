@@ -70,8 +70,8 @@ class KrakenConverter(AbstractConverter):
             os.makedirs(results_directory)
         output_file = os.path.join(results_directory, f"kraken.report")
 
-        with open(output_file, 'w') as file:
-            file.writelines(lines)
+        #with open(output_file, 'w') as file:
+        print("\n".join(lines))
 
     def load_names_from_taxonomic_data(self, taxid):
         return self.taxdb.load_names_from_taxonomic_data(taxid)

@@ -11,8 +11,11 @@ From: python3.11_base.sif
         ete3 \
         toytree \
         nextflow \
-    wget https://files.pythonhosted.org/packages/96/26/e67015926da9e28018c1bff42b2fdbc8d4eeb275dc30d21057a5504d03de/phylotree-0.1.1-cp311-cp311-manylinux_2_28_x86_64.whl
-    pip install ./phylotree-0.1.1-cp311-cp311-manylinux_2_28_x86_64.whl
+        plotly \
+        plotly-phylotree
+
+    #wget https://files.pythonhosted.org/packages/96/26/e67015926da9e28018c1bff42b2fdbc8d4eeb275dc30d21057a5504d03de/phylotree-0.1.1-cp311-cp311-manylinux_2_28_x86_64.whl
+    #pip install ./phylotree-0.1.1-cp311-cp311-manylinux_2_28_x86_64.whl
 
 %files
     /home/davidkirchner/code/htwpipe/nextflow/appcontainer/pythonfiles /opt/pythonfiles

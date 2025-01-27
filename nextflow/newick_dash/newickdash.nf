@@ -1,9 +1,9 @@
 nextflow.enable.dsl=2
 
 params.input = 'results/converted_out/converted.report'
- 
+
 process newickToKraken {
-  container params.python_container_path
+  container params.python_plotly_container_path
   containerOptions "--bind ${projectDir}:${projectDir}"
 
       input:
@@ -29,12 +29,12 @@ containerOptions "--bind ${projectDir}:${projectDir}"
       path "${input.getSimpleName()}_converted.kraken"
     script:
     """
-    export PYTHONPATH=\$PYTHONPATH:${projectDir}/newick_dash && python ${projectDir}/newick_dash/script/main.py ${input} > ${input.getSimpleName()}_converted.kraken
+    export PYTHONPATH=\$PYTHONPATH:${projectDir}/newick_dash && python ${projectDir}/newick_dash/script/main.py ${input} ${projectDir}/newick_dash/Database/database.db > ${input.getSimpleName()}_converted.kraken
     """
 }
 
 process dashToTree{
-container params.python_container_path
+container params.python_plotly_container_path
 containerOptions "--bind ${projectDir}:${projectDir}"
 
     input:

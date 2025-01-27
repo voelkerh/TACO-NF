@@ -81,6 +81,8 @@ class SAMConverter(AbstractConverter):
         for line in lines:
             if not (line.startswith('@')):
                 line_accession = line.split('\t')[2].split('.')[0]
+                if line_accession == '*':
+                    continue
                 accession_counts[line_accession] += 1
         return accession_counts
 
@@ -213,7 +215,7 @@ class SAMConverter(AbstractConverter):
         indent = '  ' * level
         reads_per_taxid = accession_counts_by_taxid.get(node.taxid, 0)
         percentage = self.calculate_percentage_of_reads(node.cumulative_reads, total_reads)
-        file.write(
+        print(
             f"{percentage}\t{node.cumulative_reads}\t{reads_per_taxid}\t{node.rank}\t{node.taxid}\t{indent}{node.name}\n")
         for child in node.children:
             self.write_data_for_nodes_in_branch(file, child, accession_counts_by_taxid, total_reads, level + 1)
@@ -232,10 +234,13 @@ class SAMConverter(AbstractConverter):
             os.makedirs(results_directory)
         output_file = os.path.join(results_directory, f"sam.report")
 
-        with open(output_file, 'w') as file:
-            file.write(
-                f"{percentage_of_unclassified_reads}\t{unclassified_reads}\t{unclassified_reads}\t{'U'}\t{'0'}\tunclassified\n")
-            self.write_data_for_nodes_in_branch(file, tree, accession_counts_by_taxid, total_reads)
+        print(
+             f"{percentage_of_unclassified_reads}\t{unclassified_reads}\t{unclassified_reads}\t{'U'}\t{'0'}\tunclassified\n")
+        self.write_data_for_nodes_in_branch(file, tree, accession_counts_by_taxid, total_reads)
+#         with open(output_file, 'w') as file:
+#             file.write(
+#                 f"{percentage_of_unclassified_reads}\t{unclassified_reads}\t{unclassified_reads}\t{'U'}\t{'0'}\tunclassified\n")
+#             self.write_data_for_nodes_in_branch(file, tree, accession_counts_by_taxid, total_reads)
 
 
 if __name__ == '__main__':

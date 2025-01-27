@@ -9,7 +9,7 @@ class TaxDBsqlite(TaxDB):
     def load_taxid_from_accession_number(self, accession):
         conn = sqlite3.connect(self.sqlitefile)
         cursor = conn.cursor()
-        cursor.execute("SELECT taxid FROM accession2taxid WHERE accession = ?", (accession,))
+        cursor.execute("SELECT tax_id FROM accession2taxid WHERE accession = ?", (accession,))
         result = cursor.fetchone()
         conn.close()
         
