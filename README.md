@@ -83,4 +83,4 @@ SRR21735255, 2000000, NZ_CP097112
 
 ### Pipeline Architecture
 
-![Pipeline](./Images/gt_gen.png)
+![Pipeline](./Images/pipeline.png)
