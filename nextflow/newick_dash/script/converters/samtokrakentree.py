@@ -20,12 +20,7 @@ class SAMConverter(AbstractConverter):
                 if not line:  # Falls die Datei weniger als 30 Zeilen hat
                     break
                 try:
-                    col1, col2, col3, col4 = line.split("\t")[:4]
-                    col2 = int(col2)
-                    col4 = int(col4)
-                    if col3.strip() == '*':
-                        continue
-                    if isinstance(col1, str) and isinstance(col2, int) and isinstance(col4, int):
+                    if line.startswith("SRR"):
                         flag = True
                 except(ValueError, IndexError):
                     continue
@@ -234,14 +229,11 @@ class SAMConverter(AbstractConverter):
             os.makedirs(results_directory)
         output_file = os.path.join(results_directory, f"sam.report")
 
-        print(
-             f"{percentage_of_unclassified_reads}\t{unclassified_reads}\t{unclassified_reads}\t{'U'}\t{'0'}\tunclassified\n")
-        self.write_data_for_nodes_in_branch(file, tree, accession_counts_by_taxid, total_reads)
-#         with open(output_file, 'w') as file:
-#             file.write(
-#                 f"{percentage_of_unclassified_reads}\t{unclassified_reads}\t{unclassified_reads}\t{'U'}\t{'0'}\tunclassified\n")
-#             self.write_data_for_nodes_in_branch(file, tree, accession_counts_by_taxid, total_reads)
-
+        # self.write_data_for_nodes_in_branch(file, tree, accession_counts_by_taxid, total_reads)
+        with open(output_file, 'w') as file:
+            file.write(
+                f"{percentage_of_unclassified_reads}\t{unclassified_reads}\t{unclassified_reads}\t{'U'}\t{'0'}\tunclassified\n")
+            self.write_data_for_nodes_in_branch(file, tree, accession_counts_by_taxid, total_reads)
 
 if __name__ == '__main__':
     pass

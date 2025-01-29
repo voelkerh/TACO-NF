@@ -215,7 +215,7 @@ class GTConverter(AbstractConverter):
         results_directory = os.path.join(parent_directory, 'results')
         if not os.path.exists(results_directory):
             os.makedirs(results_directory)
-        output_file = os.path.join(results_directory, f"kraken_in.report")
+        output_file = os.path.join(results_directory, f"gt_report.report")
 
         with open(output_file, 'w') as file:
             file.write(

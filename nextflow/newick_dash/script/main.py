@@ -63,11 +63,12 @@ def main():
 
     for converter in converters:
         if converter.can_convert(file):
-            #try:
-            result = converter.convert(file)
+            try:
+                result = converter.convert(file)
             #print(result)
-#             except Exception as e:
-#                 print(f"Error converting {file}: {e}")
+            except Exception as e:
+                 raise e
+                 #print(f"Error converting {file}: {e}")
             break
     else:
         print(f"No suitable conversion found for {file}.")
