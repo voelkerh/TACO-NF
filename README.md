@@ -1,31 +1,86 @@
-# Genomsequenzierung_WiSe24
+# Comparison of Taxonomic Classification Tools for WGS Data
 
-Thema: Comparison of Taxonomic Classification Tools for WGS Data
+---
 
-Infos zu Stand nach Sommersemester 2024: [HTW-Cloud](https://cloud.htw-berlin.de/apps/files/?dir%253D%252FProjekt_Genomsequenzierung%252FSoSe_24%2526fileid%253D149475757) (Poster, Präsentation)
+## Table of Content
 
-## To Dos
--  Skript schreiben, dass aus allen Eingaben einen kombinierten Baum erstellt. Ggf. mit Möglichkeit ein Update aufzurufen, wenn in Dash-App Dateien ein- und ausgeblendet werden.
-- **damit Pipeline funktionsfähig wird** GT2Kraken Converter überarbeiten: Indent von 4 auf 2, „all“ auf „root“, „unclassified“ ergänzen, Prozentangaben auf 2 Nachkommastellen limitieren, Namen an wiss. Bezeichnung ohne Publikation anpassen.
-- Code cleanup, Bereitstellung der Pipeline als sauberes repository (mit
- README.md, kleiner Testsuite mittels pytest-workflow, Mini-Beispieldatensatz,
- CITATION.cff)
-- Anwendung der Pipeline auf einige weitere Datensätze
-- Erstellung und Einreichung (bei BMC Bioinformatics oder PLOS One) eines
- Manuskripts
+* [Quick Start](#quick-start)
+* [Install Guide](#install-guide)
+* [Build Container](#build-container)
+    * [With Makefile](#with-makefile)
+    * [Without Makefile](#without-makefile)
+* [Run the pipeline](#run-the-pipeline)
+* [Pipeline Architecture](#pipeline-architecture)
 
-## Aufbau der Nextflow-Pipeline
+---
+
+### Quick Start
+In order to run the pipeline there are some pre-requires need. 
+
+---
+
+### Install Guide
+  - [apptainer](https://apptainer.org/docs/admin/main/installation.html) / [singularity](https://docs.sylabs.io/guides/latest/admin-guide/installation.html) 
+    - Linux and on MacOS/Windows through VM like Lima and WSL
+  - [nextflow](https://www.nextflow.io/docs/latest/install.html) 
+    - POSIX-compatible system (Linux, macOS, etc), and on Windows through WSL.
+
+---
+
+### Build Container
+#### With Makefile
+Build:
+  ```bash
+    make buildcontainers
+  ```
+Delete:
+  ```bash
+    make cleancontainers
+  ```
+Rebuild:
+  ```bash
+    make cleanbuildcontainers
+  ```
+
+#### Without Makefile:
+apptainer:
+  ```bash
+    apptainer build python_container.sif python_container.def
+    apptainer build python_container_plotly.sif  python_container_plotly.def
+  ```
+
+singularity:
+  ```bash
+    singularity build python_container.sif python_container.def
+    singularity build python_container_plotly.sif  python_container_plotly.def
+  ```
+
+---
+
+### Run the pipeline
+
+With example file:
+
+```bash
+    nextflow run workflowNew.nf -profile singularity
+```
+
+With own accessionFile:
+
+```bash
+    nextflow run workflowNew.nf -$(ownFile.txt)
+```
+
+You'll find an [example file here](nextflow/ground_truth/sra_accession.txt)
+
+```txt
+# Accession, number of reads, refseq
+SRR28741185, 100000, NZ_CP074354
+SRR21735255, 2000000, NZ_CP097112
+```
+
+---
+
+### Pipeline Architecture
 
 ![Pipeline](./Images/gt_gen.png)
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
-```
-cd existing_repo
-git remote add origin https://gitlab.rz.htw-berlin.de/Henriette.Voelker/genomsequenzierung_wise24.git
-git branch -M main
-git push -uf origin main
-```
