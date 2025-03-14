@@ -1,0 +1,38 @@
+BootStrap: docker
+From: python:3.10-slim
+
+%post
+    # Update package list and install necessary build tools
+    apt-get update && apt-get install -y \
+        build-essential \
+        libssl-dev \
+        libffi-dev \
+        python3-dev \
+        git \
+        && apt-get clean
+
+    # Install Python packages
+    pip install --no-cache-dir \
+        pandas \
+        dash \
+        numpy \
+        plotly \
+        ete3 \
+        toytree \
+        nextflow \
+        bigtree
+
+    # Install TaxDB package from local directory
+
+%files
+    /home/davidkirchner/code/htwpipe/nextflow/appcontainer/pythonfiles /opt/pythonfiles
+
+%environment
+    export PATH=$PATH:/usr/local/bin
+    export PYTHONPATH=$PYTHONPATH:/opt/pythonfiles
+
+
+%runscript
+    # This will be the default command when the container is run
+    exec python3 "$@"
+

@@ -1,0 +1,84 @@
+/* am unspezifischsten: tag-selektor */
+body {
+	line-height: 1;
+    height: 100%;
+}
+
+html {
+    font-family: 'Source Sans Pro', sans-serif;
+    background-color: #f0f0f0;
+    color: rgb(21, 49, 77);
+}
+
+header {
+    height: 12vh;
+    padding: 12px;
+    background-color: #F5F5F5;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1 {
+    font-size: 24px;
+    text-align: center;
+    padding: 8px;
+    margin-bottom: 24px;
+}
+
+/* className selektor .className */
+.treeLevel {
+    display:flex;
+    gap: 16px;
+    justify-content: center;
+    flex: 1;
+}
+
+.slider .rc-slider{
+    width: 400px;
+}
+
+.slider .rc-slider-rail {
+    background-color: #d3d3d3; /* Farbe der nicht aktiven Spur */
+}
+
+.slider .rc-slider-track {
+    background-color: rgb(21, 49, 77); /* Farbe der aktiven Spur */
+    height: 6px;
+}
+
+.slider .rc-slider-mark-text {
+    font-size: 12px; /* Schriftgröße der Markierungen */
+}
+
+.slider .rc-slider-handle {
+    border: solid 2px rgb(21, 49, 77); /* Randfarbe des Griffs */
+    height: 16px; /* Höhe des Griffs */
+    width: 16px; /* Breite des Griffs */
+    margin-top: -6px; /* Position des Griffs anpassen */
+    background-color: white; /* Hintergrundfarbe des Griffs */
+}
+
+.slider .rc-slider-dot {
+    border: 2px solid #d3d3d3; /* Standardfarbe der Punkte */
+    bottom: -2px; /* Positionierung der Punkte auf der Spur */
+}
+
+.slider .rc-slider-dot-active {
+    border: 2px solid rgb(21, 49, 77); /* Standardfarbe der Punkte */
+    bottom: -2px; /* Positionierung der Punkte auf der Spur */
+}
+
+.content-wrapper {
+    height: 88vh;
+    width: 100%;
+}
+
+/* Id - Selector #id */
+#tree {
+    width: 100%;
+    height: 100%;
+}
+
+/* inline css überschreibt alles. (außer important) */

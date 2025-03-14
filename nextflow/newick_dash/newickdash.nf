@@ -1,48 +1,51 @@
 nextflow.enable.dsl=2
 
-params.input = '/var/tmp/projekt/kraken_output_files/converted_out/converted.report'
- 
-process newickToKraken {
-container '/var/tmp/projekt/singularity_containers/my-python-container.sif'
+params.input = 'results/converted_out/converted.report'
 
-    input:
+process newickToKraken {
+  container params.python_plotly_container_path
+  containerOptions "--bind ${projectDir}:${projectDir}"
+
+      input:
       path input  
-    output:
+
+      output:
       path newick
-    script:
-    """
-    python /var/tmp/projekt/krakentonewick.py ${input} 
-    mv newick.txt newick
-    """
+
+      script:
+      """
+      python ${projectDir}/newick_dash/krakentonewick.py ${input} 
+      mv newick.txt newick
+      """
 }
 
-process samToKraken{
-container '/var/tmp/projekt/singularity_containers/my-python-container.sif'
+process toKraken{
+container params.python_container_path
+containerOptions "--bind ${projectDir}:${projectDir}"
 
     input:
-      path Bowtie2
+      path input
     output:
-      path KrakenBowtie2
+      path "${input.getSimpleName()}_converted.kraken"
     script:
     """
-    python /var/tmp/projekt/samtokrakentree.py ${Bowtie2} 2100000 ${baseDir}/database.db
-    mv samtokraken.txt KrakenBowtie2
+    export PYTHONPATH=\$PYTHONPATH:${projectDir}/newick_dash && python ${projectDir}/newick_dash/script/main.py ${input} ${projectDir}/newick_dash/Database/database.db > ${input.getSimpleName()}_converted.kraken
     """
 }
 
 process dashToTree{
-container '/var/tmp/projekt/singularity_containers/my-python-container.sif'
+container params.python_plotly_container_path
+containerOptions "--bind ${projectDir}:${projectDir}"
+
     input:
-      path Kraken2
-      path Bowtie2
-      path GTNewick
+      path input
 
     output:
       path plot
   
     script:
     """
-    python /var/tmp/projekt/dash_tree_nextto_heatmap.py ${GTNewick} ${Kraken2} ${Bowtie2} > plot
+    python ${projectDir}/newick_dash/Dash_app/dash_tree_nextto_heatmap.py ${input} > plot
     """
 }
 workflow{
@@ -51,15 +54,11 @@ workflow{
 
 workflow visualize{
   take:
-    Kraken2
-    Bowtie2
     input
   main:
-    input_file = file(params.input)
-    newick_output = newickToKraken(input_file)
-    samToKraken_out = samToKraken(Bowtie2)
-    output = dashToTree(Kraken2, samToKraken_out , newick_output)
-    
+    input.view()
+    kraken = toKraken(input)
+    output = dashToTree(kraken.collect())
   emit:
     output
 }
