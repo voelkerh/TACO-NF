@@ -1,23 +1,47 @@
 # To Dos
 
 ### Kurzfristige TODOS:
-- Rename modules and vars
-  - Abgleich mit [Architektur](./Images/pipeline.png)
-  [x] Erstelle Conversion folder (aus gt_converter folder)
-    [x] Place TreeMerger
-    [x] Place script folder - copied
-    [x] Place Database folder - copied
-    [x] Place krakentonewick.py - Places Kraken_to_newick_converter folder from utils.
-- Check what processFasta is doing, check which module it belongs to and WTF is https://github.com/OpenGene/fastp ??
-[x] rename ground_truth(folder) to preparation
-  - fix sra_accession.txt and workflow (remove refseq, was added for testing and never removed)
+
+#### 1. Restructure modules to match [Architektur](./Images/pipeline.png)
+[x] Create Conversion folder (aus gt_converter folder)
+  [x] Place TreeMerger
+  [x] Place script folder - copied
+  [x] Place Database folder - copied
+  [x] Place krakentonewick.py - Places Kraken_to_newick_converter folder from utils.
+
+[x] Rename ground_truth(folder) to preparation
   
-[x] rename taxonomy_tools to classification
-  - add ganon here (see Mittelfristige Todos, Ganon Einbinden)
-[x] rename newick_dash to visualization
-  - (Henni) Überprüfung der DashApp Version
-- check if gt_converter is still used nor got needed information else move/delete
-  - also what it actually does and what its returning data
+[x] Rename taxonomy_tools to classification
+
+[x] Rename newick_dash to visualization
+
+#### 2. Rename variables
+
+#### 3. Restructure Workflows
+- preparation folder:
+  - Why own .gitignore? Integrate into global .gitignore
+  - Check why ground_truth.txt here - if this is sample input (for testing) move to new examples folder.
+  - Fix sra_accession.txt (is this an intermediate resulte?) and workflow (remove refseq, was added for testing and never removed)
+  - Check what processFasta is doing, check which module it belongs to and WTF is https://github.com/OpenGene/fastp ??
+  - Check if accessionFetcher.nf and processFasta.nf could be merged to one preparation.nf
+
+- classification folder:
+  - Does every tool need an own .nf file? Keep or integrate into classification.nf?
+
+- conversion folder:
+  - Create new conversion.nf workflow based on subfolders, use visualization/newickdash.nf as reference
+  - Rename subfolders and update references to files in conversion.nf
+  - Check use and output of gt_converter in conversion folder, integrate into conversion.nf
+
+- visualization folder:
+  - Delete copies of folders from visualization folder, once conversion.nf is running
+  - Check version of DashApp: Update script and delete unnecessary files
+  - Update newickdash.nf to visualization.nf without conversion subworkflows
+
+- Update overall workflow.nf with new workflows
+
+
+#### 4. Replace absolute with relative paths / check container files
 - Replace in python_container.sif: 
   - %files
     /home/davidkirchner/code/htwpipe/nextflow/appcontainer/pythonfiles /opt/pythonfiles relative pfad
