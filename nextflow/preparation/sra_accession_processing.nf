@@ -5,7 +5,7 @@ params.groundtruth_workflow_store_dir = launchDir + 'store/groundtruth_workflow/
 
 // This process takes the contents of sra_accessions.txt 
 //and returns the sra_accesssion id's with which we can fetch the reads
-process extractSraAccessionFromUserInput {
+process EXTRACT_SRA_ACCESSION_FROM_USER_INPUT {
   container params.sra_tools_container_path
 
   input: 
@@ -22,7 +22,7 @@ process extractSraAccessionFromUserInput {
 
 // This process fetches raw sequence data from the NCBI SRA database using the sra_tools with isolated SRA accessions.
 // We use SRR accessions (means Run accession -> single sequencing file / fastq of one run).
-process fetchRawSequenceData {
+process FETCH_RAW_SEQUENCE_DATA {
   container params.sra_tools_container_path
   storeDir params.groundtruth_workflow_store_dir + 'fetch'
   // Make sure that only one download runs in parallel so NCBI does not blacklist us
@@ -43,7 +43,7 @@ process fetchRawSequenceData {
 }
 
 // This process takes the .sra files and converts them to fastq files using the fasterq-dump tool from sratools.
-process sraToFastqWithFasterq {
+process SRA_TO_FASTQ_WITH_FASTERQ {
   container params.sra_tools_container_path
   storeDir params.groundtruth_workflow_store_dir + 'fasterq'
 
@@ -62,7 +62,7 @@ process sraToFastqWithFasterq {
 
 // Based on the number of reads specified in the user input, this process extracts the corresponding number of reads from the fastq file.
 // Then it transfers these reads to a new fastq_sampled.fastq file.
-process generateFastqWithSpecifiedReadNumber {
+process GENERATE_FASTQ_WITH_SPECIFIED_READNUMBER {
   container params.sra_tools_container_path
   storeDir params.groundtruth_workflow_store_dir + 'reader'
 
@@ -82,7 +82,7 @@ process generateFastqWithSpecifiedReadNumber {
 
 // This process fetches the taxid for a single SRA accession using the entrez-direct tool.
 // It then generates the basis for the groundtruth file including the taxid and the number of reads.
-process generateGroundTruthBasis {
+process GENERATE_GROUND_TRUTH_BASIS {
   container params.entrez_direct_container_path
   storeDir params.groundtruth_workflow_store_dir + 'groundtruth_gen'
 
@@ -103,7 +103,7 @@ process generateGroundTruthBasis {
 
 // This process merges the fastq files generated in the previous process into a single fastq file.
 // The output serves as artificial metagenomic sample.
-process mergeFastq {
+process MERGE_FASTQ {
   container params.sra_tools_container_path
   storeDir params.groundtruth_workflow_store_dir + 'mergeFastq'
 
@@ -121,7 +121,7 @@ process mergeFastq {
 
 // This process merges the groundtruth bases generated in the previous process into a single groundtruth file.
 // This file contains the taxid and the number of reads for each SRA accession.
-process mergeGroundTruth {
+process MERGE_GROUND_TRUTH {
   container params.sra_tools_container_path
   storeDir params.groundtruth_workflow_store_dir + 'mergeGroundTruth'
   publishDir launchDir
@@ -144,14 +144,14 @@ workflow groundtruth_workflow {
     infile
 
   main:
-    output = extractSraAccessionFromUserInput(infile)
+    output = EXTRACT_SRA_ACCESSION_FROM_USER_INPUT(infile)
     sra_cleaned = infile.splitCsv(header: true, strip: true)
-    sra_raw_data = fetchRawSequenceData(sra_cleaned)
-    fasterq_out = sraToFastqWithFasterq(sra_raw_data)
-    customized_fastq = generateFastqWithSpecifiedReadNumber(fasterq_out)
-    groundtruth_basis = generateGroundTruthBasis(fasterq_out)
-    merged_fastq = mergeFastq(customized_fastq.map {v -> v[0]}.collect())
-    merged_groundtruth = mergeGroundTruth(groundtruth_basis.collect())
+    sra_raw_data = FETCH_RAW_SEQUENCE_DATA(sra_cleaned)
+    fasterq_out = SRA_TO_FASTQ_WITH_FASTERQ(sra_raw_data)
+    customized_fastq = GENERATE_FASTQ_WITH_SPECIFIED_READNUMBER(fasterq_out)
+    groundtruth_basis = GENERATE_GROUND_TRUTH_BASIS(fasterq_out)
+    merged_fastq = MERGE_FASTQ(customized_fastq.map {v -> v[0]}.collect())
+    merged_groundtruth = MERGE_GROUND_TRUTH(groundtruth_basis.collect())
 
   emit:
     fastq = merged_fastq

@@ -4,18 +4,18 @@ params.input_file = '.preparation/ground_truth.txt'
 params.output_dir = 'kraken_output_files'
 params.store_dir = launchDir + 'store/groundtruth_workflow/'
 
-process convertToKraken {
+process CONVERT_TO_KRAKEN {
 container params.python_container_path
-containerOptions "--bind ${projectDir}:${projectDir}"
+containerOptions '--bind ${projectDir}:${projectDir}'
 publishDir params.output_dir
 
-    input:
+  input:
     path input_file
 
-    output:
-    path "converted_out/converted.report"
+  output:
+    path 'converted_out/converted.report'
 
-    script:
+  script:
     """
     python ${projectDir}/conversion/gtConverter.py ${input_file} converted_out ${baseDir}/visualization/Database/database.db
     """
@@ -26,7 +26,7 @@ workflow gt_converter{
     infile
   main:
     //input_file = file(params.input_file)
-    gtkraken = convertToKraken(infile)
+    gtkraken = CONVERT_TO_KRAKEN(infile)
   emit:
     gtkraken
 }

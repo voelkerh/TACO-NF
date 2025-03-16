@@ -14,7 +14,7 @@ inputChannel = Channel.fromPath(params.inputDir+'*.fq')
 params.groundtruth = "preparation/sra_accession.txt"
 
 
-workflow{
+workflow {
 
   main:
     ground_truth_file = Channel.fromPath(params.groundtruth)
