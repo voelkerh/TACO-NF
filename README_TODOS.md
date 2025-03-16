@@ -23,9 +23,15 @@
 #### 3. Restructure Workflows
 - preparation folder:
   [x] Why own .gitignore? Integrate into global .gitignore
-  - Check why ground_truth.txt here - if this is sample input (for testing) move to new examples folder.
-  - Fix sra_accession.txt (is this an intermediate resulte?) and workflow (remove refseq, was added for testing and never removed)
+  [x] Check why ground_truth.txt here - if this is sample input (for testing) move to new examples folder.
+  - Fix sra_accession.txt (= user input to pipeline) and workflow (remove refseq, was added for testing and never removed)
+  - Move sra_accession.txt to sample_files folder and update all references
   - Check what process_fasta.nf is doing, check which module it belongs to and WTF is https://github.com/OpenGene/fastp ??
+
+- classification folder:
+  [x] Add ganon folder from ganon branch
+  [x] Standardise formatting in ganon.nf
+  - integrate ganon into main workflow
 
 - conversion folder:
   - **Create new conversion.nf workflow based on subfolders, use visualization/newickdash.nf as reference** - Dienstag 18.03.
@@ -33,9 +39,10 @@
   - Check use and output of gt_converter in conversion folder, integrate into conversion.nf
 
 - visualization folder:
-  - Delete copies of folders from visualization folder, once conversion.nf is running
+  [x] Delete copies of folders from visualization folder
   - Check version of DashApp: Update script and delete unnecessary files
-  - Update newickdash.nf to visualization.nf without conversion subworkflows
+  [x] Update newickdash.nf to visualization.nf without conversion subworkflows
+  - Revise visualization.nf with input from conversion module
 
 - Update overall workflow.nf with new workflows
 
