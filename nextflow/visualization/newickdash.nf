@@ -14,7 +14,7 @@ process newickToKraken {
 
       script:
       """
-      python ${projectDir}/newick_dash/krakentonewick.py ${input} 
+      python ${projectDir}/visualization/krakentonewick.py ${input} 
       mv newick.txt newick
       """
 }
@@ -29,7 +29,7 @@ containerOptions "--bind ${projectDir}:${projectDir}"
       path "${input.getSimpleName()}_converted.kraken"
     script:
     """
-    export PYTHONPATH=\$PYTHONPATH:${projectDir}/newick_dash && python ${projectDir}/newick_dash/script/main.py ${input} ${projectDir}/newick_dash/Database/database.db > ${input.getSimpleName()}_converted.kraken
+    export PYTHONPATH=\$PYTHONPATH:${projectDir}/visualization && python ${projectDir}/visualization/script/main.py ${input} ${projectDir}/visualization/Database/database.db > ${input.getSimpleName()}_converted.kraken
     """
 }
 
@@ -45,7 +45,7 @@ containerOptions "--bind ${projectDir}:${projectDir}"
   
     script:
     """
-    python ${projectDir}/newick_dash/Dash_app/dash_tree_nextto_heatmap.py ${input} > plot
+    python ${projectDir}/visualization/Dash_app/dash_tree_nextto_heatmap.py ${input} > plot
     """
 }
 workflow{

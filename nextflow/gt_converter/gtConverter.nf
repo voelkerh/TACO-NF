@@ -17,7 +17,7 @@ publishDir params.output_dir
 
     script:
     """
-    python ${projectDir}/gt_converter/gtConverter.py ${input_file} converted_out ${baseDir}/newick_dash/Database/database.db
+    python ${projectDir}/gt_converter/gtConverter.py ${input_file} converted_out ${baseDir}/visualization/Database/database.db
     """
 }
 

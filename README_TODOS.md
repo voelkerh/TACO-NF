@@ -14,7 +14,7 @@
   
 [x] rename taxonomy_tools to classification
   - add ganon here (see Mittelfristige Todos, Ganon Einbinden)
-- rename newick_dash to visualization
+[x] rename newick_dash to visualization
   - (Henni) Überprüfung der DashApp Version
 - check if gt_converter is still used nor got needed information else move/delete
   - also what it actually does and what its returning data
