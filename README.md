@@ -62,16 +62,16 @@ singularity:
 With example file:
 
 ```bash
-    nextflow run workflowNew.nf -profile singularity
+    nextflow run workflow.nf -profile singularity
 ```
 
 With own accessionFile:
 
 ```bash
-    nextflow run workflowNew.nf -$(ownFile.txt)
+    nextflow run workflow.nf -$(ownFile.txt)
 ```
 
-You'll find an [example file here](nextflow/ground_truth/sra_accession.txt)
+You'll find an [example file here](nextflow/preparation/sra_accession.txt)
 
 ```txt
 # Accession, number of reads, refseq
