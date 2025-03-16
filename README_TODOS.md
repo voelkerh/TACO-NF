@@ -7,7 +7,7 @@
     [x] Place TreeMerger
     - Place script folder - copied
     - Place Database folder - copied
-    - Place krakentonewick.py
+    - Place krakentonewick.py - copied
 - Check what is processFasta doing, check wich module it belongs to and WTF is https://github.com/OpenGene/fastp ??
 - rename ground_truth(folder) to preparation
   - fix sra_accession.txt and workflow (remove refseq, was added for testing and never removed)
