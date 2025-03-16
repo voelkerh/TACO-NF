@@ -11,7 +11,8 @@
 - Check what is processFasta doing, check wich module it belongs to and WTF is https://github.com/OpenGene/fastp ??
 - rename ground_truth(folder) to preparation
   - fix sra_accession.txt and workflow (remove refseq, was added for testing and never removed)
-- rename taxonomy_tools to classification
+  
+[x] rename taxonomy_tools to classification
   - add ganon here (see Mittelfristige Todos, Ganon Einbinden)
 - rename newick_dash to visualization
   - (Henni) Überprüfung der DashApp Version
