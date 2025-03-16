@@ -28,7 +28,6 @@ process FETCH_RAW_SEQUENCE_DATA {
   // Make sure that only one download runs in parallel so NCBI does not blacklist us
   maxForks 1
 
-
   input:
     tuple val(accession), val(numreads), val(refseq)
 

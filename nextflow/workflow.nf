@@ -4,7 +4,7 @@ println "Project directory: ${projectDir}"
 
 include {groundtruth_workflow} from './preparation/sra_accession_processing.nf'
 include {fastp_multiqc_workflow} from './preparation/process_fasta.nf'
-include {kraken_workflow} from './classification/kraken/kraken2.nf'
+include {kraken_workflow} from './classification/kraken2/kraken2.nf'
 include {mapping} from './classification/bowtie2/bowtie2.nf'
 include {gt_converter} from './conversion/gtConverter.nf'
 include {visualize} from './visualization/newickdash.nf'
