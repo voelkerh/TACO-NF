@@ -24,7 +24,7 @@ process extractRefSeq {
 }
 
 process AccessionsToFastas {
-    container "https://depot.galaxyproject.org/singularity/entrez-direct%3A22.1--he881be0_0"
+    container params.entrez_direct_container_path
 
     storeDir "${workflow.projectDir}/store/AccessionsToFastas"
 
