@@ -2,7 +2,7 @@ nextflow.enable.dsl=2
 
 println "Project directory: ${projectDir}"
 
-include {groundtruth_workflow} from './preparation/accessionFetcher.nf'
+include {groundtruth_workflow} from './preparation/sraAccessionProcessing.nf'
 include {fastp_multiqc_workflow} from './preparation/processFasta.nf'
 include {kraken_workflow} from './classification/kraken/kraken2.nf'
 include {mapping} from './classification/bowtie2/bowtie2.nf'
