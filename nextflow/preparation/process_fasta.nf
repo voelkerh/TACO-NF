@@ -31,7 +31,6 @@ process clean {
   container "https://depot.galaxyproject.org/singularity/fastp%3A0.23.4--hadf994f_2"
   publishDir params.outputDir, mode: "copy", overwrite:true
 
-
   input:
     path sequences
 
@@ -44,12 +43,12 @@ process clean {
     mkdir ${sequences.baseName}_fastp_report
     fastp -i ${sequences} -o ${sequences.baseName}.output.fq ${params.disable_quality_filtering} --html ${sequences.baseName}_fastp_report/${sequences.baseName}_fastp.html --json ${sequences.baseName}_fastp_report/${sequences.baseName}_fastp.json
     """
-
 }
 
 process multiQC {
   container "https://depot.galaxyproject.org/singularity/multiqc%3A1.19--pyhdfd78af_0"
   publishDir params.outputDir+"/reports", mode:"copy", overwrite:true
+
   input:
     path fastpReports
 
@@ -60,7 +59,6 @@ process multiQC {
     """
     multiqc ${fastpReports}
     """
-
 }
 
 
