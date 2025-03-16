@@ -1,0 +1,76 @@
+nextflow.enable.dsl=2
+
+// params.input = 'results/converted_out/converted.report'
+
+// process KRAKEN_TO_NEWICK {
+//   container params.python_plotly_container_path
+//   containerOptions '--bind ${projectDir}:${projectDir}'
+
+//   input:
+//     path input  
+
+//   output:
+//     path newick
+
+//   script:
+//     """
+//     python ${projectDir}/visualization/krakentonewick.py ${input} 
+//     mv newick.txt newick
+//     """
+// }
+
+// process TO_KRAKEN {
+// container params.python_container_path
+// containerOptions '--bind ${projectDir}:${projectDir}'
+
+//   input:
+//     path input
+
+//   output:
+//     path '${input.getSimpleName()}_converted.kraken'
+  
+//   script:
+//     """
+//     export PYTHONPATH=\$PYTHONPATH:${projectDir}/visualization && python ${projectDir}/visualization/script/main.py ${input} ${projectDir}/visualization/Database/database.db > ${input.getSimpleName()}_converted.kraken
+//     """
+// }
+
+
+/* 
+  Input: txt file with joint tree representation in newick format + classification outputs & ground truth in kraken report format
+  Output: Dash app with tree and heatmap
+*/
+
+process START_DASH_APP {
+container params.python_plotly_container_path
+containerOptions '--bind ${projectDir}:${projectDir}'
+
+    input:
+      path input
+
+    output:
+      path plot
+  
+    script:
+    """
+    python ${projectDir}/visualization/Dash_app/dash_tree_nextto_heatmap.py ${input} > plot
+    """
+}
+
+workflow {
+  KRAKEN_TO_NEWICK(params.input)
+}
+
+workflow visualize {
+  take:
+    input
+  
+  main:
+    input.view()
+    kraken = TO_KRAKEN(input)
+    output = START_DASH_APP(kraken.collect())
+  
+  emit:
+    output
+}
+
