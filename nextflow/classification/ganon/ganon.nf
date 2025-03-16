@@ -15,65 +15,65 @@ params.report_type = 'abundance'  // Standardwert für den Berichtstyp
 // Prozess: build_database
 // Dieser Prozess erstellt eine benutzerdefinierte Ganon-Datenbank aus der angegebenen Eingabedatei.
 process build_database {
-    storeDir "database"  // Der Prozess speichert alle Ausgaben im Verzeichnis "database"
-    container "https://depot.galaxyproject.org/singularity/ganon:2.1.0--py39ha35b9be_0"  // Singularity-Container mit der Ganon-Software
-
-    output:
-    path "ecoli_db.*"  // Alle Dateien mit diesem Präfix werden als Ausgabe bereitgestellt
+    storeDir 'database'  // Der Prozess speichert alle Ausgaben im Verzeichnis 'database"
+    container 'https://depot.galaxyproject.org/singularity/ganon:2.1.0--py39ha35b9be_0'  // Singularity-Container mit der Ganon-Software
 
     input:
-    path database_input_file  // Die Eingabedatei für den Datenbankaufbau
+        path database_input_file  // Die Eingabedatei für den Datenbankaufbau
+
+    output:
+        path 'ecoli_db.*'  // Alle Dateien mit diesem Präfix werden als Ausgabe bereitgestellt
 
     script:
-    """
-    ganon build-custom --input $database_input_file --db-prefix ecoli_db    
-    """
+        """
+        ganon build-custom --input $database_input_file --db-prefix ecoli_db    
+        """
 }       
 
 // Prozess: classify
 // Dieser Prozess klassifiziert die Sequenzdateien gegen die zuvor erstellte Ganon-Datenbank.
 process classify {
-    storeDir "output"  // Speichert die Ausgaben im Verzeichnis "output"
-    container "https://depot.galaxyproject.org/singularity/ganon:2.1.0--py39ha35b9be_0"  // Singularity-Container mit Ganon
+    storeDir 'output'  // Speichert die Ausgaben im Verzeichnis "output"
+    container 'https://depot.galaxyproject.org/singularity/ganon:2.1.0--py39ha35b9be_0'  // Singularity-Container mit Ganon
 
     input:
-    path test_sequence_file  // Die Sequenzdatei, die klassifiziert werden soll
-    path database  // Die Datenbank, die im vorherigen Prozess erstellt wurde
+        path test_sequence_file  // Die Sequenzdatei, die klassifiziert werden soll
+        path database  // Die Datenbank, die im vorherigen Prozess erstellt wurde
 
     output:
-    path "classification_output.*"  // Alle Dateien mit diesem Präfix werden als Ausgabe bereitgestellt
+        path 'classification_output.*'  // Alle Dateien mit diesem Präfix werden als Ausgabe bereitgestellt
 
     script:
-    """
-    ganon classify --db-prefix ecoli_db --single-reads $test_sequence_file --output-prefix classification_output
-    """
+        """
+        ganon classify --db-prefix ecoli_db --single-reads $test_sequence_file --output-prefix classification_output
+        """
 }
 
 // Prozess: generate_report
 // Dieser Prozess generiert einen Bericht basierend auf den Klassifikationsergebnissen und der Datenbank.
 process generate_report {
-    storeDir "reports"  // Speichert die Ausgaben im Verzeichnis "reports"
-    container "https://depot.galaxyproject.org/singularity/ganon:2.1.0--py39ha35b9be_0"  // Singularity-Container mit Ganon
+    storeDir 'reports'  // Speichert die Ausgaben im Verzeichnis "reports"
+    container 'https://depot.galaxyproject.org/singularity/ganon:2.1.0--py39ha35b9be_0'  // Singularity-Container mit Ganon
 
     input:
-    path class_file  // Die Klassifikationsergebnisse aus dem vorherigen Prozess
-    path database  // Die verwendete Datenbank
-    val report_type  // Der Berichtstyp (z. B. 'abundance')
+        path class_file  // Die Klassifikationsergebnisse aus dem vorherigen Prozess
+        path database  // Die verwendete Datenbank
+        val report_type  // Der Berichtstyp (z. B. 'abundance')
 
     output:
-    path "classification_report_*.tre"  // Generiert Berichte mit diesem Präfix
+        path 'classification_report_*.tre'  // Generiert Berichte mit diesem Präfix
 
     script:
-    """
-    ganon report --db-prefix ecoli_db --input classification_output.rep --output-prefix classification_report_$report_type --report-type $report_type
-    """
+        """
+        ganon report --db-prefix ecoli_db --input classification_output.rep --output-prefix classification_report_$report_type --report-type $report_type
+        """
 }
 
 // Hauptworkflow
 workflow {
     // Prüfen, ob die erforderlichen Parameter übergeben wurden
     if (!params.sequence_file || !params.database_file) {
-        error "Bitte gib sowohl 'sequence_file' als auch 'database_file' als Parameter an."
+        error 'Bitte gib sowohl 'sequence_file' als auch 'database_file' als Parameter an.'
     }
 
     // Definieren der Eingabedateien
