@@ -47,7 +47,7 @@ containerOptions '--bind ${projectDir}:${projectDir}'
   
     script:
     """
-    python ${projectDir}/visualization/Dash_app/dash_tree_nextto_heatmap.py ${input} > plot
+    python ${projectDir}/visualization/dash_app/dash_tree_nextto_heatmap.py ${input} > plot
     """
 }
 
