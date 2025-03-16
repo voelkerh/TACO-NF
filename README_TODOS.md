@@ -22,17 +22,13 @@
 
 #### 3. Restructure Workflows
 - preparation folder:
-  - Why own .gitignore? Integrate into global .gitignore
+  [x] Why own .gitignore? Integrate into global .gitignore
   - Check why ground_truth.txt here - if this is sample input (for testing) move to new examples folder.
   - Fix sra_accession.txt (is this an intermediate resulte?) and workflow (remove refseq, was added for testing and never removed)
   - Check what process_fasta.nf is doing, check which module it belongs to and WTF is https://github.com/OpenGene/fastp ??
-  - Check if accessionFetcher.nf and processFasta.nf could be merged to one preparation.nf
-
-- classification folder:
-  - Does every tool need an own .nf file? Keep or integrate into classification.nf?
 
 - conversion folder:
-  - Create new conversion.nf workflow based on subfolders, use visualization/newickdash.nf as reference
+  - **Create new conversion.nf workflow based on subfolders, use visualization/newickdash.nf as reference** - Dienstag 18.03.
   - Rename subfolders and update references to files in conversion.nf
   - Check use and output of gt_converter in conversion folder, integrate into conversion.nf
 
