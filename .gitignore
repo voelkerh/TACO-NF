@@ -1,6 +1,10 @@
 .DS_Store
-<<<<<<<<< Temporary merge branch 1
-/.zed
-=========
+.zed
+.nextflow*
+
+*.swp
 *.pdf
->>>>>>>>> Temporary merge branch 2
+
+work/
+cache/
+singularity_cache/

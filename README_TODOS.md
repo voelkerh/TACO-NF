@@ -16,13 +16,16 @@
 [x] Rename newick_dash to visualization
 
 #### 2. Rename variables
+- preparation:
+  [x] Improve variable and process names in sra_accession_processing.nf
+
 
 #### 3. Restructure Workflows
 - preparation folder:
   - Why own .gitignore? Integrate into global .gitignore
   - Check why ground_truth.txt here - if this is sample input (for testing) move to new examples folder.
   - Fix sra_accession.txt (is this an intermediate resulte?) and workflow (remove refseq, was added for testing and never removed)
-  - Check what processFasta is doing, check which module it belongs to and WTF is https://github.com/OpenGene/fastp ??
+  - Check what process_fasta.nf is doing, check which module it belongs to and WTF is https://github.com/OpenGene/fastp ??
   - Check if accessionFetcher.nf and processFasta.nf could be merged to one preparation.nf
 
 - classification folder:
