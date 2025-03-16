@@ -17,7 +17,7 @@ publishDir params.output_dir
 
     script:
     """
-    python ${projectDir}/gt_converter/gtConverter.py ${input_file} converted_out ${baseDir}/visualization/Database/database.db
+    python ${projectDir}/conversion/gtConverter.py ${input_file} converted_out ${baseDir}/visualization/Database/database.db
     """
 }
 

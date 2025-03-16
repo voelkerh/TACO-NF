@@ -6,7 +6,7 @@ include {groundtruth_workflow} from './ground_truth/accessionFetcher.nf'
 include {fastp_multiqc_workflow} from './dataprocessing/processFasta.nf'
 include {kraken_workflow} from './classification/kraken/kraken_workflowDSL2.nf'
 include {mapping} from './classification/bowtie2/main_namedworkflow.nf'
-include {gt_converter} from './gt_converter/gtConverter.nf'
+include {gt_converter} from './conversion/gtConverter.nf'
 include {visualize} from './visualization/newickdash.nf'
 
 params.inputDir = "input/"

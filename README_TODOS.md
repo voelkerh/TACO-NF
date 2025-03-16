@@ -3,7 +3,7 @@
 ### Kurzfristige TODOS:
 - Rename modules and vars
   - Abgleich mit [Architektur](./Images/pipeline.png)
-  - Erstelle Conversion folder
+  [x] Erstelle Conversion folder (aus gt_converter folder)
     - Place TreeMerger
     - Place script folder
     - Place Database folder
