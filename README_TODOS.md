@@ -5,8 +5,8 @@
   - Abgleich mit [Architektur](./Images/pipeline.png)
   [x] Erstelle Conversion folder (aus gt_converter folder)
     [x] Place TreeMerger
-    - Place script folder
-    - Place Database folder
+    - Place script folder - copied
+    - Place Database folder - copied
     - Place krakentonewick.py
 - Check what is processFasta doing, check wich module it belongs to and WTF is https://github.com/OpenGene/fastp ??
 - rename ground_truth(folder) to preparation
