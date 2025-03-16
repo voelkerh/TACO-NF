@@ -4,7 +4,7 @@
 - Rename modules and vars
   - Abgleich mit [Architektur](./Images/pipeline.png)
   [x] Erstelle Conversion folder (aus gt_converter folder)
-    - Place TreeMerger
+    [x] Place TreeMerger
     - Place script folder
     - Place Database folder
     - Place krakentonewick.py
