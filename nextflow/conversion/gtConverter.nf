@@ -1,6 +1,6 @@
 nextflow.enable.dsl=2
 
-params.input_file = '.ground_truth/ground_truth.txt'
+params.input_file = '.preparation/ground_truth.txt'
 params.output_dir = 'kraken_output_files'
 params.store_dir = launchDir + 'store/groundtruth_workflow/'
 

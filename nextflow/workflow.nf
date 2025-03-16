@@ -2,7 +2,7 @@ nextflow.enable.dsl=2
 
 println "Project directory: ${projectDir}"
 
-include {groundtruth_workflow} from './ground_truth/accessionFetcher.nf'
+include {groundtruth_workflow} from './preparation/accessionFetcher.nf'
 include {fastp_multiqc_workflow} from './dataprocessing/processFasta.nf'
 include {kraken_workflow} from './classification/kraken/kraken_workflowDSL2.nf'
 include {mapping} from './classification/bowtie2/main_namedworkflow.nf'
@@ -11,7 +11,7 @@ include {visualize} from './visualization/newickdash.nf'
 
 params.inputDir = "input/"
 inputChannel = Channel.fromPath(params.inputDir+'*.fq')
-params.groundtruth = "ground_truth/sra_accession.txt"
+params.groundtruth = "preparation/sra_accession.txt"
 
 
 workflow{
