@@ -59,7 +59,7 @@ process GENERATE_CLASSIFICATION_REPORT {
         """
 }
 
-workflow kraken_workflow {
+workflow kraken_classification {
     //fasta_ch = channel.fromPath("${input_path}/*.fastq")
     take: fasta_ch
 
