@@ -139,7 +139,7 @@ process MERGE_GROUND_TRUTH {
     """
 }
 
-workflow groundtruth_workflow {
+workflow process_sra_accessions {
   take:
     infile
 
@@ -160,5 +160,5 @@ workflow groundtruth_workflow {
 }
 
 workflow {
-  groundtruth_workflow(params.user_input)
+  process_sra_accessions(params.user_input)
 }
