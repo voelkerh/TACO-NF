@@ -11,8 +11,7 @@ from pathlib import Path
 
 import ete3
 
-__all__ = [
-    'KrakenSummary']
+__all__ = ['KrakenSummary']
 
 INDENT_UNIT = 2 # Number of spaces in the indentation
 
@@ -70,7 +69,7 @@ Additional code to convert Kraken output to Newick format in txt-file.
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python krakentonewick.py <infile> [--ignore-unclassified]")
+        print("Usage: python kraken_to_newick.py <infile> [--ignore-unclassified]")
         sys.exit(1)
     
     infile = sys.argv[1]
