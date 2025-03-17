@@ -70,23 +70,48 @@ process generate_report {
 }
 
 // Hauptworkflow
-workflow {
-    // Prüfen, ob die erforderlichen Parameter übergeben wurden
-    if (!params.sequence_file || !params.database_file) {
-        error "Bitte gib sowohl 'sequence_file' als auch 'database_file' als Parameter an."
-    }
+workflow ganon_classification {
 
-    // Definieren der Eingabedateien
-    test_sequence_file = file(params.sequence_file)  // Eingabesequenzdatei
-    database_input_file = file(params.database_file)  // Datenbankeingabedatei
+    take:
+        sequence_file
+    
+    main:
+        database_file = params.database_file
+        sequence_file.view()
+        database_file.view()
 
-    // Workflow-Pipeline
-    // 1. Erstelle die Datenbank
-    database = build_database(database_input_file) 
+        // 1. Create the database
+        database = build_database(database_file) 
 
-    // 2. Klassifiziere die Sequenzdateien gegen die Datenbank
-    classification = classify(test_sequence_file, database) 
+        // 2. Classify the sequence files against the database
+        classification_output = classify(sequence_file, database) 
 
-    // 3. Generiere einen Bericht basierend auf den Klassifikationsergebnissen
-    generate_report(classification, database, params.report_type)
+        // 3. Generate a report based on the classification results
+        report_output = generate_report(classification_output, database, params.report_type)
+
+    emit:
+        classification_output
+        report_output
 }
+
+// // Hauptworkflow
+// workflow ganon_classification {
+//     // Prüfen, ob die erforderlichen Parameter übergeben wurden
+//     if (!params.sequence_file || !params.database_file) {
+//         error "Bitte gib sowohl 'sequence_file' als auch 'database_file' als Parameter an."
+//     }
+
+//     // Definieren der Eingabedateien
+//     test_sequence_file = file(params.sequence_file)  // Eingabesequenzdatei
+//     database_input_file = file(params.database_file)  // Datenbankeingabedatei
+
+//     // Workflow-Pipeline
+//     // 1. Erstelle die Datenbank
+//     database = build_database(database_input_file) 
+
+//     // 2. Klassifiziere die Sequenzdateien gegen die Datenbank
+//     classification = classify(test_sequence_file, database) 
+
+//     // 3. Generiere einen Bericht basierend auf den Klassifikationsergebnissen
+//     generate_report(classification, database, params.report_type)
+// }
