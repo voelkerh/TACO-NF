@@ -1,5 +1,10 @@
 nextflow.enable.dsl = 2
 
+/* 
+  Input: txt file with joint tree representation in newick format + classification outputs & ground truth in kraken report format
+  Output: Dash app with tree and heatmap
+*/
+
 workflow visualize {
   take:
   tree_file
@@ -10,11 +15,6 @@ workflow visualize {
   kraken_reports.view()
   START_DASH_APP(tree_file, kraken_reports)
 }
-
-/* 
-  Input: txt file with joint tree representation in newick format + classification outputs & ground truth in kraken report format
-  Output: Dash app with tree and heatmap
-*/
 
 process START_DASH_APP {
   container params.python_plotly_container_path
