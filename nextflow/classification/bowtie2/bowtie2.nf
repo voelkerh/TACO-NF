@@ -123,7 +123,7 @@ process MAP_READS {
         """
 }
 
-workflow mapping {
+workflow bowtie_classification {
     take: 
         reads
         ground_truth_file
@@ -140,9 +140,3 @@ workflow mapping {
     
     emit: output
 }
-
-workflow {
-    mapping(Channel.fromPath(params.readPath))
-}
-
-
