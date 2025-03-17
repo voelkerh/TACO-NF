@@ -6,19 +6,19 @@ nextflow.enable.dsl=2
 */
 
 process START_DASH_APP {
-container params.python_plotly_container_path
-containerOptions '--bind ${projectDir}:${projectDir}'
+  container params.python_plotly_container_path
+  containerOptions '--bind ${projectDir}:${projectDir}'
 
-    input:
-      path input
+  input:
+    path input
 
-    output:
-      path plot
-  
-    script:
-    """
-    python ${projectDir}/visualization/dash_app/dash_tree_nextto_heatmap.py ${input} > plot
-    """
+  output:
+    path plot
+
+  script:
+  """
+  python ${projectDir}/visualization/dash_app/dash_app.py ${input} > plot
+  """
 }
 
 workflow {

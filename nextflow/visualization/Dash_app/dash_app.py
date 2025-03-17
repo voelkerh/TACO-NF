@@ -4,11 +4,11 @@ of different taxonomic classification tools.
 It is based on Dash and Plotly as well as the phylotree Plotly extension.
 
 Usage:
-python dash_comparison.py <newick_file> <kraken_file> <kraken_file> ...
+python dash_app.py <newick_file> <kraken_file> <kraken_file> ...
 Make sure that the newick file has "newick" in its name.
 
 Current usage:
-python dash_comparison.py sample_files/old/newick_kraken.txt sample_files/old/kraken.report
+python dash_app.py sample_files/old/newick_kraken.txt sample_files/old/kraken.report
 """
 import sys
 import pandas as pd
