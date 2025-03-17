@@ -24,15 +24,15 @@ workflow {
 
 workflow visualize {
   take:
-  input
+    input
 
   main:
-  input.view()
-  kraken = TO_KRAKEN(input)
-  output = START_DASH_APP(kraken.collect())
+    input.view()
+    kraken = TO_KRAKEN(input)
+    output = START_DASH_APP(kraken.collect())
 
   emit:
-  output
+    output
 }
 
 process KRAKEN_TO_NEWICK {
@@ -40,14 +40,14 @@ process KRAKEN_TO_NEWICK {
   containerOptions '--bind ${projectDir}:${projectDir}'
 
   input:
-  path input
+    path input
 
   output:
-  path newick
+    path newick
 
   script:
-  """
-    python ${projectDir}/conversion/kraken_to_newick_converter/krakentonewick.py ${input} 
+    """
+    python ${projectDir}/conversion/kraken_to_newick_converter/kraken_to_newick.py ${input} 
     mv newick.txt newick
     """
 }
@@ -57,13 +57,13 @@ process TO_KRAKEN {
   containerOptions '--bind ${projectDir}:${projectDir}'
 
   input:
-  path input
+    path input
 
   output:
-  path '${input.getSimpleName()}_converted.kraken'
+    path '${input.getSimpleName()}_converted.kraken'
 
   script:
-  """
-  export PYTHONPATH=\$PYTHONPATH:${projectDir}/conversion && python ${projectDir}/conversion/script/main.py ${input} ${projectDir}/conversion/database/database.db > ${input.getSimpleName()}_converted.kraken
-  """
+    """
+    export PYTHONPATH=\$PYTHONPATH:${projectDir}/conversion && python ${projectDir}/conversion/script/main.py ${input} ${projectDir}/conversion/database/database.db > ${input.getSimpleName()}_converted.kraken
+    """
 }
