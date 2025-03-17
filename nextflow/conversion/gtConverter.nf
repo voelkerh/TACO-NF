@@ -5,9 +5,9 @@ params.output_dir = 'kraken_output_files'
 params.store_dir = launchDir + 'store/groundtruth_workflow/'
 
 process CONVERT_TO_KRAKEN {
-container params.python_container_path
-containerOptions '--bind ${projectDir}:${projectDir}'
-publishDir params.output_dir
+  container params.python_container_path
+  containerOptions '--bind ${projectDir}:${projectDir}'
+  publishDir params.output_dir
 
   input:
     path input_file

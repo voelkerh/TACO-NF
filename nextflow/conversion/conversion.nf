@@ -18,18 +18,18 @@ workflow {
 
 workflow convert {
   take:
-  inputChannel
+    inputChannel
 
   main:
-  inputChannel.view()
+    inputChannel.view()
 
-  krakenChannel = INPUT_TO_KRAKEN(inputChannel)
-  newickChannel = KRAKEN_TO_NEWICK(krakenChannel)
-  merged_tree = MERGE_NEWICK(newickChannel.collect())
+    krakenChannel = INPUT_TO_KRAKEN(inputChannel)
+    newickChannel = KRAKEN_TO_NEWICK(krakenChannel)
+    merged_tree = MERGE_NEWICK(newickChannel.collect())
 
   emit:
-  kraken_files = krakenChannel
-  newick_file = merged_tree
+    kraken_files = krakenChannel
+    newick_file = merged_tree
 }
 
 process INPUT_TO_KRAKEN {
@@ -37,13 +37,13 @@ process INPUT_TO_KRAKEN {
   containerOptions '--bind ${projectDir}:${projectDir}'
 
   input:
-  path input
+    path input
 
   output:
-  path '${input.getSimpleName()}_converted.kraken'
+    path '${input.getSimpleName()}_converted.kraken'
 
   script:
-  """
+    """
     export PYTHONPATH=\$PYTHONPATH:${projectDir}/conversion && python ${projectDir}/conversion/to_kraken_converters/main.py ${input} ${projectDir}/conversion/database/database.db > ${input.getSimpleName()}_converted.kraken
     """
 }
@@ -53,13 +53,13 @@ process KRAKEN_TO_NEWICK {
   containerOptions '--bind ${projectDir}:${projectDir}'
 
   input:
-  path input
+    path input
 
   output:
-  path 'newick.txt'
+    path 'newick.txt'
 
   script:
-  """
+    """
     python ${projectDir}/conversion/kraken_to_newick_converter/kraken_to_newick.py ${input}
     """
 }
@@ -75,7 +75,7 @@ process MERGE_NEWICK {
   path 'merged_tree.txt'
 
   script:
-  """
+    """
     python ${projectDir}/conversion/newick_merger/newick_merger.py ${newick_files.join(' ')}
     """
 }
