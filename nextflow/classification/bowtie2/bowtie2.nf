@@ -1,21 +1,22 @@
 nextflow.enable.dsl = 2
 
-params.accessions = launchDir+'/preparation/sra_accession.txt' // Pfad zur Accessions-Datei
+// params.accessions = launchDir+'/preparation/sra_accession.txt' // Pfad zur Accessions-Datei 
+params.accessions = projectDir + '/sample_files/pipeline_input/sra_accession.txt'
 params.readPath = 'qc_output_data/'
 params.reads = 'qc_output_data/'
 
 // Referenzvorbereitungsprozess - Luke
 process EXTRACT_REFSEQ {
     input:
-    path inputFile
+        path inputFile
     
     output:
-    path 'refseqs.txt'
+        path 'refseqs.txt'
 
     script:
-    """
-    tail -n +2 ${inputFile} | cut -d, -f3 > refseqs.txt
-    """
+        """
+        tail -n +2 ${inputFile} | cut -d, -f3 > refseqs.txt
+        """
 }
 
 process ACCESSIONS_TO_FASTAS {
@@ -23,15 +24,15 @@ process ACCESSIONS_TO_FASTAS {
     storeDir '${workflow.projectDir}/store/AccessionsToFastas'
 
     input:
-    val accession
+        val accession
 
     output:
-    path 'prepared_${accession}.fasta', emit: preparedFasta
+        path 'prepared_${accession}.fasta', emit: preparedFasta
 
     script:
-    """
-    efetch -db nucleotide -id '${accession}'' -format fasta > 'prepared_${accession}.fasta'
-    """
+        """
+        efetch -db nucleotide -id '${accession}'' -format fasta > 'prepared_${accession}.fasta'
+        """
 }
 
 process MERGE_FASTAS {
@@ -39,16 +40,16 @@ process MERGE_FASTAS {
     storeDir '${workflow.projectDir}/store/MergeFastas'
 
     input:
-    path fastaFiles
+        path fastaFiles
 
     output:
-    path 'merged.fasta', emit: mergedFasta
+        path 'merged.fasta', emit: mergedFasta
 
     script:
-    """
-    #//mkdir store
-    cat *.fasta > merged.fasta
-    """
+        """
+        #//mkdir store
+        cat *.fasta > merged.fasta
+        """
     //"""
     //cat $fastaFiles > merged.fasta
     //"""
@@ -59,33 +60,32 @@ process HASHING_FASTA_FILE {
     container params.bowtie2_container_path
 
     input: 
-    path fasta_file
+        path fasta_file
 
     output:
-    path 'md5sum.txt', emit: md5txt
+        path 'md5sum.txt', emit: md5txt
     
     script:
-    """
-    md5sum=\$(md5sum ${fasta_file} | cut -d ' ' -f 1) > md5sum.txt   
-    """
+        """
+        md5sum=\$(md5sum ${fasta_file} | cut -d ' ' -f 1) > md5sum.txt   
+        """
 }
 
 process INDEX_REFERENCE {
     container params.bowtie2_container_path
 
     input:
-    path fasta_file
-    val md5sum
+        path fasta_file
+        val md5sum
 
     output:
-    path 'index_data', emit: indexFiles
+        path 'index_data', emit: indexFiles
 
-    script:
-    
-    """
-    mkdir -p index_data/\$(cat ${md5sum})
-    bowtie2-build $fasta_file index_data/\$(cat ${md5sum})/index 
-    """
+    script:  
+        """
+        mkdir -p index_data/\$(cat ${md5sum})
+        bowtie2-build $fasta_file index_data/\$(cat ${md5sum})/index 
+        """
 }
 
 
@@ -94,16 +94,16 @@ process MERGE_FASTQS {
     container params.bowtie2_container_path
 
     input:
-    path fastqFiles
+        path fastqFiles
 
     output:
-    path 'merged.fq', emit: mergedFq
+        path 'merged.fq', emit: mergedFq
 
     script:
-    """
-    mkdir store_fq
-    cat *.fq > merged.fq
-    """
+        """
+        mkdir store_fq
+        cat *.fq > merged.fq
+        """
 }
 
 process MAP_READS {
@@ -111,32 +111,32 @@ process MAP_READS {
     publishDir '${workflow.projectDir}/output'
 
     input:
-    path index_files
-    path reads
+        path index_files
+        path reads
     
     output:
-    path 'output.sam', emit: resultSam
+        path 'output.sam', emit: resultSam
 
     script:
-    """
-    bowtie2 -x $index_files/index -U $reads -S output.sam -p 40
-    """
+        """
+        bowtie2 -x $index_files/index -U $reads -S output.sam -p 40
+        """
 }
 
 workflow mapping {
     take: 
-    reads
-    ground_truth_file
+        reads
+        ground_truth_file
     
     main:
-    refsq_out = EXTRACT_REFSEQ(ground_truth_file)
-    preparedFastaChannel = ACCESSIONS_TO_FASTAS(refsq_out.splitText() {it.trim()})
-    mergedFastaChannel = MERGE_FASTAS(preparedFastaChannel.preparedFasta.collect())
+        refsq_out = EXTRACT_REFSEQ(ground_truth_file)
+        preparedFastaChannel = ACCESSIONS_TO_FASTAS(refsq_out.splitText() {it.trim()})
+        mergedFastaChannel = MERGE_FASTAS(preparedFastaChannel.preparedFasta.collect())
 
-    hash = HASHING_FASTA_FILE(mergedFastaChannel)
-    indexFiles = INDEX_REFERENCE(mergedFastaChannel, hash)
-    mergedFq = MERGE_FASTQS(reads)
-    output = MAP_READS(indexFiles, mergedFq)
+        hash = HASHING_FASTA_FILE(mergedFastaChannel)
+        indexFiles = INDEX_REFERENCE(mergedFastaChannel, hash)
+        mergedFq = MERGE_FASTQS(reads)
+        output = MAP_READS(indexFiles, mergedFq)
     
     emit: output
 }
