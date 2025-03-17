@@ -1,5 +1,14 @@
 nextflow.enable.dsl = 2
 
+/*
+  Ablauf:
+  1. Konvertiere Ground Truth in Kraken-Format
+  2. Konvertiere alle Classification Outputs in Kraken-Format
+  3. Konvertiere zusätzlich alle Kraken-Files in Newick-Format
+  4. Führe Newick-Files mit merger zusammen
+  5. Gebe übergreifenden Baum in Newick-Format und vollständigen Satz an Kraken-Files aus
+*/
+
 params.input = 'results/converted_out/converted.report'
 
 // process START_DASH_APP {
@@ -64,6 +73,6 @@ process TO_KRAKEN {
 
   script:
     """
-    export PYTHONPATH=\$PYTHONPATH:${projectDir}/conversion && python ${projectDir}/conversion/script/main.py ${input} ${projectDir}/conversion/database/database.db > ${input.getSimpleName()}_converted.kraken
+    export PYTHONPATH=\$PYTHONPATH:${projectDir}/conversion && python ${projectDir}/conversion/to_kraken_converters/main.py ${input} ${projectDir}/conversion/database/database.db > ${input.getSimpleName()}_converted.kraken
     """
 }
