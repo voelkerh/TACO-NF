@@ -38,7 +38,6 @@ def convert_to_kraken(input_file, output_dir, dbfilename):
             except ValueError as e:
                 print(f"Error processing line: {line.strip()} - {e}")
                 continue
-
             
             name, parent_taxid, rank_code = fetch_taxonomic_info(tax_id, taxdb)
             tax_ids = []
