@@ -27,13 +27,19 @@
   - Fix sra_accession.txt (= user input to pipeline) and workflow (remove refseq, was added for testing and never removed)
   - Move sra_accession.txt to sample_files folder and update all references
   - Check what process_fasta.nf is doing, check which module it belongs to and WTF is https://github.com/OpenGene/fastp ??
+  - **Check if multiqcChannel is needed in process_fasta.nf, treat error**
 
 - classification folder:
   [x] Add ganon folder from ganon branch
   [x] Standardise formatting in ganon.nf
-  - integrate ganon into main workflow
+  - Integrate ganon into main workflow
+  - Translate ganon comments into English, transfer to tools integration documentation in README.md
+  - Check nextflow.config in ganon subfolder, integrate into main nextflow.config
+  - **Correct inputs for bowtie2.nf (1 missing) to handle error**
 
 - conversion folder:
+  - Check which files in database subfolder are still needed, keep only necessary ones (probably delete: datenbank.py, taxdb_dump.py, taxdb_mock.py, test.py)
+  - Check if left over database scripts should be here or in appcontainer python subfolder
   - **Create new conversion.nf workflow based on subfolders, use visualization/newickdash.nf as reference** - Dienstag 18.03.
   - Rename subfolders and update references to files in conversion.nf
   - Check use and output of gt_converter in conversion folder, integrate into conversion.nf

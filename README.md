@@ -71,7 +71,7 @@ With own accessionFile:
     nextflow run workflow.nf -$(ownFile.txt)
 ```
 
-You'll find an [example file here](nextflow/preparation/sra_accession.txt)
+You'll find an [example file here](nextflow/sample_files/pipeline_input/sra_accession.txt)
 
 ```txt
 # Accession, number of reads, refseq
