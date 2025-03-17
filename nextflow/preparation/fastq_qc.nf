@@ -24,7 +24,7 @@ params.low_complexity_filter = ''       //enter --low_complexity_filter="-y" ena
 params.complexity_threshold = ''        //enter --complexity_threshold="-Y int" int: the threshold for low complexity filter (0~100). Default is 30, which means 30% complexity is required.
 
 
-multiqcChannel = Channel.fromPath(params.outputDir+'/reports')
+// multiqcChannel = Channel.fromPath(params.outputDir+'/reports') - could be deleted?
 
 
 process CLEAN {
