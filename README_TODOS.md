@@ -44,11 +44,11 @@
   - Rename subfolders and update references to files in conversion.nf
   - Check use and output of gt_converter in conversion folder, integrate into conversion.nf
 
-- visualization folder:
+[x] visualization folder:
   [x] Delete copies of folders from visualization folder
-  - Check version of DashApp: Update script and delete unnecessary files
+  [x] Check version of DashApp: Update script and delete unnecessary files
   [x] Update newickdash.nf to visualization.nf without conversion subworkflows
-  - Revise visualization.nf with input from conversion module
+  [x] Revise visualization.nf with input from conversion module
 
 - Update overall workflow.nf with new workflows
 

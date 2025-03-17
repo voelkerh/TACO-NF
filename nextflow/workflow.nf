@@ -24,7 +24,7 @@ workflow {
     mapping_output = mapping(fastp_output.fastq, ground_truth_file)
     tool_outputs = kraken_output.concat(mapping_output).concat(KrakenGT.gtkraken)
     //plot = visualize(kraken_output, mapping_output, KrakenGT.gtkraken)
-    plot = visualize(tool_outputs)
+    visualize(tool_outputs) // supplement tree file
     //concatonate the mapping outputs to enable easier adding of other tools
     
 }
