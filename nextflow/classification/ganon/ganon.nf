@@ -73,7 +73,7 @@ process generate_report {
 workflow {
     // Prüfen, ob die erforderlichen Parameter übergeben wurden
     if (!params.sequence_file || !params.database_file) {
-        error 'Bitte gib sowohl 'sequence_file' als auch 'database_file' als Parameter an.'
+        error "Bitte gib sowohl 'sequence_file' als auch 'database_file' als Parameter an."
     }
 
     // Definieren der Eingabedateien
