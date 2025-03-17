@@ -1,5 +1,6 @@
 nextflow.enable.dsl=2
-params.groundtruth_in = launchDir+'/sra_accession.txt'
+// params.user_input = launchDir+'/sra_accession.txt'
+params.user_input = projectDir + '/sample_files/pipeline_input/sra_accession.txt'
 params.groundtruth_workflow_store_dir = launchDir + 'store/groundtruth_workflow/'
 
 
@@ -159,5 +160,5 @@ workflow groundtruth_workflow {
 }
 
 workflow {
-  groundtruth_workflow(params.groundtruth_in)
+  groundtruth_workflow(params.user_input)
 }
