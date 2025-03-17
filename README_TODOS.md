@@ -26,7 +26,7 @@
   [x] Check why ground_truth.txt here - if this is sample input (for testing) move to new examples folder.
   - Fix sra_accession.txt (= user input to pipeline) and workflow (remove refseq, was added for testing and never removed)
   - Move sra_accession.txt to sample_files folder and update all references
-  - Check what process_fasta.nf is doing, check which module it belongs to and WTF is https://github.com/OpenGene/fastp ??
+  - Check what process_fasta.nf is doing, check which module it belongs to and WTF is https://github.com/OpenGene/fastp ?? --> QualityControl for fastq files, does not even process fasta files, thus renamed to fastq_qc-nf
   - **Check if multiqcChannel is needed in process_fasta.nf, treat error**
 
 - classification folder:
