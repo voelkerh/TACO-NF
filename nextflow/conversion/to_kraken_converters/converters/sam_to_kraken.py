@@ -1,5 +1,5 @@
 from database.taxdb import TaxDB
-from script.abstract_converter import AbstractConverter
+from to_kraken_converters.abstract_converter import AbstractConverter
 import os
 
 class SAMConverter(AbstractConverter):

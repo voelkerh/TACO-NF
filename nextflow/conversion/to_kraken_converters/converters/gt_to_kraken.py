@@ -1,4 +1,4 @@
-from script.abstract_converter import AbstractConverter
+from to_kraken_converters.abstract_converter import AbstractConverter
 import os
 from database.taxdb import TaxDB
 
