@@ -1,10 +1,6 @@
-import sys
-from Database.taxDBsqlite import TaxDBsqlite
-import sqlite3
-from Database.taxdb import TaxDB
+from database.taxdb import TaxDB
 from script.abstract_converter import AbstractConverter
 import os
-
 
 class SAMConverter(AbstractConverter):
 

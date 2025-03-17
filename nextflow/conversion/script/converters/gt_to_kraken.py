@@ -1,10 +1,6 @@
-from Database.taxDBsqlite import TaxDBsqlite
 from script.abstract_converter import AbstractConverter
-import sys
-import sqlite3
 import os
-from Database.taxdb import TaxDB
-
+from database.taxdb import TaxDB
 
 class GTConverter(AbstractConverter):
 

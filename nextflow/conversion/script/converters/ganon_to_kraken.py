@@ -1,12 +1,7 @@
 import os
-import sys
 from script.abstract_converter import AbstractConverter
-import sqlite3
-from Database.taxDBsqlite import TaxDBsqlite
-from Database.taxdb import TaxDB
+from database.taxdb import TaxDB
 from bigtree import dict_to_tree
-import re
-
 
 class GanonConverter(AbstractConverter):
 
@@ -100,8 +95,3 @@ class GanonConverter(AbstractConverter):
 
 if __name__ == '__main__':
     pass
-    # df = pd.read_csv('script/input_samples/gan.tre',sep=r'\s{2,}',header=None,engine='python',skiprows=1)
-    # print(df)
-    # taxdb = TaxDBsqlite(database_path)
-    # g = GanonConverter(taxdb)
-    # g.convert('script/input_samples/g.tre')

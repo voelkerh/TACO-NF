@@ -1,10 +1,6 @@
 import os
-import sys
-from Database.taxDBsqlite import TaxDBsqlite
 from script.abstract_converter import AbstractConverter
-import sqlite3
-from Database.taxdb import TaxDB
-
+from database.taxdb import TaxDB
 
 class KrakenConverter(AbstractConverter):
 
@@ -78,7 +74,6 @@ class KrakenConverter(AbstractConverter):
 
     def get_name_from_taxonomic_data(self, taxid):
         return self.taxdb.get_name_from_taxonomic_data(taxid)
-
 
 if __name__ == '__main__':
     pass
