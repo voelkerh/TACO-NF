@@ -1,6 +1,6 @@
 nextflow.enable.dsl=2
 
-println 'Project directory: ${projectDir}'
+// println 'Project directory: ${projectDir}'
 
 include {groundtruth_workflow} from './preparation/sra_accession_processing.nf'
 include {fastp_multiqc_workflow} from './preparation/process_fasta.nf'
@@ -9,8 +9,8 @@ include {mapping} from './classification/bowtie2/bowtie2.nf'
 include {gt_converter} from './conversion/gtConverter.nf'
 include {visualize} from './visualization/visualization.nf'
 
-params.inputDir = "input/"
-inputChannel = Channel.fromPath(params.inputDir+'*.fq')
+// params.inputDir = "input/"
+// inputChannel = Channel.fromPath(params.inputDir+'*.fq')
 params.groundtruth = "preparation/sra_accession.txt"
 
 workflow {
@@ -25,5 +25,6 @@ workflow {
     tool_outputs = kraken_output.concat(mapping_output).concat(KrakenGT.gtkraken)
     //plot = visualize(kraken_output, mapping_output, KrakenGT.gtkraken)
     plot = visualize(tool_outputs)
-//concatonate the mapping outputs to enable easier adding of other tools
+    //concatonate the mapping outputs to enable easier adding of other tools
+    
 }
