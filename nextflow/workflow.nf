@@ -7,6 +7,7 @@ include {fastp_multiqc_workflow} from './preparation/fastq_qc.nf'
 include {kraken_workflow} from './classification/kraken2/kraken2.nf'
 include {mapping} from './classification/bowtie2/bowtie2.nf'
 include {gt_converter} from './conversion/gtConverter.nf'
+include {convert} from './conversion/conversion.nf'
 include {visualize} from './visualization/visualization.nf'
 
 // params.inputDir = "input/"
@@ -22,9 +23,12 @@ workflow {
     fastp_output = fastp_multiqc_workflow(groundtruth_workflow_out.fastq)
     kraken_output = kraken_workflow(fastp_output.fastq)
     mapping_output = mapping(fastp_output.fastq, ground_truth_file)
+    
     tool_outputs = kraken_output.concat(mapping_output).concat(KrakenGT.gtkraken)
-    //plot = visualize(kraken_output, mapping_output, KrakenGT.gtkraken)
-    visualize(tool_outputs) // supplement tree file
-    //concatonate the mapping outputs to enable easier adding of other tools
+    convert_output = convert(tool_outputs) 
+    visualize(convert_output.newick_file, convert_output.kraken_files)
     
 }
+
+//plot = visualize(kraken_output, mapping_output, KrakenGT.gtkraken)
+//concatonate the mapping outputs to enable easier adding of other tools

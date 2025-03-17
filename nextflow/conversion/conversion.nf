@@ -11,37 +11,41 @@ nextflow.enable.dsl = 2
 
 params.input = 'results/converted_out/converted.report'
 
-// process START_DASH_APP {
-// container params.python_plotly_container_path
-// containerOptions '--bind ${projectDir}:${projectDir}'
-
-//     input:
-//       path input
-
-//     output:
-//       path plot
-
-//     script:
-//     """
-//     python ${projectDir}/visualization/dash_app/dash_tree_nextto_heatmap.py ${input} > plot
-//     """
-// }
-
 workflow {
-  KRAKEN_TO_NEWICK(params.input)
+  inputChannel = Channel.fromPath(params.input)
+  convert(inputChannel)
 }
 
-workflow visualize {
+workflow convert {
   take:
-    input
+  inputChannel
 
   main:
-    input.view()
-    kraken = TO_KRAKEN(input)
-    output = START_DASH_APP(kraken.collect())
+  inputChannel.view()
+
+  krakenChannel = INPUT_TO_KRAKEN(inputChannel)
+  newickChannel = KRAKEN_TO_NEWICK(krakenChannel)
+  merged_tree = MERGE_NEWICK(newickChannel.collect())
 
   emit:
-    output
+  kraken_files = krakenChannel
+  newick_file = merged_tree
+}
+
+process INPUT_TO_KRAKEN {
+  container params.python_container_path
+  containerOptions '--bind ${projectDir}:${projectDir}'
+
+  input:
+  path input
+
+  output:
+  path '${input.getSimpleName()}_converted.kraken'
+
+  script:
+  """
+    export PYTHONPATH=\$PYTHONPATH:${projectDir}/conversion && python ${projectDir}/conversion/to_kraken_converters/main.py ${input} ${projectDir}/conversion/database/database.db > ${input.getSimpleName()}_converted.kraken
+    """
 }
 
 process KRAKEN_TO_NEWICK {
@@ -49,30 +53,29 @@ process KRAKEN_TO_NEWICK {
   containerOptions '--bind ${projectDir}:${projectDir}'
 
   input:
-    path input
+  path input
 
   output:
-    path newick
+  path 'newick.txt'
 
   script:
-    """
-    python ${projectDir}/conversion/kraken_to_newick_converter/kraken_to_newick.py ${input} 
-    mv newick.txt newick
+  """
+    python ${projectDir}/conversion/kraken_to_newick_converter/kraken_to_newick.py ${input}
     """
 }
 
-process TO_KRAKEN {
-  container params.python_container_path
+process MERGE_NEWICK {
+  container params.python_plotly_container_path
   containerOptions '--bind ${projectDir}:${projectDir}'
 
   input:
-    path input
+  path newick_files
 
   output:
-    path '${input.getSimpleName()}_converted.kraken'
+  path 'merged_tree.txt'
 
   script:
-    """
-    export PYTHONPATH=\$PYTHONPATH:${projectDir}/conversion && python ${projectDir}/conversion/to_kraken_converters/main.py ${input} ${projectDir}/conversion/database/database.db > ${input.getSimpleName()}_converted.kraken
+  """
+    python ${projectDir}/conversion/newick_merger/newick_merger.py ${newick_files.join(' ')}
     """
 }
