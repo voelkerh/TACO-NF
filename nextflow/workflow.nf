@@ -1,34 +1,39 @@
-nextflow.enable.dsl=2
+nextflow.enable.dsl = 2
 
 // println 'Project directory: ${projectDir}'
 
-include {groundtruth_workflow} from './preparation/sra_accession_processing.nf'
-include {fastp_multiqc_workflow} from './preparation/fastq_qc.nf'
-include {kraken_workflow} from './classification/kraken2/kraken2.nf'
-include {mapping} from './classification/bowtie2/bowtie2.nf'
-include {gt_converter} from './conversion/gtConverter.nf'
-include {convert} from './conversion/conversion.nf'
-include {visualize} from './visualization/visualization.nf'
+include { process_sra_accessions } from './preparation/sra_accession_processing.nf'
+include { fastp_multiqc_workflow } from './preparation/fastq_qc.nf'
+include { kraken_classification } from './classification/kraken2/kraken2.nf'
+include { bowtie_classification } from './classification/bowtie2/bowtie2.nf'
+include { ganon_classification } from './classification/ganon/ganon.nf'
+include { gt_converter } from './conversion/gtConverter.nf' // check if this is needed
+include { convert } from './conversion/conversion.nf'
+include { visualize } from './visualization/visualization.nf'
 
 // params.inputDir = "input/"
 // inputChannel = Channel.fromPath(params.inputDir+'*.fq')
-params.groundtruth = "preparation/sra_accession.txt"
+params.pipeline_input = "sample_files/pipeline_input/sra_accession.txt"
 
 workflow {
+  input_channel = Channel.fromPath(params.pipeline_input)
 
-  main:
-    ground_truth_file = Channel.fromPath(params.groundtruth)
-    groundtruth_workflow_out = groundtruth_workflow(ground_truth_file)
-    KrakenGT = gt_converter(groundtruth_workflow_out.groundtruth)
-    fastp_output = fastp_multiqc_workflow(groundtruth_workflow_out.fastq)
-    kraken_output = kraken_workflow(fastp_output.fastq)
-    mapping_output = mapping(fastp_output.fastq, ground_truth_file)
-    
-    tool_outputs = kraken_output.concat(mapping_output).concat(KrakenGT.gtkraken)
-    convert_output = convert(tool_outputs) 
-    visualize(convert_output.newick_file, convert_output.kraken_files)
-    
+  // preparation
+  fastq_and_groundtruth = process_sra_accessions(input_channel)
+  fastp_output = fastp_multiqc_workflow(fastq_and_groundtruth.fastq)
+
+  // classification
+  kraken_output = kraken_classification(fastp_output.fastq)
+  bowtie_output = bowtie_classification(fastp_output.fastq, input_channel)
+  ganon_output = ganon_classification(fastp_output.fastq)
+
+  // conversion
+  tool_outputs = kraken_output.concat(bowtie_output).concat(ganon_output).concat(fastq_and_groundtruth.groundtruth)
+  convert_output = convert(tool_outputs)
+
+  // visualization
+  visualize(convert_output.newick_file, convert_output.kraken_files)
 }
 
-//plot = visualize(kraken_output, mapping_output, KrakenGT.gtkraken)
-//concatonate the mapping outputs to enable easier adding of other tools
+  // KrakenGT = gt_converter(fastq_and_groundtruth.groundtruth)
+  // tool_outputs = kraken_output.concat(bowtie_output).concat(KrakenGT.gtkraken)
