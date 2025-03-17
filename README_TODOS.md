@@ -35,11 +35,11 @@
 - classification folder:
   [x] Add ganon folder from ganon branch
   [x] Standardise formatting in ganon.nf
-
-  - Integrate ganon into main workflow
+  [x] Integrate ganon into main workflow
+  - Find out about ganon database file
   - Translate ganon comments into English, transfer to tools integration documentation in README.md
   - Check nextflow.config in ganon subfolder, integrate into main nextflow.config
-  - **Correct inputs for bowtie2.nf (1 missing) to handle error**
+  [x] Correct inputs for bowtie2.nf (1 missing) to handle error and worklfow def in bowtie2.nf
 
 - conversion folder:
   - Check which files in database subfolder are still needed, keep only necessary ones (probably delete: datenbank.py, taxdb_dump.py, taxdb_mock.py, test.py)
