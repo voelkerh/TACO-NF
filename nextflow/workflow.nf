@@ -1,21 +1,21 @@
 nextflow.enable.dsl = 2
 
-// println 'Project directory: ${projectDir}'
-
 include { process_sra_accessions } from './preparation/sra_accession_processing.nf'
 include { fastp_multiqc_workflow } from './preparation/fastq_qc.nf'
 include { kraken_classification } from './classification/kraken2/kraken2.nf'
 include { bowtie_classification } from './classification/bowtie2/bowtie2.nf'
 include { ganon_classification } from './classification/ganon/ganon.nf'
-include { gt_converter } from './conversion/gtConverter.nf' // check if this is needed
+include { gt_converter } from './conversion/gtConverter.nf'
+// check if this is needed
 include { convert } from './conversion/conversion.nf'
 include { visualize } from './visualization/visualization.nf'
 
 // params.inputDir = "input/"
 // inputChannel = Channel.fromPath(params.inputDir+'*.fq')
-params.pipeline_input = "sample_files/pipeline_input/sra_accession.txt"
+params.pipeline_input = "./sample_files/pipeline_input/sra_accession.txt"
 
 workflow {
+  println('Project directory: ${projectDir}')
   input_channel = Channel.fromPath(params.pipeline_input)
 
   // preparation
@@ -25,15 +25,13 @@ workflow {
   // classification
   kraken_output = kraken_classification(fastp_output.fastq)
   bowtie_output = bowtie_classification(fastp_output.fastq, input_channel)
-  ganon_output = ganon_classification(fastp_output.fastq)
+  //ganon_output = ganon_classification(fastp_output.fastq)
 
   // conversion
-  tool_outputs = kraken_output.concat(bowtie_output).concat(ganon_output).concat(fastq_and_groundtruth.groundtruth)
+  //tool_outputs = kraken_output.concat(bowtie_output).concat(ganon_output).concat(fastq_and_groundtruth.groundtruth)
+  tool_outputs = kraken_output.concat(bowtie_output).concat(fastq_and_groundtruth.groundtruth)
   convert_output = convert(tool_outputs)
 
   // visualization
   visualize(convert_output.newick_file, convert_output.kraken_files)
 }
-
-  // KrakenGT = gt_converter(fastq_and_groundtruth.groundtruth)
-  // tool_outputs = kraken_output.concat(bowtie_output).concat(KrakenGT.gtkraken)
