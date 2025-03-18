@@ -28,30 +28,34 @@ process KRAKEN2_CLASSIFICATION {
         path kraken_db
 
     output:
-        file '${fastq.baseName}.classified.fastq'
+        file '${fastq.baseName}.classified.fastq', emit: classified
+        file '${fastq.baseName}.report', emit: report
 
     script:
         """
-        kraken2 --threads 4 --db ${kraken_db} --output ${fastq.baseName}.classified.fastq ${fastq}
+        kraken2 --threads 4 --db ${kraken_db} \
+            --output ${fastq.baseName}.classified.fastq \
+            --report ${fastq.baseName}.report \
+            ${fastq}
         """
 }
 
-process GENERATE_CLASSIFICATION_REPORT {
-    container 'https://depot.galaxyproject.org/singularity/kraken2%3A2.1.3--pl5321hdcf5f25_0'
-    publishDir '${params.outdir}', mode:'copy'
+// process GENERATE_CLASSIFICATION_REPORT {
+//     container 'https://depot.galaxyproject.org/singularity/kraken2%3A2.1.3--pl5321hdcf5f25_0'
+//     publishDir '${params.outdir}', mode:'copy'
 
-    input:
-        path kraken_in
-        path kraken_db
+//     input:
+//         path kraken_in
+//         path kraken_db
 
-    output:
-        file '${kraken_in.baseName}.report'
+//     output:
+//         file '${kraken_in.baseName}.report'
 
-    script:
-        """
-        kraken2 --threads 4 --db ${kraken_db} --report ${kraken_in.baseName}.report ${kraken_in}
-        """
-}
+//     script:
+//         """
+//         kraken2 --threads 4 --db ${kraken_db} --report ${kraken_in.baseName}.report ${kraken_in}
+//         """
+// }
 
 workflow kraken_classification {
 
@@ -60,9 +64,11 @@ workflow kraken_classification {
 
     main:
         database = DOWNLOAD_DB()
-        KRAKEN2_CLASSIFICATION(fastq, database)
-        GENERATE_CLASSIFICATION_REPORT(fastq, database)
+        classification_out = KRAKEN2_CLASSIFICATION(fastq, database)
+        // GENERATE_CLASSIFICATION_REPORT(fastq, database)
 
-    emit: GENERATE_CLASSIFICATION_REPORT.out
-    
+    emit:
+        report = classification_out.report
+        classified = classification_out.classified
+
 }
