@@ -3,10 +3,7 @@ nextflow.enable.dsl=2
 params.outdir = './results'
 params.db = 'k2_standard_08gb_20230605'
 
-// Der Eingabepfad wird als Kommandozeilenargument festgelegt
-//input_path = file(params.input_path)
-
-// Download-Prozess
+// Download pre-built Kraken2 database
 process DOWNLOAD_DB {
     storeDir './db'
 
@@ -21,12 +18,10 @@ process DOWNLOAD_DB {
         """
 }
 
-// Eingabe: FASTQ-Dateien und die heruntergeladene Kraken-Datenbank
-// Ausgabe: Klassifizierte FASTQ-Datei
-// Prozess: Kraken-Datenbankarchiv wird extrahiert und Kraken2 wird auf die Eingabedatei angewendet
+// Extract kraken database archive and apply kraken2 to input file
 process KRAKEN2_CLASSIFICATION {
     container 'https://depot.galaxyproject.org/singularity/kraken2%3A2.1.3--pl5321hdcf5f25_0'
-    publishDir '${params.outdir}', mode:'copy' // Die Ergebnisse des Kraken2-Prozesses werden in diesem Verzeichnis veröffentlicht
+    publishDir '${params.outdir}', mode:'copy'
 
     input:
         path fastq
@@ -41,7 +36,6 @@ process KRAKEN2_CLASSIFICATION {
         """
 }
 
-// Klassifikationsbericht-Prozess
 process GENERATE_CLASSIFICATION_REPORT {
     container 'https://depot.galaxyproject.org/singularity/kraken2%3A2.1.3--pl5321hdcf5f25_0'
     publishDir '${params.outdir}', mode:'copy'
@@ -60,13 +54,15 @@ process GENERATE_CLASSIFICATION_REPORT {
 }
 
 workflow kraken_classification {
-    //fasta_ch = channel.fromPath("${input_path}/*.fastq")
-    take: fasta_ch
+
+    take:
+        fastq
 
     main:
-        db_ch = DOWNLOAD_DB()
-        KRAKEN2_CLASSIFICATION(fasta_ch, db_ch)
-        GENERATE_CLASSIFICATION_REPORT(fasta_ch, db_ch)
+        database = DOWNLOAD_DB()
+        KRAKEN2_CLASSIFICATION(fastq, database)
+        GENERATE_CLASSIFICATION_REPORT(fastq, database)
 
     emit: GENERATE_CLASSIFICATION_REPORT.out
+    
 }
