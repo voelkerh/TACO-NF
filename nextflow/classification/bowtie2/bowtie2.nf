@@ -1,142 +1,142 @@
 nextflow.enable.dsl = 2
 
-// params.accessions = launchDir+'/preparation/sra_accession.txt' // Pfad zur Accessions-Datei 
-params.accessions = projectDir + '/sample_files/pipeline_input/sra_accession.txt'
-params.readPath = 'qc_output_data/'
-params.reads = 'qc_output_data/'
+workflow bowtie_classification {
+    take:
+    reads // probably not reads, but merged fastq
+    pipeline_input
 
-// Referenzvorbereitungsprozess - Luke
+    main:
+    refsq_out = EXTRACT_REFSEQ(pipeline_input)
+    preparedFastaChannel = ACCESSIONS_TO_FASTAS(refsq_out.splitText { it.trim() })
+    mergedFastaChannel = MERGE_FASTAS(preparedFastaChannel.preparedFasta.collect())
+
+    hash = HASHING_FASTA_FILE(mergedFastaChannel)
+    indexFiles = INDEX_REFERENCE(mergedFastaChannel, hash)
+    mergedFq = MERGE_FASTQS(reads)
+    // probably not needed
+    output = MAP_READS(indexFiles, mergedFq)
+
+    emit:
+    output
+}
+
+// params.readPath = 'qc_output_data/' // probably no longer needed
+// params.reads = 'qc_output_data/' // probably no longer needed
+
+// Extract RefSeq Accessions from pipeline input
 process EXTRACT_REFSEQ {
     input:
-        path inputFile
-    
+    path inputFile
+
     output:
-        path 'refseqs.txt'
+    path 'refseqs.txt'
 
     script:
-        """
+    """
         tail -n +2 ${inputFile} | cut -d, -f3 > refseqs.txt
         """
 }
 
+// Download FASTA files from NCBI RefSeq database
 process ACCESSIONS_TO_FASTAS {
     container params.entrez_direct_container_path
     storeDir '${workflow.projectDir}/store/AccessionsToFastas'
 
     input:
-        val accession
+    val accession
 
     output:
-        path 'prepared_${accession}.fasta', emit: preparedFasta
+    path 'prepared_${accession}.fasta', emit: preparedFasta
 
     script:
-        """
+    """
         efetch -db nucleotide -id '${accession}'' -format fasta > 'prepared_${accession}.fasta'
         """
 }
 
+// Merge downloaded FASTA files
 process MERGE_FASTAS {
-    container 'https://depot.galaxyproject.org/singularity/bowtie2%3A2.5.4--he96a11b_5'
+    container params.bowtie2_container_path
     storeDir '${workflow.projectDir}/store/MergeFastas'
 
     input:
-        path fastaFiles
+    path fastaFiles
 
     output:
-        path 'merged.fasta', emit: mergedFasta
+    path 'merged.fasta', emit: mergedFasta
 
     script:
-        """
+    """
         #//mkdir store
         cat *.fasta > merged.fasta
         """
-    //"""
-    //cat $fastaFiles > merged.fasta
-    //"""
 }
 
-// Indexierungsprozess - Ben
+// Create hash of FASTA file for unique identification
 process HASHING_FASTA_FILE {
     container params.bowtie2_container_path
 
-    input: 
-        path fasta_file
+    input:
+    path fasta_file
 
     output:
-        path 'md5sum.txt', emit: md5txt
-    
+    path 'md5sum.txt', emit: md5txt
+
     script:
-        """
+    """
         md5sum=\$(md5sum ${fasta_file} | cut -d ' ' -f 1) > md5sum.txt   
         """
 }
 
+// Create Bowtie2 index for reference FASTA file, hash used for unique naming
 process INDEX_REFERENCE {
     container params.bowtie2_container_path
 
     input:
-        path fasta_file
-        val md5sum
+    path fasta_file
+    val md5sum
 
     output:
-        path 'index_data', emit: indexFiles
+    path 'index_data', emit: indexFiles
 
-    script:  
-        """
+    script:
+    """
         mkdir -p index_data/\$(cat ${md5sum})
-        bowtie2-build $fasta_file index_data/\$(cat ${md5sum})/index 
+        bowtie2-build ${fasta_file} index_data/\$(cat ${md5sum})/index 
         """
 }
 
-
-// Mapping-Prozess - Tom
+// !!! Currently we have a combined FASTQ as input, this is probably not needed and could produce errors
 process MERGE_FASTQS {
     container params.bowtie2_container_path
 
     input:
-        path fastqFiles
+    path fastqFiles
 
     output:
-        path 'merged.fq', emit: mergedFq
+    path 'merged.fq', emit: mergedFq
 
     script:
-        """
+    """
         mkdir store_fq
         cat *.fq > merged.fq
         """
 }
 
+// Map reads from combined FASTQ to reference FASTA file
 process MAP_READS {
     container params.bowtie2_container_path
     publishDir '${workflow.projectDir}/output'
 
     input:
-        path index_files
-        path reads
-    
+    path index_files
+    path reads
+
     output:
-        path 'output.sam', emit: resultSam
+    path 'output.sam', emit: resultSam
 
     script:
+    """
+        bowtie2 -x ${index_files}/index -U ${reads} -S output.sam -p 40
         """
-        bowtie2 -x $index_files/index -U $reads -S output.sam -p 40
-        """
-}
-
-workflow bowtie_classification {
-    take: 
-        reads
-        ground_truth_file
-    
-    main:
-        refsq_out = EXTRACT_REFSEQ(ground_truth_file)
-        preparedFastaChannel = ACCESSIONS_TO_FASTAS(refsq_out.splitText() {it.trim()})
-        mergedFastaChannel = MERGE_FASTAS(preparedFastaChannel.preparedFasta.collect())
-
-        hash = HASHING_FASTA_FILE(mergedFastaChannel)
-        indexFiles = INDEX_REFERENCE(mergedFastaChannel, hash)
-        mergedFq = MERGE_FASTQS(reads)
-        output = MAP_READS(indexFiles, mergedFq)
-    
-    emit: output
 }
