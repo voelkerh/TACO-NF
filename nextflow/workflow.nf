@@ -29,7 +29,7 @@ workflow {
 
   // conversion
   //tool_outputs = kraken_output.concat(bowtie_output).concat(ganon_output).concat(fastq_and_groundtruth.groundtruth)
-  tool_outputs = kraken_output.concat(bowtie_output).concat(fastq_and_groundtruth.groundtruth)
+  tool_outputs = kraken_output.report.concat(bowtie_output).concat(fastq_and_groundtruth.groundtruth)
   convert_output = convert(tool_outputs)
 
   // visualization
