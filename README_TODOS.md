@@ -23,12 +23,17 @@
 
 #### 3. Restructure Workflows
 
+- sample_files:
+
+  - Fix sra_accession.txt (= user input to pipeline) and workflow (remove refseq, was added for testing and never removed)
+    --> !! refseq is required information for bowtie2. These are accession numbers for reference sequences for organisms provided by NCBI in the RefSeq Database (other than SRA Database). bowtie2.nf extracts these (! 1st row commentary needed / will be cut off) and downloads refseqs for specific organisms to map the reads to.
+  - Decide: New process to find suitable refseq for sra accession or change requirements in manuscript!
+    [x] Move sra_accession.txt to sample_files folder and update all references
+
 - preparation folder:
   [x] Why own .gitignore? Integrate into global .gitignore
   [x] Check why ground_truth.txt here - if this is sample input (for testing) move to new examples folder.
 
-  - Fix sra_accession.txt (= user input to pipeline) and workflow (remove refseq, was added for testing and never removed)
-  - Move sra_accession.txt to sample_files folder and update all references
   - Check what process_fasta.nf is doing, check which module it belongs to and WTF is https://github.com/OpenGene/fastp ?? --> QualityControl for fastq files, does not even process fasta files, thus renamed to fastq_qc-nf
   - **Check if multiqcChannel is needed in process_fasta.nf, treat error**
 
@@ -36,10 +41,14 @@
   [x] Add ganon folder from ganon branch
   [x] Standardise formatting in ganon.nf
   [x] Integrate ganon into main workflow
+
   - Find out about ganon database file
   - Translate ganon comments into English, transfer to tools integration documentation in README.md
   - Check nextflow.config in ganon subfolder, integrate into main nextflow.config
+
   [x] Correct inputs for bowtie2.nf (1 missing) to handle error and worklfow def in bowtie2.nf
+
+  - bowtie2.nf has a process, which merges fastq input files -> Currently we have a combined fastq from the preparation module as input, this will produce errors!
 
 - conversion folder:
   - Check which files in database subfolder are still needed, keep only necessary ones (probably delete: datenbank.py, taxdb_dump.py, taxdb_mock.py, test.py)
