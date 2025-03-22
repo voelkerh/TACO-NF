@@ -55,6 +55,11 @@ singularity:
     singularity build python_container_plotly.sif  python_container_plotly.def
   ```
 
+#### Pull Containers from Galaxy
+Pull:
+  ```bash
+    make pullcontainers
+  ```
 ---
 
 ### Run the pipeline
