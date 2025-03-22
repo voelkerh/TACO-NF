@@ -28,7 +28,7 @@ params.complexity_threshold = ''        //enter --complexity_threshold="-Y int" 
 
 
 process CLEAN {
-  container 'https://depot.galaxyproject.org/singularity/fastp%3A0.23.4--hadf994f_2'
+  container file(params.fastp_container_path)
   publishDir params.outputDir, mode: 'copy', overwrite:true
 
   input:
@@ -46,7 +46,7 @@ process CLEAN {
 }
 
 process MULTIQC {
-  container 'https://depot.galaxyproject.org/singularity/multiqc%3A1.19--pyhdfd78af_0'
+  container file(params.multiqc_container_path)
   publishDir params.outputDir+'/reports', mode:'copy', overwrite:true
 
   input:
