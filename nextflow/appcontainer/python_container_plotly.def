@@ -1,8 +1,9 @@
-Bootstrap: localimage
-From: python3.11_base.sif
+Bootstrap: docker
+From: python:3.11-slim
 
 %post
     # Install Python packages
+    pip install --upgrade pip
     pip install --no-cache-dir \
         pandas \
         dash \
@@ -18,7 +19,8 @@ From: python3.11_base.sif
     #pip install ./phylotree-0.1.1-cp311-cp311-manylinux_2_28_x86_64.whl
 
 %files
-    /home/davidkirchner/code/htwpipe/nextflow/appcontainer/pythonfiles /opt/pythonfiles
+    ./nextflow/appcontainer/pythonfiles /opt/pythonfiles
+
 
 %environment
     export PATH=$PATH:/usr/local/bin
