@@ -34,7 +34,7 @@ workflow ganon_classification {
 // Creates a custom Ganon database based on the input file.
 process BUILD_DB {
     storeDir 'database' // Specifies output directory for database
-    container params.ganon_container_path
+    container file(params.ganon_container_path)
 
     input:
         path database_input_file
@@ -51,7 +51,7 @@ process BUILD_DB {
 // Classifies the input sequence file against the specified database.
 process GANON_CLASSIFICATION {
     storeDir 'output' // Specifies output directory for classification results
-    container params.ganon_container_path
+    container file(params.ganon_container_path)
 
     input:
         path test_sequence_file // Sequence file to be classified
@@ -69,7 +69,7 @@ process GANON_CLASSIFICATION {
 // Generates a classification report based on the classification results and database.
 process GENERATE_REPORT {
     storeDir 'reports' // Specifies output directory for classification reports
-    container params.ganon_container_path
+    container file(params.ganon_container_path)
 
     input:
         path classification_output

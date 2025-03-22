@@ -17,7 +17,7 @@ workflow visualize {
 }
 
 process START_DASH_APP {
-  container params.python_plotly_container_path
+  container file(params.python_plotly_container_path)
   containerOptions '--bind ${projectDir}:${projectDir}'
 
   input:

@@ -39,7 +39,7 @@ process EXTRACT_REFSEQ {
 
 // Download FASTA files from NCBI RefSeq database
 process ACCESSIONS_TO_FASTAS {
-    container params.entrez_direct_container_path
+    container file(params.entrez_direct_container_path)
     storeDir '${workflow.projectDir}/store/AccessionsToFastas'
 
     input:
@@ -56,7 +56,7 @@ process ACCESSIONS_TO_FASTAS {
 
 // Merge downloaded FASTA files
 process MERGE_FASTAS {
-    container params.bowtie2_container_path
+    container file(params.bowtie2_container_path)
     storeDir '${workflow.projectDir}/store/MergeFastas'
 
     input:
@@ -74,7 +74,7 @@ process MERGE_FASTAS {
 
 // Create hash of FASTA file for unique identification
 process HASHING_FASTA_FILE {
-    container params.bowtie2_container_path
+    container file(params.bowtie2_container_path)
 
     input:
     path fasta_file
@@ -90,7 +90,7 @@ process HASHING_FASTA_FILE {
 
 // Create Bowtie2 index for reference FASTA file, hash used for unique naming
 process INDEX_REFERENCE {
-    container params.bowtie2_container_path
+    container file(params.bowtie2_container_path)
 
     input:
     path fasta_file
@@ -108,7 +108,7 @@ process INDEX_REFERENCE {
 
 // !!! Currently we have a combined FASTQ as input, this is probably not needed and could produce errors
 process MERGE_FASTQS {
-    container params.bowtie2_container_path
+    container file(params.bowtie2_container_path)
 
     input:
     path fastqFiles
@@ -125,7 +125,7 @@ process MERGE_FASTQS {
 
 // Map reads from combined FASTQ to reference FASTA file
 process MAP_READS {
-    container params.bowtie2_container_path
+    container file(params.bowtie2_container_path)
     publishDir '${workflow.projectDir}/output'
 
     input:

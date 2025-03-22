@@ -33,7 +33,7 @@ workflow convert {
 }
 
 process INPUT_TO_KRAKEN {
-  container params.python_container_path
+  container file(params.python_container_path)
   containerOptions '--bind ${projectDir}:${projectDir}'
 
   input:
@@ -49,7 +49,7 @@ process INPUT_TO_KRAKEN {
 }
 
 process KRAKEN_TO_NEWICK {
-  container params.python_plotly_container_path
+  container file(params.python_plotly_container_path)
   containerOptions '--bind ${projectDir}:${projectDir}'
 
   input:
@@ -65,7 +65,7 @@ process KRAKEN_TO_NEWICK {
 }
 
 process MERGE_NEWICK {
-  container params.python_plotly_container_path
+  container file(params.python_plotly_container_path)
   containerOptions '--bind ${projectDir}:${projectDir}'
 
   input:
