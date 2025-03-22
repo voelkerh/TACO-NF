@@ -20,7 +20,7 @@ process DOWNLOAD_DB {
 
 // Extract kraken database archive and apply kraken2 to input file
 process KRAKEN2_CLASSIFICATION {
-    container 'https://depot.galaxyproject.org/singularity/kraken2%3A2.1.3--pl5321hdcf5f25_0'
+    container file(params.kraken2_container_path)
     publishDir '${params.outdir}', mode:'copy'
 
     input:
