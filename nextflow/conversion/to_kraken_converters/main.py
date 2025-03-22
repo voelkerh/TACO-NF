@@ -2,7 +2,7 @@ import sys
 import os
 import importlib
 from to_kraken_converters.abstract_converter import AbstractConverter
-from database.taxDBsqlite import TaxDBsqlite
+from Database.taxDBsqlite import TaxDBsqlite
 
 def import_converters(package: str, directory: str):
     """
