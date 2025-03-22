@@ -2,9 +2,14 @@
 .zed
 .nextflow*
 
+nextflowstore/*
+
 *.swp
 *.pdf
+*.sif
 
 work/
 cache/
+cacheDir/
 singularity_cache/
+__pycache__/
