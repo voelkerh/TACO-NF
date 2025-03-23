@@ -1,35 +1,38 @@
 nextflow.enable.dsl=2
 
-params.outdir = './results'
+params.outdir = 'output'
 params.db = 'k2_standard_08gb_20230605'
+params.kraken_workflow_store_dir = launchDir + 'store/3_kraken2/'
 
 // Download pre-built Kraken2 database
 process DOWNLOAD_DB {
-    storeDir './db'
+    storeDir params.kraken_workflow_store_dir + '/db/'
 
     output:
-        path '${params.db}'
+        path("${params.db}/"), emit: db
 
     script:
         """
-        mkdir '${params.db}'
+        mkdir ${params.db}
         wget -O ${params.db}.tar.gz https://genome-idx.s3.amazonaws.com/kraken/${params.db}.tar.gz
         tar -zxvf ${params.db}.tar.gz -C ${params.db}
+        rm ${params.db}.tar.gz
         """
 }
 
 // Extract kraken database archive and apply kraken2 to input file
 process KRAKEN2_CLASSIFICATION {
     container file(params.kraken2_container_path)
-    publishDir '${params.outdir}', mode:'copy'
+    storeDir params.kraken_workflow_store_dir + '/classified/'
+    publishDir params.outdir + '/kraken_results/', mode:'copy'
 
     input:
         path fastq
         path kraken_db
 
     output:
-        file '${fastq.baseName}.classified.fastq', emit: classified
-        file '${fastq.baseName}.report', emit: report
+        path "${fastq.baseName}.classified.fastq", emit: classified
+        path "${fastq.baseName}.report", emit: report
 
     script:
         """
@@ -40,23 +43,6 @@ process KRAKEN2_CLASSIFICATION {
         """
 }
 
-// process GENERATE_CLASSIFICATION_REPORT {
-//     container 'https://depot.galaxyproject.org/singularity/kraken2%3A2.1.3--pl5321hdcf5f25_0'
-//     publishDir '${params.outdir}', mode:'copy'
-
-//     input:
-//         path kraken_in
-//         path kraken_db
-
-//     output:
-//         file '${kraken_in.baseName}.report'
-
-//     script:
-//         """
-//         kraken2 --threads 4 --db ${kraken_db} --report ${kraken_in.baseName}.report ${kraken_in}
-//         """
-// }
-
 workflow kraken_classification {
 
     take:
@@ -65,7 +51,6 @@ workflow kraken_classification {
     main:
         database = DOWNLOAD_DB()
         classification_out = KRAKEN2_CLASSIFICATION(fastq, database)
-        // GENERATE_CLASSIFICATION_REPORT(fastq, database)
 
     emit:
         report = classification_out.report
