@@ -11,5 +11,6 @@ nextflowstore/*
 work/
 cache/
 cacheDir/
+output/
 singularity_cache/
 __pycache__/
