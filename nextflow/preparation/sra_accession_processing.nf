@@ -1,13 +1,14 @@
 nextflow.enable.dsl=2
-// params.user_input = launchDir+'/sra_accession.txt'
-params.user_input = projectDir + '/sample_files/pipeline_input/sra_accession.txt'
-params.groundtruth_workflow_store_dir = launchDir + 'store/groundtruth_workflow/'
 
+params.user_input = projectDir + '/sample_files/pipeline_input/sra_accession.txt'
+params.outdir = 'output'
+params.groundtruth_workflow_store_dir = launchDir + 'store/1_sra_accession_processing/'
 
 // This process takes the contents of sra_accessions.txt 
 //and returns the sra_accesssion id's with which we can fetch the reads
 process EXTRACT_SRA_ACCESSION_FROM_USER_INPUT {
   container file(params.sra_tools_container_path)
+  storeDir params.groundtruth_workflow_store_dir + '/extract/'
 
   input: 
     path accession
@@ -25,7 +26,7 @@ process EXTRACT_SRA_ACCESSION_FROM_USER_INPUT {
 // We use SRR accessions (means Run accession -> single sequencing file / fastq of one run).
 process FETCH_RAW_SEQUENCE_DATA {
   container file(params.sra_tools_container_path)
-  storeDir params.groundtruth_workflow_store_dir + 'fetch'
+  storeDir params.groundtruth_workflow_store_dir + '/fetch/'
   // Make sure that only one download runs in parallel so NCBI does not blacklist us
   maxForks 1
 
@@ -45,7 +46,7 @@ process FETCH_RAW_SEQUENCE_DATA {
 // This process takes the .sra files and converts them to fastq files using the fasterq-dump tool from sratools.
 process SRA_TO_FASTQ_WITH_FASTERQ {
   container file(params.sra_tools_container_path)
-  storeDir params.groundtruth_workflow_store_dir + 'fasterq'
+  storeDir params.groundtruth_workflow_store_dir + '/fasterq/'
 
   input:
     tuple path(srafile), val(numreads)
@@ -64,7 +65,7 @@ process SRA_TO_FASTQ_WITH_FASTERQ {
 // Then it transfers these reads to a new fastq_sampled.fastq file.
 process GENERATE_FASTQ_WITH_SPECIFIED_READNUMBER {
   container file(params.sra_tools_container_path)
-  storeDir params.groundtruth_workflow_store_dir + 'reader'
+  storeDir params.groundtruth_workflow_store_dir + '/fastq_read_number/'
 
   input:
     tuple path(fastq), val(numreads)
@@ -84,7 +85,7 @@ process GENERATE_FASTQ_WITH_SPECIFIED_READNUMBER {
 // It then generates the basis for the groundtruth file including the taxid and the number of reads.
 process GENERATE_GROUND_TRUTH_BASIS {
   container file(params.entrez_direct_container_path)
-  storeDir params.groundtruth_workflow_store_dir + 'groundtruth_gen'
+  storeDir params.groundtruth_workflow_store_dir + '/groundtruth_basis/'
 
   input:
     tuple path(fastq), val(numreads)
@@ -105,7 +106,7 @@ process GENERATE_GROUND_TRUTH_BASIS {
 // The output serves as artificial metagenomic sample.
 process MERGE_FASTQ {
   container file(params.sra_tools_container_path)
-  storeDir params.groundtruth_workflow_store_dir + 'mergeFastq'
+  storeDir params.groundtruth_workflow_store_dir + '/mergeFastq/'
 
   input:
     path infastq
@@ -123,8 +124,8 @@ process MERGE_FASTQ {
 // This file contains the taxid and the number of reads for each SRA accession.
 process MERGE_GROUND_TRUTH {
   container file(params.sra_tools_container_path)
-  storeDir params.groundtruth_workflow_store_dir + 'mergeGroundTruth'
-  publishDir launchDir
+  storeDir params.groundtruth_workflow_store_dir + '/mergeGroundTruth/'
+  publishDir params.outdir + '/groundtruth/'
 
   input:
     path accessiontxt
@@ -144,7 +145,7 @@ workflow process_sra_accessions {
     infile
 
   main:
-    output = EXTRACT_SRA_ACCESSION_FROM_USER_INPUT(infile)
+    //output = EXTRACT_SRA_ACCESSION_FROM_USER_INPUT(infile)
     sra_cleaned = infile.splitCsv(header: true, strip: true)
     sra_raw_data = FETCH_RAW_SEQUENCE_DATA(sra_cleaned)
     fasterq_out = SRA_TO_FASTQ_WITH_FASTERQ(sra_raw_data)
@@ -156,9 +157,5 @@ workflow process_sra_accessions {
   emit:
     fastq = merged_fastq
     groundtruth = merged_groundtruth
-    SRAACC = output
-}
-
-workflow {
-  process_sra_accessions(params.user_input)
+    //SRAACC = output
 }
