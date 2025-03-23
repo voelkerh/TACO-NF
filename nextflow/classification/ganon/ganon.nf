@@ -4,9 +4,68 @@
 
 // try: nextflow run ganon_workflow.nf --sequence_file input/test_sequence_file.fastq --database_file input/GCA_000005845.2_ASM584v2_genomic.fna
 
+params.outdir = 'output'
+params.ganon_workflow_store_dir = launchDir + 'store/5_ganon/'
+
 params.sequence_file = null
 params.database_file = null
 params.report_type = 'abundance'
+
+// Creates a custom Ganon database based on the input file.
+process BUILD_DB {
+    container file(params.ganon_container_path)
+    storeDir params.ganon_workflow_store_dir + '/db/'
+
+    input:
+        path database_input_file
+
+    output:
+        path 'ecoli_db.*'
+
+    script:
+        """
+        ganon build-custom --input ${database_input_file} --db-prefix ecoli_db
+        """
+}
+
+// Classifies the input sequence file against the specified database.
+process GANON_CLASSIFICATION {
+    container file(params.ganon_container_path)
+    storeDir params.ganon_workflow_store_dir + '/classification/'
+    publishDir params.outdir + '/ganon_results/'
+
+    input:
+        path test_sequence_file // Sequence file to be classified
+        path database
+
+    output:
+        path 'classification_output.*'
+
+    script:
+        """
+        ganon classify --db-prefix ${database} --single-reads ${test_sequence_file} --output-prefix classification_output
+        """
+}
+
+// Generates a classification report based on the classification results and database.
+process GENERATE_REPORT {
+    container file(params.ganon_container_path)
+    storeDir params.ganon_workflow_store_dir + '/reports/'
+    publishDir params.outdir + '/ganon_results/'
+
+    input:
+        path classification_output
+        path database
+        val report_type
+
+    output:
+        path 'classification_report_*.tre'
+
+    script:
+        """
+        ganon report --db-prefix ${database} --input ${classification_output} --output-prefix classification_report_${report_type} --report-type ${report_type}
+        """
+}
 
 workflow ganon_classification {
     take:
@@ -29,58 +88,4 @@ workflow ganon_classification {
     emit:
         classification_output
         report_output
-}
-
-// Creates a custom Ganon database based on the input file.
-process BUILD_DB {
-    storeDir 'database' // Specifies output directory for database
-    container file(params.ganon_container_path)
-
-    input:
-        path database_input_file
-
-    output:
-        path 'ecoli_db.*'
-
-    script:
-        """
-        ganon build-custom --input ${database_input_file} --db-prefix ecoli_db
-        """
-}
-
-// Classifies the input sequence file against the specified database.
-process GANON_CLASSIFICATION {
-    storeDir 'output' // Specifies output directory for classification results
-    container file(params.ganon_container_path)
-
-    input:
-        path test_sequence_file // Sequence file to be classified
-        path database
-
-    output:
-        path 'classification_output.*'
-
-    script:
-        """
-        ganon classify --db-prefix ${database} --single-reads ${test_sequence_file} --output-prefix classification_output
-        """
-}
-
-// Generates a classification report based on the classification results and database.
-process GENERATE_REPORT {
-    storeDir 'reports' // Specifies output directory for classification reports
-    container file(params.ganon_container_path)
-
-    input:
-        path classification_output
-        path database
-        val report_type
-
-    output:
-        path 'classification_report_*.tre'
-
-    script:
-        """
-        ganon report --db-prefix ${database} --input ${classification_output} --output-prefix classification_report_${report_type} --report-type ${report_type}
-        """
 }
