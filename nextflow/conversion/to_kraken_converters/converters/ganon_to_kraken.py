@@ -1,6 +1,6 @@
 import os
 from to_kraken_converters.abstract_converter import AbstractConverter
-from database.taxdb import TaxDB
+from Database.taxdb import TaxDB
 from bigtree import dict_to_tree
 
 class GanonConverter(AbstractConverter):

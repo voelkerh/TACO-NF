@@ -1,6 +1,6 @@
 from to_kraken_converters.abstract_converter import AbstractConverter
 import os
-from database.taxdb import TaxDB
+from Database.taxdb import TaxDB
 
 class GTConverter(AbstractConverter):
 
