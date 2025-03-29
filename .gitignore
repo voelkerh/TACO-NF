@@ -7,10 +7,13 @@ nextflowstore/*
 *.swp
 *.pdf
 *.sif
+*.csv
 
-work/
+**/work/
 cache/
 cacheDir/
+new_taxdump/
+nucl_gb/
 output/
 singularity_cache/
 __pycache__/
