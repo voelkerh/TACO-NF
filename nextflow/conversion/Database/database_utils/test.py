@@ -1,23 +1,23 @@
 import sqlite3
 
-datenbank = 'database.db'
-connection = sqlite3.connect(datenbank)
+database = 'database.db'
+connection = sqlite3.connect(database)
 
 cursor = connection.cursor()
 query = "SELECT name FROM sqlite_master WHERE type='table';"
 cursor.execute(query)
 
 tables = cursor.fetchall()
-print("Tabellen in der Datenbank:")
+print("Tables in the database:")
 for table in tables:
     table_name = table[0]
-    print("Tabelle:", table_name)
+    print("\nTable:", table_name)
     
     columns_query = f"PRAGMA table_info({table_name});"
     cursor.execute(columns_query)
     columns = cursor.fetchall()
     
-    print("Spaltennamen:")
+    print("\nColumn names:")
     for column in columns:
         print(column[1])
     
@@ -25,7 +25,7 @@ for table in tables:
     cursor.execute(first_row_query)
     first_row = cursor.fetchall()
     
-    print("Erste Zeile:")
+    print("\nFirst row:")
     print(first_row)
     
     # count_query = f"SELECT COUNT(*) FROM {table_name};"
@@ -33,12 +33,12 @@ for table in tables:
     # count = cursor.fetchone()[0]
     
     # print("Anzahl der Einträge:", count)
-    # print()
+    print('\n-----')
 
 connection.close()
 
 def get_taxid_from_accession_number(accession_number):
-    conn = sqlite3.connect(datenbank)
+    conn = sqlite3.connect(database)
     cursor = conn.cursor()
     cursor.execute("SELECT taxid FROM accession2taxid WHERE accession = ?", (accession_number,))
     result = cursor.fetchone()
@@ -50,7 +50,7 @@ def get_taxid_from_accession_number(accession_number):
         return "NOT FOUND"
 
 def get_parent(taxid):
-    conn = sqlite3.connect(datenbank)
+    conn = sqlite3.connect(database)
     cursor = conn.cursor()
     cursor.execute("SELECT parent_tax_id FROM nodes WHERE tax_id = ?", (taxid,))
     result = cursor.fetchone()
@@ -62,7 +62,7 @@ def get_parent(taxid):
         return "NOT FOUND"
 
 def get_name(taxid):
-    conn = sqlite3.connect(datenbank)
+    conn = sqlite3.connect(database)
     cursor = conn.cursor()
     cursor.execute("SELECT name_txt FROM names WHERE tax_id = ?", (taxid,))
     result = cursor.fetchone()
@@ -74,7 +74,7 @@ def get_name(taxid):
         return "NOT FOUND"
     
 def get_rank(taxid):
-    conn = sqlite3.connect(datenbank)
+    conn = sqlite3.connect(database)
     cursor = conn.cursor()
     cursor.execute("SELECT rank FROM nodes WHERE tax_id = ?", (taxid,))
     result = cursor.fetchone()
@@ -86,9 +86,10 @@ def get_rank(taxid):
         return "NOT FOUND"
       
 accession_number = 'NC_032111'
-print(f"Accession: {accession_number}")
+print(f"\nSample queries for accession: {accession_number}")
 taxid = get_taxid_from_accession_number(accession_number)
 
+print("\nTrace taxIDs from leave to root, requesting parent nodes")
 while taxid is not None and taxid != "NOT FOUND":
     name = get_name(taxid)
     parent = get_parent(taxid)
@@ -100,11 +101,11 @@ while taxid is not None and taxid != "NOT FOUND":
         if taxid == "1":
             break
     else:
-        print(f"Keine weitere ParentID gefunden für TaxID {taxid}")
+        print(f"No more ParentIDs found for TaxID {taxid}")
         break
 
 def get_taxids_with_same_parent(parent_tax_id):
-    conn = sqlite3.connect(datenbank)
+    conn = sqlite3.connect(database)
     cursor = conn.cursor()
     cursor.execute("SELECT tax_id FROM nodes WHERE parent_tax_id = ?", (parent_tax_id,))
     results = cursor.fetchall()
@@ -118,8 +119,14 @@ def get_taxids_with_same_parent(parent_tax_id):
 parent_tax_id_to_query = 1
 taxids = get_taxids_with_same_parent(parent_tax_id_to_query)
 
-print(f"Parent: {parent_tax_id_to_query} Name: {name} Rank: {rank}:")
+print('\n-----')
+
+print("\nRequest all children from a given taxid - Example: taxid=1")
+
+print(f"\nParent: {parent_tax_id_to_query} Name: {name} Rank: {rank}:")
 for taxid in taxids:
+    name = get_name(taxid)
+    rank = get_rank(rank)
     print(f"Children Taxid: {taxid} Name: {name} Rank: {rank} ")
 
 #taxonomyDB Obejekt
