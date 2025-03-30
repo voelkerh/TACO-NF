@@ -26,6 +26,6 @@ process START_DASH_APP {
 
   script:
   """
-  python ${projectDir}/visualization/dash_app/dash_app.py ${tree_file} ${kraken_reports.join(' ')}
+  python3 ${projectDir}/visualization/Dash_app/dash_app.py ${tree_file} ${kraken_reports.join(' ')}
   """
 }
