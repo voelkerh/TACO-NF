@@ -33,7 +33,7 @@ class GTConverter(AbstractConverter):
         # Writing the output file
         self.create_output_file(tree, accession_counts_by_taxid, total_reads, output_filename)
 
-        return "Conversion successful. Output created in 'results/gt.report'."
+        return "Conversion successful (gt to kraken)."
 
     def count_numreads(self, input_file):
         numreads = 0

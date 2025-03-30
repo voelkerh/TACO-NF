@@ -19,7 +19,7 @@ class GanonConverter(AbstractConverter):
 
     def convert(self, filename: str, output_filename: str) -> str:
         if not self.can_convert(filename):
-            raise ValueError(f"The file {filename} cannot be converted.It isn't a ganon file.")
+            raise ValueError(f"The file {filename} cannot be converted.It is not a ganon file.")
 
         with open(filename, 'r') as infile:
             header = infile.readline().strip()
@@ -47,7 +47,7 @@ class GanonConverter(AbstractConverter):
 
         self.create_output_file(tree, perc_unc, unclassified, output_filename)
 
-        return "Conversion successful. Output created in 'results/ganon.report'."
+        return "Conversion successful (tre to kraken)."
 
     def load_names_from_taxonomic_data(self, taxid):
         return self.taxdb.load_names_from_taxonomic_data(taxid)

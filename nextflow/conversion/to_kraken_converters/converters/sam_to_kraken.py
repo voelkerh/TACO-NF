@@ -33,7 +33,7 @@ class SAMConverter(AbstractConverter):
         self.create_output_file(tree, accession_counts_by_taxid, unclassified_reads, percentage_of_unclassified_reads,
                                 total, output_filename)
 
-        return "Conversion successful. Output created in 'results/sam.report'."
+        return "Conversion successful (SAM to kraken)."
 
     def read_sam_file_to_lines(self, sam_file: str) -> list:
         with open(sam_file, 'r') as file:
