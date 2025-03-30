@@ -1,5 +1,4 @@
 from to_kraken_converters.abstract_converter import AbstractConverter
-import os
 from Database.taxdb import TaxDB
 
 class GTConverter(AbstractConverter):
@@ -15,7 +14,7 @@ class GTConverter(AbstractConverter):
             if f.readline().strip().split(",")[0] == "taxid":
                 return True
 
-    def convert(self, filename: str) -> str:
+    def convert(self, filename: str, output_filename: str) -> str:
         """
         Converts the ground truth file and creates an output format.
         """
@@ -32,7 +31,7 @@ class GTConverter(AbstractConverter):
         tree = self.build_tree(accession_counts_by_taxid)
 
         # Writing the output file
-        self.create_output_file(tree, accession_counts_by_taxid, total_reads)
+        self.create_output_file(tree, accession_counts_by_taxid, total_reads, output_filename)
 
         return "Conversion successful. Output created in 'results/gt.report'."
 
@@ -200,26 +199,13 @@ class GTConverter(AbstractConverter):
             self.write_data_for_nodes_in_branch(
                 file, child, accession_counts_by_taxid, total_reads, level + 1)
 
-    def create_output_file(self, tree, accession_counts_by_taxid, total_reads):
-        # 1. Den absoluten Pfad des Skripts (datei.py) ermitteln
-        script_directory = os.path.dirname(os.path.abspath(__file__))
-
-        # 2. Den Pfad zum übergeordneten Verzeichnis 'script' ermitteln
-        parent_directory = os.path.dirname(script_directory)
-
-        # 3. Den Pfad zum 'results'-Verzeichnis erstellen
-        results_directory = os.path.join(parent_directory, 'results')
-        if not os.path.exists(results_directory):
-            os.makedirs(results_directory)
-        output_file = os.path.join(results_directory, f"gt_report.report")
-
-        with open(output_file, 'w') as file:
+    def create_output_file(self, tree, accession_counts_by_taxid, total_reads, output_filename):
+        with open(output_filename, 'w') as file:
             file.write(
                 # f"{percentage_of_unclassified_reads:<6}\t{unclassified_reads:<15}\t{unclassified_reads:<15}\t{'U':<4}\t{'0':<8}\tunclassified\n")
                 f"{0.0}\t{0}\t{0}\t{'U'}\t{0}\tunclassified\n")
             self.write_data_for_nodes_in_branch(
                 file, tree, accession_counts_by_taxid, total_reads)
-
 
 if __name__ == '__main__':
     pass

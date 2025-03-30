@@ -1,4 +1,3 @@
-import os
 from to_kraken_converters.abstract_converter import AbstractConverter
 from Database.taxdb import TaxDB
 from bigtree import dict_to_tree
@@ -18,7 +17,7 @@ class GanonConverter(AbstractConverter):
             except:
                 return False
 
-    def convert(self, filename: str) -> str:
+    def convert(self, filename: str, output_filename: str) -> str:
         if not self.can_convert(filename):
             raise ValueError(f"The file {filename} cannot be converted.It isn't a ganon file.")
 
@@ -46,7 +45,7 @@ class GanonConverter(AbstractConverter):
 
         tree = dict_to_tree(dct)
 
-        self.create_output_file(tree, perc_unc, unclassified)
+        self.create_output_file(tree, perc_unc, unclassified, output_filename)
 
         return "Conversion successful. Output created in 'results/ganon.report'."
 
@@ -73,20 +72,8 @@ class GanonConverter(AbstractConverter):
             self.write_data_for_nodes_in_branch(
                 file, child, level + 1)
 
-    def create_output_file(self, tree, percentage_of_unclassified_reads, unclassified_reads):
-        # 1. Den absoluten Pfad des Skripts (datei.py) ermitteln
-        script_directory = os.path.dirname(os.path.abspath(__file__))
-
-        # 2. Den Pfad zum übergeordneten Verzeichnis 'script' ermitteln
-        parent_directory = os.path.dirname(script_directory)
-
-        # 3. Den Pfad zum 'results'-Verzeichnis erstellen
-        results_directory = os.path.join(parent_directory, 'results')
-        if not os.path.exists(results_directory):
-            os.makedirs(results_directory)
-        output_file = os.path.join(results_directory, f"ganon.report")
-
-        with open(output_file, 'w') as file:
+    def create_output_file(self, tree, percentage_of_unclassified_reads, unclassified_reads, output_filename):
+        with open(output_filename, 'w') as file:
             file.write(
                 f"{percentage_of_unclassified_reads}\t{unclassified_reads}\t{unclassified_reads}\t{'U'}\t{'0'}\tunclassified\n")
             self.write_data_for_nodes_in_branch(
