@@ -7,7 +7,7 @@ params.groundtruth_workflow_store_dir = launchDir + 'store/1_sra_accession_proce
 //and returns the sra_accesssion id's with which we can fetch the reads
 process EXTRACT_SRA_ACCESSION_FROM_USER_INPUT {
   container file(params.sra_tools_container_path)
-  storeDir params.groundtruth_workflow_store_dir + '/extract/'
+  storeDir params.groundtruth_workflow_store_dir + '/extract_sra_accessions/'
 
   input: 
     path accession
@@ -25,7 +25,7 @@ process EXTRACT_SRA_ACCESSION_FROM_USER_INPUT {
 // We use SRR accessions (means Run accession -> single sequencing file / fastq of one run).
 process FETCH_RAW_SEQUENCE_DATA {
   container file(params.sra_tools_container_path)
-  storeDir params.groundtruth_workflow_store_dir + '/fetch/'
+  storeDir params.groundtruth_workflow_store_dir + '/fetch_raw_sequence_data/'
   // Make sure that only one download runs in parallel so NCBI does not blacklist us
   maxForks 1
 
@@ -45,7 +45,7 @@ process FETCH_RAW_SEQUENCE_DATA {
 // This process takes the .sra files and converts them to fastq files using the fasterq-dump tool from sratools.
 process SRA_TO_FASTQ_WITH_FASTERQ {
   container file(params.sra_tools_container_path)
-  storeDir params.groundtruth_workflow_store_dir + '/fasterq/'
+  storeDir params.groundtruth_workflow_store_dir + '/fastq_from_sra_with_fasterq/'
 
   input:
     tuple path(srafile), val(numreads)
@@ -64,7 +64,7 @@ process SRA_TO_FASTQ_WITH_FASTERQ {
 // Then it transfers these reads to a new fastq_sampled.fastq file.
 process GENERATE_FASTQ_WITH_SPECIFIED_READNUMBER {
   container file(params.sra_tools_container_path)
-  storeDir params.groundtruth_workflow_store_dir + '/fastq_read_number/'
+  storeDir params.groundtruth_workflow_store_dir + '/fastq_with_specified_read_number/'
 
   input:
     tuple path(fastq), val(numreads)
@@ -84,7 +84,7 @@ process GENERATE_FASTQ_WITH_SPECIFIED_READNUMBER {
 // It then generates the basis for the groundtruth file including the taxid and the number of reads.
 process GENERATE_GROUND_TRUTH_BASIS {
   container file(params.entrez_direct_container_path)
-  storeDir params.groundtruth_workflow_store_dir + '/groundtruth_basis/'
+  storeDir params.groundtruth_workflow_store_dir + '/groundtruth_with_taxid/'
 
   input:
     tuple path(fastq), val(numreads)
@@ -111,11 +111,11 @@ process MERGE_FASTQ {
     path infastq
 
   output:
-    path "sampled.fastq"
+    path "merged.fastq"
 
   script:
   """
-  cat *.fastq >> sampled.fastq
+  cat *.fastq >> merged.fastq
   """
 }
 
