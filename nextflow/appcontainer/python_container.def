@@ -25,13 +25,8 @@ From: python:3.10-slim
 
     # Install TaxDB package from local directory
 
-%files
-    ./nextflow/appcontainer/pythonfiles /opt/pythonfiles
-
 %environment
     export PATH=$PATH:/usr/local/bin
-    export PYTHONPATH=$PYTHONPATH:/opt/pythonfiles
-
 
 %runscript
     # This will be the default command when the container is run
