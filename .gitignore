@@ -9,7 +9,7 @@ nextflowstore/*
 *.sif
 *.csv
 
-**/work/
+work/
 cache/
 cacheDir/
 new_taxdump/
