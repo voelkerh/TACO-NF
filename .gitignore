@@ -8,6 +8,7 @@ nextflowstore/*
 *.pdf
 *.sif
 *.csv
+*.db
 
 work/
 cache/
