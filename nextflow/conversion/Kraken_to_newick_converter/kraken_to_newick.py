@@ -78,9 +78,10 @@ def main():
     kraken_summary = KrakenSummary(infile, ignore_unclassified)
     newick_string = kraken_summary.newick
 
-    with open('newick.txt', 'w') as outfile:
-        outfile.write(newick_string)
-        print("Newick string written to newick.txt")
+    output_file = sys.argv[2]
+
+    with open(output_file, 'w') as file:
+        file.write(newick_string)
 
 if __name__ == '__main__':
     main()
