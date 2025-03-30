@@ -58,7 +58,7 @@ def tree_to_newick_no_distance(tree):
     return newick_no_distance
 
 def write_newick_to_output_file(newick_str):
-    with open('merged_tree.txt', 'w') as file:
+    with open('merged_newick_tree.txt', 'w') as file:
         file.write(newick_str)
 
 tree_files = process_program_arguments()
