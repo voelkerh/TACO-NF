@@ -6,7 +6,7 @@ from Database.taxDBsqlite import TaxDBsqlite
 
 def import_converters(package: str, directory: str):
     """
-    Dynamically import all modules in a directory.
+    Dynamically import all modules in a directory to make them addressable as subclasses of AbstractConverter.
     Args:
         package (str): The Python package name (e.g., "converters").
         directory (str): The directory path where the modules are located.
@@ -49,11 +49,12 @@ def main():
     converters = get_all_converters(taxdb)
 
     file = sys.argv[1]
+    output_file = sys.argv[3]
 
     for converter in converters:
         if converter.can_convert(file):
             try:
-                result = converter.convert(file)
+                converter.convert(file, output_file)
             except Exception as e:
                 raise e
             break

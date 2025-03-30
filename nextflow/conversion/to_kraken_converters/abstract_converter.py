@@ -6,5 +6,5 @@ class AbstractConverter(ABC):
         pass
 
     @abstractmethod
-    def convert(self, filename: str) -> str:
+    def convert(self, filename: str, output_filename: str) -> str:
         pass
