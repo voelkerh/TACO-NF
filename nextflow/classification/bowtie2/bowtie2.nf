@@ -89,7 +89,7 @@ process INDEX_REFERENCE {
         """
 }
 
-// !!! Currently we have a combined FASTQ as input, this is probably not needed and could produce errors
+// !!! TODO: Currently we have a combined FASTQ as input, this is probably not needed and could produce errors
 process MERGE_FASTQS {
     container file(params.bowtie2_container_path)
     storeDir params.bowtie_workflow_store_dir + '/mergeFastq/'
@@ -118,11 +118,11 @@ process MAP_READS {
         path reads
 
     output:
-        path 'output.sam', emit: resultSam
+        path 'bowtie2.sam', emit: resultSam
 
     script:
         """
-        bowtie2 -x ${index_files}/index -U ${reads} -S output.sam -p 40
+        bowtie2 -x ${index_files}/index -U ${reads} -S bowtie2.sam -p 40
         """
 }
 

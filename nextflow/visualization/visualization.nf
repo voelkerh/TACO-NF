@@ -1,10 +1,5 @@
 nextflow.enable.dsl = 2
 
-/* 
-  Input: txt file with joint tree representation in newick format + classification outputs & ground truth in kraken report format
-  Output: Dash app with tree and heatmap
-*/
-
 workflow visualize {
   take:
   tree_file
@@ -26,6 +21,7 @@ process START_DASH_APP {
 
   script:
   """
+  echo "Dash App: http://127.0.01:8050"
   python3 ${projectDir}/visualization/Dash_app/dash_app.py ${tree_file} ${kraken_reports.join(' ')}
   """
 }

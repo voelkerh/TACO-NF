@@ -2,15 +2,6 @@ nextflow.enable.dsl = 2
 
 params.conversion_workflow_store_dir = launchDir + 'store/5_conversion/'
 
-/*
-  Ablauf:
-  1. Konvertiere Ground Truth in Kraken-Format
-  2. Konvertiere alle Classification Outputs in Kraken-Format
-  3. Konvertiere zusätzlich alle Kraken-Files in Newick-Format
-  4. Führe Newick-Files mit merger zusammen
-  5. Gebe übergreifenden Baum in Newick-Format und vollständigen Satz an Kraken-Files aus
-*/
-
 process INPUT_TO_KRAKEN {
   container file(params.python_container_path)
   containerOptions '--bind ${projectDir}:${projectDir}'
@@ -55,7 +46,7 @@ process MERGE_NEWICK {
   path newick_files
 
   output:
-  path 'merged_tree.txt'
+  path 'merged_newick_tree.txt'
 
   script:
     """
@@ -75,6 +66,6 @@ workflow convert {
     merged_tree = MERGE_NEWICK(newickChannel.collect())
 
   emit:
-    kraken_files = krakenChannel
+    kraken_files = krakenChannel.collect()
     newick_file = merged_tree
 }
