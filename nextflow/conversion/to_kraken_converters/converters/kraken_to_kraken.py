@@ -1,4 +1,3 @@
-import os
 from to_kraken_converters.abstract_converter import AbstractConverter
 from Database.taxdb import TaxDB
 
@@ -7,20 +6,17 @@ class KrakenConverter(AbstractConverter):
     def __init__(self, taxdb: TaxDB):
         self.taxdb = taxdb
 
-    def can_convert(self, filename: str) -> bool:
+    def can_convert(self, filename):
         with open(filename, 'r') as f:
-            header = f.readline().strip
-            try:
-                root = f.readline().strip().split("\t")[5]
-                if root == "root":
+            for line in f:
+                columns = line.strip().split('\t')
+                if len(columns) >= 6 and (columns[5] == "root" or columns[5] == "unclassified"):
                     return True
-            except:
-                return False
+        return False
 
-    def convert(self, filename: str) -> str:
-
+    def convert(self, filename: str, output_filename: str) -> str:
         if not self.can_convert(filename):
-            raise ValueError(f"The file {filename} cannot be converted.It isn't a kraken file.")
+            raise ValueError(f"The file {filename} cannot be converted. It is not a kraken file.")
 
         with open(filename, 'r') as infile:
             lines = infile.readlines()
@@ -28,49 +24,33 @@ class KrakenConverter(AbstractConverter):
         for i in range(2, len(lines)):
             try:
                 line = lines[i]
-
-                # Zeile in Spalten splitten und die Leerzeichen zwischen tax_id und name zählen
                 parts = line.split('\t')
                 perc_reads, read_number, reads, rank, tax_id, name = parts[:6]
 
-                # Entfernen der führenden und abschließenden Leerzeichen aus tax_id und name
                 tax_id = tax_id.strip()
                 name = name.strip()
 
-                # Zählen der Leerzeichen zwischen tax_id und name
-                spaces_between = len(parts[5]) - len(parts[5].lstrip())
+                indent = len(parts[5]) - len(parts[5].lstrip())
 
-                # Überprüfen, ob der Name mit dem aus der Datenbank übereinstimmt
+                # Check, if given name equals name from internal database; ensures consistency.
                 updated_name = self.get_name_from_taxonomic_data(tax_id)
                 if updated_name != name:
                     name = updated_name
 
-                lines[i] = f"{perc_reads}\t{read_number}\t{reads}\t{rank}\t{tax_id}\t{' ' * spaces_between}{name}\n"
+                lines[i] = f"{perc_reads}\t{read_number}\t{reads}\t{rank}\t{tax_id}\t{' ' * indent}{name}\n"
 
             except ValueError as e:
-                # Fehlerbehandlung, wenn Zeile nicht korrekt ist
                 print(f"Error processing line: {line.strip()} - {e}")
                 continue
 
-        self.create_output_file(lines)
+        self.create_output_file(lines, output_filename)
 
-        return "Conversion successful. Output created in 'results/kraken.report'."
+        return "Conversion successful (kraken to kraken)."
 
-    def create_output_file(self, lines):
-        script_directory = os.path.dirname(os.path.abspath(__file__))
-
-        parent_directory = os.path.dirname(script_directory)
-
-        results_directory = os.path.join(parent_directory, 'results')
-        if not os.path.exists(results_directory):
-            os.makedirs(results_directory)
-        output_file = os.path.join(results_directory, f"kraken.report")
-
-        #with open(output_file, 'w') as file:
-        print("\n".join(lines))
-
-    def load_names_from_taxonomic_data(self, taxid):
-        return self.taxdb.load_names_from_taxonomic_data(taxid)
+    def create_output_file(self, lines, output_filename):
+        with open(output_filename, 'w') as file:
+            for line in lines:
+                file.write(line)
 
     def get_name_from_taxonomic_data(self, taxid):
         return self.taxdb.get_name_from_taxonomic_data(taxid)
