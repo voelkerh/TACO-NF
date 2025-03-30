@@ -1,7 +1,6 @@
 nextflow.enable.dsl=2
 
 params.user_input = projectDir + '/sample_files/pipeline_input/sra_accession.txt'
-params.outdir = 'output'
 params.groundtruth_workflow_store_dir = launchDir + 'store/1_sra_accession_processing/'
 
 // This process takes the contents of sra_accessions.txt 
@@ -56,8 +55,8 @@ process SRA_TO_FASTQ_WITH_FASTERQ {
 
   script:
     """
-    fasterq-dump ${srafile} -O outdir
-    cat outdir/*.fastq > ${srafile.getSimpleName()}.fastq
+    fasterq-dump ${srafile}
+    cat *.fastq > ${srafile.getSimpleName()}.fastq
     """
 }
 
@@ -125,7 +124,6 @@ process MERGE_FASTQ {
 process MERGE_GROUND_TRUTH {
   container file(params.sra_tools_container_path)
   storeDir params.groundtruth_workflow_store_dir + '/mergeGroundTruth/'
-  publishDir params.outdir + '/groundtruth/'
 
   input:
     path accessiontxt
