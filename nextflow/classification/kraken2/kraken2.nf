@@ -31,14 +31,14 @@ process KRAKEN2_CLASSIFICATION {
         path kraken_db
 
     output:
-        path "${fastq.baseName}.classified.fastq", emit: classified
-        path "${fastq.baseName}.report", emit: report
+        path "${fastq.baseName}_kraken.fastq", emit: classified
+        path "${fastq.baseName}_kraken.report", emit: report
 
     script:
         """
         kraken2 --threads 4 --db ${kraken_db} \
-            --output ${fastq.baseName}.classified.fastq \
-            --report ${fastq.baseName}.report \
+            --output ${fastq.baseName}_kraken.fastq \
+            --report ${fastq.baseName}_kraken.report \
             ${fastq}
         """
 }
