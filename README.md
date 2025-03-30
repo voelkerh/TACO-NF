@@ -1,68 +1,63 @@
 # Comparison of Taxonomic Classification Tools for WGS Data
 
+A customizable nextflow pipeline to compare taxonomic classification tools for whole genome sequencing data.
+
+![Pipeline](./Images/pipeline.png)
+
 ---
 
 ## Table of Content
 
-* [Quick Start](#quick-start)
-* [Install Guide](#install-guide)
-* [Build Container](#build-container)
-    * [With Makefile](#with-makefile)
-    * [Without Makefile](#without-makefile)
+* [Installation](#installation)
 * [Run the pipeline](#run-the-pipeline)
-* [Pipeline Architecture](#pipeline-architecture)
+* [Integrate an additional taxonomic classification tool](#integrate-an-additional-taxonomic-classification-tool)
 
 ---
 
-### Quick Start
-In order to run the pipeline there are some pre-requires need. 
+### Installation
 
----
+Make sure you have [nextflow](https://www.nextflow.io/docs/latest/install.html) and [singularity](https://docs.sylabs.io/guides/latest/admin-guide/installation.html) installed on your Linux system. You may also use [apptainer](https://apptainer.org/docs/admin/main/installation.html) (?).
 
-### Install Guide
-  - [apptainer](https://apptainer.org/docs/admin/main/installation.html) / [singularity](https://docs.sylabs.io/guides/latest/admin-guide/installation.html) 
-    - Linux and on MacOS/Windows through VM like Lima and WSL
-  - [nextflow](https://www.nextflow.io/docs/latest/install.html) 
-    - POSIX-compatible system (Linux, macOS, etc), and on Windows through WSL.
+Clone the repo and cd into the directory:
+  ```bash
+    git clone https://--.git
+    cd --
+  ```
 
----
-
-### Build Container
-#### With Makefile
-Build:
+Use Makefile to pull singularity containers from galaxy and build additional python containers:
   ```bash
     make buildcontainers
+    make pullcontainers
   ```
-Delete:
+You can delete or delete and rebuild the containers:
   ```bash
     make cleancontainers
-  ```
-Rebuild:
-  ```bash
     make cleanbuildcontainers
   ```
 
-#### Without Makefile:
-apptainer:
-  ```bash
-    apptainer build python_container.sif python_container.def
-    apptainer build python_container_plotly.sif  python_container_plotly.def
-  ```
-
-singularity:
+You can also build containers manually:
   ```bash
     singularity build python_container.sif python_container.def
     singularity build python_container_plotly.sif  python_container_plotly.def
   ```
 
-#### Pull Containers from Galaxy
-Pull:
+In the next step, download the NCBI taxonomy and accession-to-taxid mapping files, then create a local SQLite database required for taxonomy-based conversion in the pipeline.
   ```bash
-    make pullcontainers
+    cd nextflow/conversion/Database/database_utils
+    wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/new_taxdump/new_taxdump.tar.gz
+    tar -xzf new_taxdump.tar.gz
+    wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid.gz
+    gunzip nucl_gb.accession2taxid.gz
+    python3 create_tax_db_file.py
   ```
+
+Make sure that **database.db** is located in **nextflow/conversion/Database**, not in a subfolder.
+You can test the result using the test.py file provided in the database_utils subfolder.
+
 ---
 
 ### Run the pipeline
+(TODO: specifiy user input)
 
 With example file:
 
@@ -86,6 +81,11 @@ SRR21735255, 2000000, NZ_CP097112
 
 ---
 
-### Pipeline Architecture
+### Integrate an additional taxonomic classification tool
 
-![Pipeline](./Images/pipeline.png)
+To integrate an additional taxonomic classification tool for comparison you will need to make adjustments to the pipeline.
+
+- Move to the classification folder and create a subfolder for the tool. Place the classification workflow here.
+- If the workflow requires an additional container, add the reference to the Makefile, place the path in the nextflow.config and use the respective parameter in the workflow.
+- Include the new classification workflow in the central workflow.nf. Integrate the output in the concatenation of tool_outputs.
+- Check, if the file format of the classification output is supported by the converter layer. You find the respective converters in nextflow/conversion/to_kraken_converters/converters/. Currently supported: SAM, kraken2 report format, tre. If the required format is not supported, implement a new converter as a subclass of abstract_converter.py and place it in the converters folder.

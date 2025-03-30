@@ -90,7 +90,7 @@ def convert_names_dmp_to_csv():
     df = pd.read_csv(names_file, sep='|', header=None, engine='python')
     df = df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
 
-    print(f"Anzahl der Spalten im DataFrame: {df.shape[1]}")
+    print(f"Number of columns in DataFrame: {df.shape[1]}")
 
     column_names = ['tax_id', 'name_txt', 'unique name', 'name class']
     if len(column_names) == df.shape[1] - 1:
