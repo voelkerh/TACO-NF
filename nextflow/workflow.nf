@@ -5,17 +5,13 @@ include { fastp_multiqc_workflow } from './preparation/fastq_qc.nf'
 include { kraken_classification } from './classification/kraken2/kraken2.nf'
 include { bowtie_classification } from './classification/bowtie2/bowtie2.nf'
 include { ganon_classification } from './classification/ganon/ganon.nf'
-include { gt_converter } from './conversion/gtConverter.nf'
-// check if this is needed
 include { convert } from './conversion/conversion.nf'
 include { visualize } from './visualization/visualization.nf'
 
-// params.inputDir = "input/"
-// inputChannel = Channel.fromPath(params.inputDir+'*.fq')
 params.pipeline_input = "./sample_files/pipeline_input/sra_accession.txt"
 
 workflow {
-  println('Project directory: ${projectDir}')
+  println("Project directory: ${projectDir}")
   input_channel = Channel.fromPath(params.pipeline_input)
 
   // preparation
