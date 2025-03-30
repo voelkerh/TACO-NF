@@ -1,6 +1,7 @@
 from to_kraken_converters.abstract_converter import AbstractConverter
 from Database.taxdb import TaxDB
 
+
 class GTConverter(AbstractConverter):
 
     def __init__(self, taxdb: TaxDB):
@@ -31,7 +32,8 @@ class GTConverter(AbstractConverter):
         tree = self.build_tree(accession_counts_by_taxid)
 
         # Writing the output file
-        self.create_output_file(tree, accession_counts_by_taxid, total_reads, output_filename)
+        self.create_output_file(
+            tree, accession_counts_by_taxid, total_reads, output_filename)
 
         return "Conversion successful (gt to kraken)."
 
@@ -49,27 +51,21 @@ class GTConverter(AbstractConverter):
         return numreads
 
     def count_alignments_per_taxid_from_lines(self, input_file):
-        accession_counts = {}  # Wörterbuch zur Speicherung der Reads pro TaxID
+        accession_counts = {}
 
         with open(input_file, 'r') as f:
             header = f.readline().strip()
 
             for line in f:
                 try:
-                    # Zeile aufteilen
                     tax_id, read_number = line.strip().split(',')
-
-                    # Sicherstellen, dass read_number ein Integer ist
-
                     read_number = int(read_number)
 
-                    # Aggregiere die Reads für dieselbe TaxID
                     if tax_id in accession_counts:
                         accession_counts[tax_id] += read_number
                     else:
                         accession_counts[tax_id] = read_number
                 except ValueError as e:
-                    # Fehlerhafte Zeilen ignorieren und Fehler protokollieren
                     print(f"Error processing line: {line.strip()} - {e}")
                     continue
 
@@ -206,6 +202,7 @@ class GTConverter(AbstractConverter):
                 f"{0.0}\t{0}\t{0}\t{'U'}\t{0}\tunclassified\n")
             self.write_data_for_nodes_in_branch(
                 file, tree, accession_counts_by_taxid, total_reads)
+
 
 if __name__ == '__main__':
     pass

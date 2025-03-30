@@ -11,6 +11,7 @@ from io import StringIO
 from Bio import Phylo
 from copy import deepcopy
 
+
 def process_program_arguments():
     tree_files = []
     if len(sys.argv) < 2:
@@ -20,6 +21,7 @@ def process_program_arguments():
         tree_files.append(arg)
     return tree_files
 
+
 def get_tree_from_file(file):
     newick = ''
     with open(file, 'r') as file:
@@ -28,10 +30,12 @@ def get_tree_from_file(file):
     handle = StringIO(newick_str)
     return Phylo.read(handle, "newick")
 
+
 def merge_two_trees(base_tree, additional_tree):
     merged_tree = deepcopy(base_tree)
-    merge_clades(merged_tree.root, additional_tree.root)    
+    merge_clades(merged_tree.root, additional_tree.root)
     return merged_tree
+
 
 def merge_clades(base_clade, additional_clade):
     reference_clades = {clade.name: clade for clade in base_clade.clades}
@@ -43,11 +47,13 @@ def merge_clades(base_clade, additional_clade):
                 base_child = reference_clades[additional_child.name]
                 merge_clades(base_child, additional_child)
 
+
 def merge_trees(trees):
     merged_tree = trees[0]
     for tree in trees[1:]:
         merged_tree = merge_two_trees(merged_tree, tree)
     return merged_tree
+
 
 def tree_to_newick_no_distance(tree):
     output = StringIO()
@@ -57,9 +63,11 @@ def tree_to_newick_no_distance(tree):
     newick_no_distance = re.sub(r':\d+(\.\d+)?', '', newick)
     return newick_no_distance
 
+
 def write_newick_to_output_file(newick_str):
     with open('merged_newick_tree.txt', 'w') as file:
         file.write(newick_str)
+
 
 tree_files = process_program_arguments()
 trees = [get_tree_from_file(file) for file in tree_files]

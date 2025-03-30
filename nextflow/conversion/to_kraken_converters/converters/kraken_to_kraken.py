@@ -1,6 +1,7 @@
 from to_kraken_converters.abstract_converter import AbstractConverter
 from Database.taxdb import TaxDB
 
+
 class KrakenConverter(AbstractConverter):
 
     def __init__(self, taxdb: TaxDB):
@@ -16,7 +17,8 @@ class KrakenConverter(AbstractConverter):
 
     def convert(self, filename: str, output_filename: str) -> str:
         if not self.can_convert(filename):
-            raise ValueError(f"The file {filename} cannot be converted. It is not a kraken file.")
+            raise ValueError(
+                f"The file {filename} cannot be converted. It is not a kraken file.")
 
         with open(filename, 'r') as infile:
             lines = infile.readlines()
@@ -54,6 +56,7 @@ class KrakenConverter(AbstractConverter):
 
     def get_name_from_taxonomic_data(self, taxid):
         return self.taxdb.get_name_from_taxonomic_data(taxid)
+
 
 if __name__ == '__main__':
     pass

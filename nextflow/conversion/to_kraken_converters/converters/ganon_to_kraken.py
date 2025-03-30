@@ -2,6 +2,7 @@ from to_kraken_converters.abstract_converter import AbstractConverter
 from Database.taxdb import TaxDB
 from bigtree import dict_to_tree
 
+
 class GanonConverter(AbstractConverter):
 
     def __init__(self, taxdb: TaxDB):
@@ -19,7 +20,8 @@ class GanonConverter(AbstractConverter):
 
     def convert(self, filename: str, output_filename: str) -> str:
         if not self.can_convert(filename):
-            raise ValueError(f"The file {filename} cannot be converted.It is not a ganon file.")
+            raise ValueError(
+                f"The file {filename} cannot be converted.It is not a ganon file.")
 
         with open(filename, 'r') as infile:
             header = infile.readline().strip()
@@ -33,12 +35,14 @@ class GanonConverter(AbstractConverter):
                     perc_reads = round(float(columns[8].strip()), 2)
                     read_number = columns[7].strip()
                     reads = int(columns[4]) + int(columns[5])
-                    rank = self.get_rank_code_from_full_rank(columns[0].strip())
+                    rank = self.get_rank_code_from_full_rank(
+                        columns[0].strip())
                     tax_id = columns[1].strip()
                     name = "root" if self.get_name_from_taxonomic_data(
                         tax_id) == 'all' else self.get_name_from_taxonomic_data(tax_id)
                     key = columns[2].replace("|", "/").strip()
-                    dct[key] = {'line': [perc_reads, read_number, reads, rank, tax_id, name]}
+                    dct[key] = {'line': [perc_reads,
+                                         read_number, reads, rank, tax_id, name]}
                 except ValueError as e:
                     print(f"Error processing line: {line.strip()} - {e}")
                     continue

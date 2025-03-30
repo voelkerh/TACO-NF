@@ -17,6 +17,7 @@ from dash import Dash, dcc, html, Input, Output
 import plotly.graph_objects as go
 from phylotree import create_phylogenetic_tree
 
+
 def get_newick_string():
     """
     Reads the newick file and returns the newick string.
@@ -27,6 +28,7 @@ def get_newick_string():
         newick_str = file.read()
     return newick_str
 
+
 def process_program_arguments():
     """
     Processes the program arguments and returns the kraken files.
@@ -36,6 +38,7 @@ def process_program_arguments():
         if 'newick' not in arg:
             kraken_files.append(arg)
     return kraken_files
+
 
 def prepare_combined_dataframe(files):
     """
@@ -51,6 +54,7 @@ def prepare_combined_dataframe(files):
     combined_df = pd.concat(dfs.values(), axis=1, keys=dfs.keys(), sort=False)
     return combined_df.fillna(0)
 
+
 def get_max_indent(combined_df):
     """
     Calculates the maximum indent of the labels in the combined dataframe.
@@ -60,6 +64,7 @@ def get_max_indent(combined_df):
         indent = (len(label) - len(label.lstrip('  '))) // 2
         max_indent = max(max_indent, indent)
     return max_indent
+
 
 global_files = process_program_arguments()
 global_dataframe = prepare_combined_dataframe(global_files)
@@ -80,7 +85,8 @@ app.layout = html.Div(
                         id='hierarchy-level-slider',
                         min=0,
                         max=global_max_indent,
-                        marks={i: f'{i}' for i in range(0, global_max_indent + 1, 2)},
+                        marks={i: f'{i}' for i in range(
+                            0, global_max_indent + 1, 2)},
                         value=0,
                         step=1,
                         className='slider'
@@ -97,32 +103,36 @@ app.layout = html.Div(
     ],
 )
 
+
 @app.callback(
     [Output("tree", "figure")],
     [Input("hierarchy-level-slider", "value")]
 )
-
 def filter_figure(selected_level):
     """
     Filters by the selected level and returns the combinedfigure.
     """
     fig = update_tree(selected_level)
 
-    df_level_filtered = filter_dataframe_by_level(global_dataframe, selected_level)
+    df_level_filtered = filter_dataframe_by_level(
+        global_dataframe, selected_level)
     fig_heatmap, heatmap_labels = update_heatmap(df_level_filtered)
     combined_figure = combine_figures(fig, fig_heatmap)
     combined_figure = update_layout(combined_figure, heatmap_labels)
 
     return [combined_figure]
 
+
 def update_tree(selected_level):
     """
     Updates the phylogenetic tree.
     """
-    fig_tree = create_phylogenetic_tree(global_newick_str, selected_level, show_labels=False)
+    fig_tree = create_phylogenetic_tree(
+        global_newick_str, selected_level, show_labels=False)
     for i in range(len(fig_tree["data"])):
         fig_tree["data"][i]["xaxis"] = "x"
     return fig_tree
+
 
 def filter_dataframe_by_level(df, level):
     """
@@ -142,6 +152,7 @@ def filter_dataframe_by_level(df, level):
 
     return df.loc[df_filter]
 
+
 def update_heatmap(df_level_filtered):
     """
     Updates the heatmap.
@@ -159,6 +170,7 @@ def update_heatmap(df_level_filtered):
     )
     return fig_heatmap, heatmap_labels
 
+
 def format_labels(heatmap_labels):
     stripped_labels = [label.strip() for label in heatmap_labels]
     max_label_length = max(len(label) for label in stripped_labels)
@@ -168,6 +180,7 @@ def format_labels(heatmap_labels):
             label = '-'+label
         formatted_labels.append(label)
     return formatted_labels
+
 
 def combine_figures(fig_tree, fig_heatmap):
     """
@@ -179,6 +192,7 @@ def combine_figures(fig_tree, fig_heatmap):
     fig_tree.data[-1].y = fig_tree.layout.yaxis.tickvals
 
     return fig_tree
+
 
 def update_layout(fig, tick_labels):
     """
@@ -225,6 +239,7 @@ def update_layout(fig, tick_labels):
         },
     )
     return fig
+
 
 # Run app
 if __name__ == '__main__':

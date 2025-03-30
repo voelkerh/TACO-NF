@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class AbstractConverter(ABC):
     @abstractmethod
     def can_convert(self, filename: str) -> bool:

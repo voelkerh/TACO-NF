@@ -13,7 +13,8 @@ import ete3
 
 __all__ = ['KrakenSummary']
 
-INDENT_UNIT = 2 # Number of spaces in the indentation
+INDENT_UNIT = 2  # Number of spaces in the indentation
+
 
 class KrakenSummary(object):
     def __init__(self, infile, ignore_unclassified=False):
@@ -55,7 +56,8 @@ class KrakenSummary(object):
 
     @property
     def newick(self):
-        return self.tree.write(format=1) # Format 1 keeps the internal node names, manually added
+        # Format 1 keeps the internal node names, manually added
+        return self.tree.write(format=1)
 
     def __repr__(self):
         return (
@@ -63,15 +65,18 @@ class KrakenSummary(object):
             f'"{self.infile}", '
             f'ignore_unclassified={self.ignore_unclassified})')
 
+
 """
 Additional code to convert Kraken output to Newick format in txt-file.
 """
 
+
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python kraken_to_newick.py <infile> [--ignore-unclassified]")
+        print(
+            "Usage: python kraken_to_newick.py <infile> [--ignore-unclassified]")
         sys.exit(1)
-    
+
     infile = sys.argv[1]
     ignore_unclassified = '--ignore-unclassified' in sys.argv
 
@@ -82,6 +87,7 @@ def main():
 
     with open(output_file, 'w') as file:
         file.write(newick_string)
+
 
 if __name__ == '__main__':
     main()

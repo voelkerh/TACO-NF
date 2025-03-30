@@ -4,6 +4,7 @@ import importlib
 from to_kraken_converters.abstract_converter import AbstractConverter
 from Database.taxDBsqlite import TaxDBsqlite
 
+
 def import_converters(package: str, directory: str):
     """
     Dynamically import all modules in a directory to make them addressable as subclasses of AbstractConverter.
@@ -20,6 +21,7 @@ def import_converters(package: str, directory: str):
             except Exception as e:
                 print(f"Error importing {module_name}: {e}")
 
+
 def get_all_converters(taxdb):
     """
     Instantiate all subclasses of AbstractConverter with the TaxDB.
@@ -29,13 +31,14 @@ def get_all_converters(taxdb):
         converters.append(subclass(taxdb))
     return converters
 
+
 def main():
     """
     Execute in the terminal:
         1.Change to the utils directory:
         2.Run the script using Python:
         python -m to_kraken_converters.main path_to_file
-        
+
         Example:
         python -m to_kraken_converters.main to_kraken_converters/input_samples/ground_truth.txt
     """
@@ -60,6 +63,7 @@ def main():
             break
     else:
         print(f"No suitable conversion found for {file}.")
+
 
 if __name__ == "__main__":
     main()
