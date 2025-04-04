@@ -19,9 +19,9 @@
   - Decide: New process to find suitable refseq for sra accession or **change requirements in manuscript**!
   - Make **user specified input** for pipeline possible (sample_file if no parameter, otherwise use parameter as input?)
 
-- Integrate **ganon**: Lucy definiert db parameter, wir nehmen mittelgroße Referenzdatenbank ohne Spezifikation (complete genome db)
+- Ganon2: Database changes have been made, needs to be tested
 
-- Bowtie2: **bowtie2.nf** has a process, which **merges fastq** input files -> Lucy löscht und passt workflow def. an.
+- Bowtie2: MergeFastq was not need and was changed, need to be tested
 
 - Identify reasons for **visualization issues**: (Henni)
   - Tree representation has artefacts -> merged_newick_tree.txt probably has issues, possibly due to conversion from kraken
