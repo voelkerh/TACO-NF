@@ -20,7 +20,7 @@ process BUILD_DB {
 
     script:
         """
-        ganon build --source refseq --organism-group${params.db} --threads 48 --complete-genomes --db-prefix ganon_database
+        ganon build --source refseq --organism-group ${params.db} --threads 48 --complete-genomes --db-prefix ganon_database
         """
 }
 
