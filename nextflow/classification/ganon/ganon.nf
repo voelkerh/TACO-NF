@@ -2,9 +2,8 @@
 // It is divided into three processes: database creation, read classification and report generation.
 // Three parameters can be specified: The sequence file (required), the database file (required) and the report type (default 'abundance').
 
-// try: nextflow run ganon_workflow.nf --sequence_file input/test_sequence_file.fastq --database_file input/GCA_000005845.2_ASM584v2_genomic.fna
-
 params.outdir = 'output'
+params.db = 'archaea bacteria fungi viral'
 params.ganon_workflow_store_dir = launchDir + 'store/5_ganon/'
 
 params.sequence_file = null
@@ -16,15 +15,12 @@ process BUILD_DB {
     container file(params.ganon_container_path)
     storeDir params.ganon_workflow_store_dir + '/db/'
 
-    input:
-        path database_input_file
-
     output:
-        path 'ecoli_db.*'
+        path 'ganon_database.*'
 
     script:
         """
-        ganon build-custom --input ${database_input_file} --db-prefix ecoli_db
+        ganon build --source refseq --organism-group${params.db} --threads 48 --complete-genomes --db-prefix ganon_database
         """
 }
 
@@ -67,6 +63,8 @@ process GENERATE_REPORT {
         """
 }
 
+// Main workflow for Ganon classification
+// It takes a sequence file and a database file as input, and generates a classification report.
 workflow ganon_classification {
     take:
         sequence_file

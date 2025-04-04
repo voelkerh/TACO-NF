@@ -89,23 +89,6 @@ process INDEX_REFERENCE {
         """
 }
 
-// !!! TODO: Currently we have a combined FASTQ as input, this is probably not needed and could produce errors
-process MERGE_FASTQS {
-    container file(params.bowtie2_container_path)
-    storeDir params.bowtie_workflow_store_dir + '/mergeFastq/'
-
-    input:
-        path fastqFiles
-
-    output:
-        path 'merged.fq', emit: mergedFq
-
-    script:
-        """
-        mkdir store_fq
-        cat *.fq > merged.fq
-        """
-}
 
 // Map reads from combined FASTQ to reference FASTA file
 process MAP_READS {
@@ -126,9 +109,10 @@ process MAP_READS {
         """
 }
 
+// Main workflow for Bowtie2 classification
 workflow bowtie_classification {
     take:
-        reads // probably not reads, but merged fastq
+        reads
         pipeline_input
 
     main:
@@ -138,8 +122,7 @@ workflow bowtie_classification {
 
         hash = HASHING_FASTA_FILE(mergedFastaChannel)
         indexFiles = INDEX_REFERENCE(mergedFastaChannel, hash)
-        mergedFq = MERGE_FASTQS(reads) // probably not needed
-        output = MAP_READS(indexFiles, mergedFq)
+        output = MAP_READS(indexFiles, reads) 
 
     emit:
         output
