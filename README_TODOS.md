@@ -19,9 +19,9 @@
   - Decide: New process to find suitable refseq for sra accession or **change requirements in manuscript**!
   - Make **user specified input** for pipeline possible (sample_file if no parameter, otherwise use parameter as input?)
 
-- Ganon2: Database changes have been made, needs to be tested
+[x] Ganon2: Database changes have been made, needs to be tested
 
-- Bowtie2: MergeFastq was not need and was changed, need to be tested
+[x] Bowtie2: MergeFastq was not need and was changed, need to be tested
 
 - Identify reasons for **visualization issues**: (Henni)
   - Tree representation has artefacts -> merged_newick_tree.txt probably has issues, possibly due to conversion from kraken
