@@ -1,6 +1,6 @@
 nextflow.enable.dsl = 2
 
-params.outdir = 'output'
+params.outdir = 'output/classification'
 params.bowtie_workflow_store_dir = launchDir + 'store/4_bowtie2/'
 
 // Extract RefSeq Accessions from pipeline input

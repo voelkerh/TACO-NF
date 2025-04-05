@@ -1,6 +1,6 @@
 nextflow.enable.dsl=2
 
-params.outdir = 'output'
+params.outdir = 'output/classification'
 params.db = 'k2_standard_08gb_20230605'
 params.kraken_workflow_store_dir = launchDir + 'store/3_kraken2/'
 
@@ -54,6 +54,5 @@ workflow kraken_classification {
 
     emit:
         report = classification_out.report
-        classified = classification_out.classified
 
 }
