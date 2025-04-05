@@ -1,6 +1,9 @@
+import os
 import sqlite3
 
-database = 'database.db'
+base_path = os.path.dirname(os.path.abspath(__file__))
+parent_path = os.path.dirname(base_path)
+database = os.path.join(parent_path, 'database.db')
 connection = sqlite3.connect(database)
 
 cursor = connection.cursor()

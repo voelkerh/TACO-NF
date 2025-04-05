@@ -5,7 +5,9 @@ import csv
 import pandas as pd
 
 base_path = os.path.dirname(os.path.abspath(__file__))
-db_path = os.path.join(base_path, 'database.db')
+# move one directory up to save db where needed
+parent_path = os.path.dirname(base_path)
+db_path = os.path.join(parent_path, 'database.db')
 
 
 def create_accession2taxid_table(db_file, csv_file):

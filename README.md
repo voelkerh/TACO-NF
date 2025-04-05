@@ -48,11 +48,16 @@ In the next step, download the NCBI taxonomy and accession-to-taxid mapping file
     tar -xzf new_taxdump.tar.gz
     wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid.gz
     gunzip nucl_gb.accession2taxid.gz
-    python3 create_tax_db_file.py
+    python3 create_tax_db_file.py create
   ```
 
-Make sure that **database.db** is located in **nextflow/conversion/Database**, not in a subfolder.
+Make sure that **database.db** is correctly located in **nextflow/conversion/Database**, not in a subfolder.
 You can test the result using the test.py file provided in the database_utils subfolder.
+
+  ```bash
+    cd nextflow/conversion/Database/database_utils
+    python3 test.py
+  ```
 
 ---
 
