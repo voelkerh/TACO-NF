@@ -3,7 +3,7 @@
 // Three parameters can be specified: The sequence file (required), the database file (required) and the report type (default 'abundance').
 
 params.ganon_workflow_store_dir = launchDir + 'store/5_ganon/'
-params.outdir = 'output'
+params.outdir = 'output/classification'
 params.db = 'archaea bacteria fungi viral'
 params.report_type = 'abundance'
 
@@ -49,14 +49,13 @@ process GENERATE_REPORT {
     input:
         path classification_output
         path database
-        val report_type
 
     output:
-        path 'classification_report_*.tre'
+        path "classification_report_*.tre", emit: report
 
     script:
         """
-        ganon report --db-prefix ${database} --input ${classification_output} --output-prefix classification_report_${report_type} --report-type ${report_type}
+        ganon report --db-prefix ${database} --input ${classification_output} --output-prefix classification_report_${params.report_type} --report-type ${params.report_type}
         """
 }
 
@@ -74,9 +73,8 @@ workflow ganon_classification {
         classification_output = GANON_CLASSIFICATION(sequence_file, database)
 
         // 3. Generate a report based on the classification results
-        report_output = GENERATE_REPORT(classification_output, database, params.report_type)
+        report = GENERATE_REPORT(classification_output, database)
 
     emit:
-        classification_output
-        report_output
+        report
 }
