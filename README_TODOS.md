@@ -36,7 +36,7 @@
 
 #### Finalize manuscript
 
-- Check effects of **fastp and multiqc**, describe in **manuscript** (Henni fängt an sich einzulesen)
+[x] Check effects of **fastp and multiqc**, describe in **manuscript** --> Added: fastp is used for quality control and filtering of merged fastq and multiqc generates an interactive html report about the results. Added to manuscripts, including citations.
 
 #### Write documentation
 
