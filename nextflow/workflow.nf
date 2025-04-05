@@ -13,16 +13,16 @@ params.pipeline_input = "./sample_files/pipeline_input/sra_accession.txt"
 
 workflow {
   println("Project directory: ${projectDir}")
-  input_channel = Channel.fromPath(params.pipeline_input)
+  user_input = Channel.fromPath(params.pipeline_input)
 
   // preparation
-  fastq_and_groundtruth = process_sra_accessions(input_channel)
+  fastq_and_groundtruth = process_sra_accessions(user_input)
   fastp_output = fastp_multiqc_workflow(fastq_and_groundtruth.fastq)
 
   // classification
-  kraken_output = kraken_classification(fastp_output.fastq)
-  bowtie_output = bowtie_classification(fastp_output.fastq, input_channel)
-  ganon_output = ganon_classification(fastp_output.fastq)
+  kraken_output = kraken_classification(fastp_output)
+  bowtie_output = bowtie_classification(fastp_output, user_input)
+  ganon_output = ganon_classification(fastp_output)
   // new_classification_tool_output = new_classification(fastp_output.fastq)
 
   // conversion
