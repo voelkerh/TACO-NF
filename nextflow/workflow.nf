@@ -1,7 +1,7 @@
 nextflow.enable.dsl = 2
 
 include { process_sra_accessions } from './preparation/sra_accession_processing.nf'
-include { fastp_multiqc_workflow } from './preparation/fastq_qc.nf'
+include { quality_control_workflow } from './preparation/fastq_qc.nf'
 include { kraken_classification } from './classification/kraken2/kraken2.nf'
 include { bowtie_classification } from './classification/bowtie2/bowtie2.nf'
 include { ganon_classification } from './classification/ganon2/ganon2.nf'
@@ -17,17 +17,17 @@ workflow {
 
   // preparation
   fastq_and_groundtruth = process_sra_accessions(user_input)
-  fastp_output = fastp_multiqc_workflow(fastq_and_groundtruth.fastq)
+  fastp_output = quality_control_workflow(fastq_and_groundtruth.fastq)
 
   // classification
   kraken_output = kraken_classification(fastp_output)
   bowtie_output = bowtie_classification(fastp_output, user_input)
-  ganon_output = ganon_classification(fastp_output)
+  // ganon_output = ganon_classification(fastp_output)
   // new_classification_tool_output = new_classification(fastp_output.fastq)
 
   // conversion
-  tool_outputs = kraken_output.concat(bowtie_output).concat(ganon_output).concat(fastq_and_groundtruth.groundtruth)
-  // tool_outputs = kraken_output.report.concat(bowtie_output).concat(fastq_and_groundtruth.groundtruth)
+  // tool_outputs = kraken_output.concat(bowtie_output).concat(ganon_output).concat(fastq_and_groundtruth.groundtruth)
+  tool_outputs = kraken_output.concat(bowtie_output).concat(fastq_and_groundtruth.groundtruth)
   // tool_outputs = kraken_output.concat(bowtie_output).concat(ganon_output).concat(new_classification_tool_output).concat(fastq_and_groundtruth.groundtruth)
 
   convert_output = convert(tool_outputs)
