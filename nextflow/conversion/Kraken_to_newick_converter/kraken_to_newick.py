@@ -1,10 +1,11 @@
-import sys
-
 """
-Script to convert Kraken output to Newick format.
-Buildt on: https://github.com/sridhar0605/kraken-review (MIT License)
+Script converts kraken2 report format to tree representation in Newick format.
+The result will be saved as .txt file.
+Built on: https://github.com/sridhar0605/kraken-review (MIT License)
 Note: set ignore_unclassified to True in pipeline.
 """
+
+import sys
 import csv
 import re
 from pathlib import Path
@@ -17,25 +18,31 @@ INDENT_UNIT = 2  # Number of spaces in the indentation
 
 
 class KrakenSummary(object):
+    """
+    Creates tree representation in Newick format upon instantiation.
+    """
+
     def __init__(self, infile, ignore_unclassified=False):
         self.infile = Path(infile).expanduser().resolve()
         self.ignore_unclassified = ignore_unclassified
 
         nodes = {}
         current_root_index = 0
-        re_indent = re.compile('^\s*')
+        re_indent = re.compile(r'^\s*')
 
         tree = ete3.Tree()
         root = tree.add_child(name='root')
 
         nodes[current_root_index] = root
 
-        with self.infile.open() as handle:
+        with self.infile.open(encoding="UTF-8") as handle:
             for line in csv.reader(handle, delimiter='\t'):
-                fraction, cumulative, count, order, tax_id, taxa_entry = line
+                _, _, _, _, _, taxa_entry = line
 
                 indent_size = len(re_indent.match(taxa_entry).group())
                 taxa_name = re_indent.sub('', taxa_entry)
+                # Substitute characters which produce errors in Newick format
+                taxa_name = re.sub(r"[():;,']", "_", taxa_name)
 
                 if taxa_name == 'root':
                     continue
@@ -56,6 +63,9 @@ class KrakenSummary(object):
 
     @property
     def newick(self):
+        """
+        Writes tree representation from ete3.Tree object for external use.
+        """
         # Format 1 keeps the internal node names, manually added
         return self.tree.write(format=1)
 
@@ -66,12 +76,11 @@ class KrakenSummary(object):
             f'ignore_unclassified={self.ignore_unclassified})')
 
 
-"""
-Additional code to convert Kraken output to Newick format in txt-file.
-"""
-
-
 def main():
+    """
+    Wrapper to convert kraken2 report format to Newick format in txt-file.
+    """
+
     if len(sys.argv) < 2:
         print(
             "Usage: python kraken_to_newick.py <infile> [--ignore-unclassified]")
@@ -85,7 +94,7 @@ def main():
 
     output_file = sys.argv[2]
 
-    with open(output_file, 'w') as file:
+    with open(output_file, 'w', encoding="UTF-8") as file:
         file.write(newick_string)
 
 
