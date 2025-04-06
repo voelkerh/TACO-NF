@@ -1,3 +1,10 @@
+"""
+Concrete implementation of api for internal taxonomy database.
+TaxDBsqlite defines SQL queries for data retrieval.
+Note: Changes to the name_class argument affect the visualization
+and can produce errors in transformation to newick strings.
+"""
+
 import sqlite3
 from .taxdb import TaxDB
 

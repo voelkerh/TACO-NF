@@ -1,3 +1,14 @@
+"""
+This script has to be executed manually before running the pipeline.
+It creates a taxonomy database based on previous downloads (/new_taxdump and /nucl_gb).
+The database.db will be stored in the parent directory for use by converter scripts.
+At the first run use option "create" als command line argument.
+It can later be rebuilt with option "update".
+
+The database translates SRA accession IDs to taxIDs and allows
+retrieval of the nodes and names information.
+"""
+
 import os
 import argparse
 import sqlite3

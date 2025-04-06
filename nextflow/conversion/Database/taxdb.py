@@ -1,3 +1,8 @@
+"""
+Definition of abstract class for internal taxonomy database
+allows for customized adaption of database behaviour.
+"""
+
 from abc import ABC, abstractmethod
 
 
