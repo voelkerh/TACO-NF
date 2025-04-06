@@ -30,7 +30,7 @@
 
 - Write **test suite** with pytest workflow (erstmal nicht, wenn dann converter test suite für user)
 
-- Use **PEP-8** formatting for **all python files** hat Henni gemacht
+[x] Use **PEP-8** formatting for **all python files**
 - Possibly use **linter** (Pylint?) (Henni checkt, ob sinnvoll) - Docstring da, wo Einsatz sinnvoll, nicht kategorisch überall.
 - Final repository **cleanup**
 
@@ -40,11 +40,27 @@
 
 #### Write documentation
 
+[x] Harmonize **documentation for nextflow files**
+
 - **document code files in repository** using DocString (Henni)
+  [x] create_tax_db.py
+  [x] test.py
+  [x] taxdb.py
+  [x] taxDBsqlite.py - check nochmal name Ausgabe
+  [-] kraken_to_newick.py - check ob man mit Namen anders umgehen kann, damit sie visualisierung nicht zerhauen
+  - newick_merger.py
+  - main.py
+  - abstract_converter.py
+  - ganon_to_kraken.py
+  - gt_to_kraken.py
+  - sam_to_kraken.py
+  - dash_app.py - check heatmap konsistenz und reihenfolge
 
-- **Update README**: Makefile (überarbeitet Lucy), create_db für accession2taxid muss selbst erstellt werden (lässt sich nicht zuverlässig committen) dafür braucht es download, ablage und build Anleitung. (Lucy)
+- rename taxDBsqlite.py
 
-- Write **documentation** for how to **build accessions2taxid database** on your own with **create_taxdb_file.py** and include it in README for setup. It is too large to be provided via repository. Also include testrun with **test.py** from database utils folder (Lucy probiert aus, ob sie das zum Laufen bekommt nach der Anleitung)
+[x] **Update README**: Makefile (überarbeitet Lucy), create_db für accession2taxid muss selbst erstellt werden (lässt sich nicht zuverlässig committen) dafür braucht es download, ablage und build Anleitung.
+
+[x] Write **documentation** for how to **build accessions2taxid database** on your own with **create_taxdb_file.py** and include it in README for setup. It is too large to be provided via repository. Also include testrun with **test.py** from database utils folder. --> Fertig ergänzt und ausprobiert.
 
 ### Long-term TODOs:
 
