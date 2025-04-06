@@ -196,7 +196,7 @@ class GTConverter(AbstractConverter):
                 file, child, accession_counts_by_taxid, total_reads, level + 1)
 
     def create_output_file(self, tree, accession_counts_by_taxid, total_reads, output_filename):
-        with open(output_filename, 'w') as file:
+        with open(output_filename, 'w', encoding="UTF-8") as file:
             file.write(
                 # f"{percentage_of_unclassified_reads:<6}\t{unclassified_reads:<15}\t{unclassified_reads:<15}\t{'U':<4}\t{'0':<8}\tunclassified\n")
                 f"{0.0}\t{0}\t{0}\t{'U'}\t{0}\tunclassified\n")

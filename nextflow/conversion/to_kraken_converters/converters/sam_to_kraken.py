@@ -9,7 +9,7 @@ class SAMConverter(AbstractConverter):
 
     def can_convert(self, filename):
 
-        with open(filename, 'r') as f:
+        with open(filename, 'r', encoding="UTF-8") as f:
             lines = f.readlines()
 
         header_lines = [line for line in lines if line.startswith("@")]
@@ -42,7 +42,7 @@ class SAMConverter(AbstractConverter):
         return "Conversion successful (SAM to kraken)."
 
     def read_sam_file_to_lines(self, sam_file: str) -> list:
-        with open(sam_file, 'r') as file:
+        with open(sam_file, 'r', encoding="UTF-8") as file:
             return file.readlines()
 
     def count_numreads(self, lines: list) -> int:
@@ -202,7 +202,7 @@ class SAMConverter(AbstractConverter):
 
     def create_output_file(self, tree, accession_counts_by_taxid, unclassified_reads, percentage_of_unclassified_reads,
                            total_reads, output_filename):
-        with open(output_filename, 'w') as file:
+        with open(output_filename, 'w', encoding="UTF-8") as file:
             file.write(
                 f"{percentage_of_unclassified_reads}\t{unclassified_reads}\t{unclassified_reads}\t{'U'}\t{'0'}\tunclassified\n")
             self.write_data_for_nodes_in_branch(
