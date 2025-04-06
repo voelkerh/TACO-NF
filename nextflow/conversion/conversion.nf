@@ -3,7 +3,7 @@ nextflow.enable.dsl = 2
 params.outdir = 'output/conversion'
 params.conversion_workflow_store_dir = launchDir + 'store/6_conversion/'
 
-
+// Convert classification reports to kraken2 report format using to_kraken_converters and internal taxonomy database
 process INPUT_TO_KRAKEN {
   container file(params.python_container_path)
   containerOptions '--bind ${projectDir}:${projectDir}'
@@ -23,6 +23,7 @@ process INPUT_TO_KRAKEN {
     """
 }
 
+// Additionally convert classification reports from kraken2 report format to tree representation in Newick format
 process KRAKEN_TO_NEWICK {
   container file(params.python_plotly_container_path)
   containerOptions '--bind ${projectDir}:${projectDir}'
@@ -40,6 +41,7 @@ process KRAKEN_TO_NEWICK {
     """
 }
 
+// Generate a combined tree representation of all classification results from Newick strings for final visualization
 process MERGE_NEWICK {
   container file(params.python_plotly_container_path)
   containerOptions '--bind ${projectDir}:${projectDir}'

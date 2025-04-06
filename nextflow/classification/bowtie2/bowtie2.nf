@@ -89,7 +89,6 @@ process INDEX_REFERENCE {
         """
 }
 
-
 // Map reads from combined FASTQ to reference FASTA file
 process MAP_READS {
     container file(params.bowtie2_container_path)
@@ -109,7 +108,6 @@ process MAP_READS {
         """
 }
 
-// Main workflow for Bowtie2 classification
 workflow bowtie_classification {
     take:
         reads

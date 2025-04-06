@@ -1,16 +1,6 @@
 nextflow.enable.dsl = 2
 
-workflow visualize {
-  take:
-  tree_file
-  kraken_reports
-
-  main:
-  tree_file.view()
-  kraken_reports.view()
-  START_DASH_APP(tree_file, kraken_reports)
-}
-
+// Start Dash App on localhost based on merged tree in Newick format and classification results in kraken2 report format
 process START_DASH_APP {
   container file(params.python_plotly_container_path)
   containerOptions '--bind ${projectDir}:${projectDir}'
@@ -21,7 +11,16 @@ process START_DASH_APP {
 
   script:
   """
-  echo "Dash App: http://127.0.01:8050"
   python3 ${projectDir}/visualization/Dash_app/dash_app.py ${tree_file} ${kraken_reports.join(' ')}
   """
+}
+
+workflow visualize {
+  take:
+    tree_file
+    kraken_reports
+
+  main:
+    println("Dash App: http://127.0.01:8050")
+    START_DASH_APP(tree_file, kraken_reports)
 }

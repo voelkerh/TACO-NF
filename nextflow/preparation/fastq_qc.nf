@@ -1,11 +1,10 @@
 nextflow.enable.dsl=2
 
+params.outputDir = 'output/preparation'
 params.fastq_qc_store_dir = launchDir + 'store/2_fastq_qc/'
 
-params.outputDir = 'output/preparation'
-
 // Quality filtering options
-// Note: The options used below are from the fastp library
+// Note: The options used below derive from the fastp library
 // Refer to fastp documentation for detailed information
 // on these options: https://github.com/OpenGene/fastp
 params.disable_quality_filtering = ''   //enter --disable_quality_filtering="-Q" to disable quality filtering
@@ -23,7 +22,7 @@ params.length_limit = ''                //enter --length_limit="--length_limit="
 params.low_complexity_filter = ''       //enter --low_complexity_filter="-y" enable low complexity filter. The complexity is defined as the percentage of base that is different from its next base (base[i] != base[i+1]).
 params.complexity_threshold = ''        //enter --complexity_threshold="-Y int" int: the threshold for low complexity filter (0~100). Default is 30, which means 30% complexity is required.
 
-
+// Use fastp for filtering and quality control of merged FASTQ file while generating JSON and HTML reports
 process CLEAN {
   container file(params.fastp_container_path)
   publishDir params.outputDir+'/fastp_report_and_fastq', mode: 'copy', overwrite:true
@@ -43,6 +42,7 @@ process CLEAN {
     """
 }
 
+// Create interactive HTML report from fastp QC reports
 process MULTIQC {
   container file(params.multiqc_container_path)
   publishDir params.outputDir+'/multiqc_report', mode:'copy', overwrite:true
@@ -61,7 +61,7 @@ process MULTIQC {
 }
 
 
-workflow fastp_multiqc_workflow {
+workflow quality_control_workflow {
   take: fastpChannel
 
   main:

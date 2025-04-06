@@ -1,13 +1,12 @@
-// This workflow integrates the Ganon classification tool for WGS data.
-// It is divided into three processes: database creation, read classification and report generation.
-// Three parameters can be specified: The sequence file (required), the database file (required) and the report type (default 'abundance').
+nextflow.enable.dsl = 2
 
-params.ganon_workflow_store_dir = launchDir + 'store/5_ganon/'
 params.outdir = 'output/classification'
+params.ganon_workflow_store_dir = launchDir + 'store/5_ganon/'
+
 params.db = 'archaea bacteria fungi viral'
 params.report_type = 'abundance'
 
-// Creates a custom Ganon database based on the input file.
+// Create a custom Ganon database based on params.db
 process BUILD_DB {
     container file(params.ganon_container_path)
     storeDir params.ganon_workflow_store_dir + '/db/'
@@ -21,7 +20,7 @@ process BUILD_DB {
         """
 }
 
-// Classifies the input sequence file against the specified database.
+// Classify FASTQ file using custom database
 process GANON_CLASSIFICATION {
     container file(params.ganon_container_path)
     storeDir params.ganon_workflow_store_dir + '/classification/'
@@ -40,7 +39,7 @@ process GANON_CLASSIFICATION {
         """
 }
 
-// Generates a classification report based on the classification results and database.
+// Generate classification report based on classification results and database
 process GENERATE_REPORT {
     container file(params.ganon_container_path)
     storeDir params.ganon_workflow_store_dir + '/reports/'
@@ -59,20 +58,13 @@ process GENERATE_REPORT {
         """
 }
 
-// Main workflow for Ganon classification
-// It takes a sequence file and a database file as input, and generates a classification report.
 workflow ganon_classification {
     take:
         sequence_file
 
     main:
-        // 1. Create the database
         database = BUILD_DB()
-
-        // 2. Classify the sequence files against the database
         classification_output = GANON_CLASSIFICATION(sequence_file, database)
-
-        // 3. Generate a report based on the classification results
         report = GENERATE_REPORT(classification_output, database)
 
     emit:
