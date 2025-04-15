@@ -3,7 +3,7 @@ nextflow.enable.dsl=2
 params.outdir = 'output/classification'
 params.kraken_workflow_store_dir = launchDir + 'store/3_kraken2/'
 
-params.db = 'k2_standard_08gb_20230605'
+params.kraken_db = 'k2_standard_08gb_20230605'
 
 // Download pre-built Kraken2 database
 process DOWNLOAD_DB {
