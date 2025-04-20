@@ -51,7 +51,7 @@ process GENERATE_REPORT {
 
     script:
         """
-        ganon report --db-prefix ${database} --input ${classification_output} --output-prefix classification_report_${params.ganon2_report_type} --report-type ${params.ganon2_report_type}
+        ganon report --db-prefix ${database} --input ${classification_output} --output-prefix classification_report_${params.ganon2_report_type} --report-type ${params.ganon2_report_type} --ranks all
         """
 }
 
