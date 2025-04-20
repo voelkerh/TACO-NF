@@ -1,3 +1,9 @@
+"""
+Main script to run conversion layer. This converts all tool outputs to kraken2 report format.
+Imports all specified converters from converters folder.
+Instantiates all converters with an instance of the internal taxonomy database.
+Tries to convert all given outputs by iterating over the converters.
+"""
 import sys
 import os
 import importlib
@@ -7,7 +13,8 @@ from Database.taxDBsqlite import TaxDBsqlite
 
 def import_converters(package: str, directory: str):
     """
-    Dynamically import all modules in a directory to make them addressable as subclasses of AbstractConverter.
+    Dynamically import all modules from directory.
+    Makes them addressable as subclasses of AbstractConverter.
     Args:
         package (str): The Python package name (e.g., "converters").
         directory (str): The directory path where the modules are located.
@@ -16,7 +23,7 @@ def import_converters(package: str, directory: str):
         if filename.endswith(".py") and filename != "__init__.py":
             module_name = f"{package}.{filename[:-3]}"
             try:
-                module = importlib.import_module(module_name)
+                importlib.import_module(module_name)
 
             except Exception as e:
                 print(f"Error importing {module_name}: {e}")
@@ -33,15 +40,6 @@ def get_all_converters(taxdb):
 
 
 def main():
-    """
-    Execute in the terminal:
-        1.Change to the utils directory:
-        2.Run the script using Python:
-        python -m to_kraken_converters.main path_to_file
-
-        Example:
-        python -m to_kraken_converters.main to_kraken_converters/input_samples/ground_truth.txt
-    """
     current_dir = os.path.dirname(__file__)
     converters_dir = os.path.join(current_dir, "converters")
     import_converters("to_kraken_converters.converters", converters_dir)
