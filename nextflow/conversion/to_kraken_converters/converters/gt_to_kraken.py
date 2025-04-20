@@ -1,3 +1,7 @@
+"""
+Concrete implementation of the AbstractConverter class.
+Converts the ground truth provided by the user input to kraken2 report format.
+"""
 from to_kraken_converters.abstract_converter import AbstractConverter
 from Database.taxdb import TaxDB
 
@@ -11,7 +15,7 @@ class GTConverter(AbstractConverter):
         """
         Checks if the file is in a ground truth format.
         """
-        with open(filename, 'r') as f:
+        with open(filename, 'r', encoding='UTF-8') as f:
             if f.readline().strip().split(",")[0] == "taxid":
                 return True
 
@@ -39,11 +43,11 @@ class GTConverter(AbstractConverter):
 
     def count_numreads(self, input_file):
         numreads = 0
-        with open(input_file, 'r') as infile:
-            header = infile.readline().strip()
+        with open(input_file, 'r', encoding='UTF-8') as infile:
+            infile.readline().strip()
             for line in infile:
                 try:
-                    tax_id, read_number = line.strip().split(',')
+                    read_number = line.strip().split(',')[1]
                     numreads += int(read_number)
                 except ValueError as e:
                     print(f"Error processing line: {line.strip()} - {e}")
@@ -53,10 +57,10 @@ class GTConverter(AbstractConverter):
     def count_alignments_per_taxid_from_lines(self, input_file):
         accession_counts = {}
 
-        with open(input_file, 'r') as f:
-            header = f.readline().strip()
+        with open(input_file, 'r', encoding='UTF-8') as infile:
+            infile.readline().strip()
 
-            for line in f:
+            for line in infile:
                 try:
                     tax_id, read_number = line.strip().split(',')
                     read_number = int(read_number)
@@ -130,10 +134,8 @@ class GTConverter(AbstractConverter):
 
     def build_branch(self, taxid):
         branch = []
-        # print(taxid)
-        while taxid and taxid != '1':  # Wurzel erreicht
+        while taxid and taxid != '1':  # Root reached
             parent_taxid = self.get_parent_taxid_from_taxonomic_data(taxid)
-            # print(parent_taxid)
             name = self.get_name_from_taxonomic_data(taxid)
             rank = self.get_full_rank_from_taxonomic_data(taxid)
             rank_code = self.get_rank_code_from_full_rank(rank)
@@ -143,7 +145,7 @@ class GTConverter(AbstractConverter):
                     self.get_full_rank_from_taxonomic_data(parent_taxid))
                 rank_code = '1' if parent_rank_code == ' ' else parent_rank_code + '1'
             node = self.Node(name, taxid, rank_code, parent_taxid)
-            # Umgekehrte Reihenfolge (von Wurzel zu Blatt)
+            # Inverted order (root to leaf)
 
             branch.insert(0, node)
             taxid = parent_taxid
@@ -152,28 +154,26 @@ class GTConverter(AbstractConverter):
 
     def build_tree(self, accession_counts_by_taxid):
         root = self.Node('root', 1, ' ', None, 0)
-        for id in accession_counts_by_taxid:
-            taxid = id
+        for taxid in accession_counts_by_taxid:
             if taxid == "NOT FOUND":
                 continue
             reads_for_current_taxid = accession_counts_by_taxid.get(taxid, 0)
-            branch = self.build_branch(taxid)  # jeweils Wurzel bis Blatt
-            current_node_in_tree = root  # Beginne an der Wurzel
-            # Addiere die Reads für die Wurzel
+            branch = self.build_branch(taxid)
+            current_node_in_tree = root
             current_node_in_tree.cumulative_reads += reads_for_current_taxid
             add_new_nodes_to_tree = False
-            for node_in_branch in branch:  # Durchlaufe die Knoten des Zweiges
+            for node_in_branch in branch:
                 if add_new_nodes_to_tree:
                     new_node = self.Node(node_in_branch.name, node_in_branch.taxid,
                                          node_in_branch.rank, current_node_in_tree, reads_for_current_taxid)
                     current_node_in_tree = current_node_in_tree.add_child(
                         new_node)
                 else:
-                    # Prüft, ob nächster Knoten des Zweiges bereits im Baum ist
+                    # Check if next node of branch is already contained in tree
                     child = current_node_in_tree.get_child(
                         node_in_branch.taxid)
                     if child:
-                        # Addiere die Reads des Zweiges zu bestehendem Knoten
+                        # Add reads of branch to existing node
                         child.cumulative_reads += reads_for_current_taxid
                         current_node_in_tree = child
                     else:
@@ -198,7 +198,6 @@ class GTConverter(AbstractConverter):
     def create_output_file(self, tree, accession_counts_by_taxid, total_reads, output_filename):
         with open(output_filename, 'w', encoding="UTF-8") as file:
             file.write(
-                # f"{percentage_of_unclassified_reads:<6}\t{unclassified_reads:<15}\t{unclassified_reads:<15}\t{'U':<4}\t{'0':<8}\tunclassified\n")
                 f"{0.0}\t{0}\t{0}\t{'U'}\t{0}\tunclassified\n")
             self.write_data_for_nodes_in_branch(
                 file, tree, accession_counts_by_taxid, total_reads)
