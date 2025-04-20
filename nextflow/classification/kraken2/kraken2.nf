@@ -3,21 +3,19 @@ nextflow.enable.dsl=2
 params.outdir = 'output/classification'
 params.kraken_workflow_store_dir = launchDir + 'store/3_kraken2/'
 
-params.kraken_db = 'k2_standard_08gb_20230605'
-
 // Download pre-built Kraken2 database
 process DOWNLOAD_DB {
     storeDir params.kraken_workflow_store_dir + '/db/'
 
     output:
-        path("${params.db}/"), emit: db
+        path("${params.kraken2_db}/"), emit: db
 
     script:
         """
-        mkdir ${params.db}
-        wget -O ${params.db}.tar.gz https://genome-idx.s3.amazonaws.com/kraken/${params.db}.tar.gz
-        tar -zxvf ${params.db}.tar.gz -C ${params.db}
-        rm ${params.db}.tar.gz
+        mkdir ${params.kraken2_db}
+        wget -O ${params.kraken2_db}.tar.gz https://genome-idx.s3.amazonaws.com/kraken/${params.kraken2_db}.tar.gz
+        tar -zxvf ${params.kraken2_db}.tar.gz -C ${params.kraken2_db}
+        rm ${params.kraken2_db}.tar.gz
         """
 }
 

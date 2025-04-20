@@ -3,10 +3,7 @@ nextflow.enable.dsl = 2
 params.outdir = 'output/classification'
 params.ganon_workflow_store_dir = launchDir + 'store/5_ganon/'
 
-params.ganon_db = ['archaea', 'bacteria', 'fungi', 'viral']
-params.report_type = 'abundance'
-
-// Create a custom Ganon database based on params.db
+// Create a custom Ganon database based on params.ganon2_db
 process BUILD_DB {
     container file(params.ganon_container_path)
     storeDir params.ganon_workflow_store_dir + '/db/'
@@ -16,7 +13,7 @@ process BUILD_DB {
 
     script:
         """
-        ganon build --source refseq --organism-group ${params.db.join(',')} --threads 48 --complete-genomes --db-prefix ganon_database
+        ganon build --source refseq --organism-group ${params.ganon2_db.join(',')} --threads 48 --complete-genomes --db-prefix ganon_database
         """
 }
 
@@ -54,7 +51,7 @@ process GENERATE_REPORT {
 
     script:
         """
-        ganon report --db-prefix ${database} --input ${classification_output} --output-prefix classification_report_${params.report_type} --report-type ${params.report_type}
+        ganon report --db-prefix ${database} --input ${classification_output} --output-prefix classification_report_${params.ganon2_report_type} --report-type ${params.ganon2_report_type}
         """
 }
 
