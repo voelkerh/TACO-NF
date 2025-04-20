@@ -51,8 +51,7 @@ class KrakenConverter(AbstractConverter):
 
     def create_output_file(self, lines, output_filename):
         with open(output_filename, 'w', encoding="UTF-8") as file:
-            for line in lines:
-                file.write(line)
+            file.writelines(lines)
 
     def get_name_from_taxonomic_data(self, taxid):
         return self.taxdb.get_name_from_taxonomic_data(taxid)
