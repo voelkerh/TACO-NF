@@ -14,59 +14,37 @@ class TaxDBsqlite(TaxDB):
 
     def __init__(self, sqlite_file):
         self.sqlite_file = sqlite_file
+        self.conn = sqlite3.connect(self.sqlite_file)
+        self.cursor = self.conn.cursor()
+
+    def __del__(self):
+        self.conn.close()
 
     def load_taxid_from_accession_number(self, accession):
-        conn = sqlite3.connect(self.sqlite_file)
-        cursor = conn.cursor()
-        cursor.execute(
+        self.cursor.execute(
             "SELECT taxid FROM accession2taxid WHERE accession = ?", (accession,))
-        result = cursor.fetchone()
-        conn.close()
-
-        if result:
-            return result[0]
-
-        return "NOT FOUND"
+        result = self.cursor.fetchone()
+        return result[0] if result else "NOT FOUND"
 
     def load_names_from_taxonomic_data(self, taxid):
-        conn = sqlite3.connect(self.sqlite_file)
-        cursor = conn.cursor()
-        cursor.execute(
+        self.cursor.execute(
             "SELECT name_txt FROM names WHERE tax_id = ? AND name_class = 'scientific name'",
             (taxid,)
         )
-        result = cursor.fetchone()
-        conn.close()
-
-        if result:
-            return result[0]
-
-        return "NOT FOUND"
+        result = self.cursor.fetchone()
+        return result[0] if result else "NOT FOUND"
 
     def load_full_ranks_from_taxonomic_data(self, taxid):
-        conn = sqlite3.connect(self.sqlite_file)
-        cursor = conn.cursor()
-        cursor.execute("SELECT rank FROM nodes WHERE tax_id = ?", (taxid,))
-        result = cursor.fetchone()
-        conn.close()
-
-        if result:
-            return result[0]
-
-        return "NOT FOUND"
+        self.cursor.execute(
+            "SELECT rank FROM nodes WHERE tax_id = ?", (taxid,))
+        result = self.cursor.fetchone()
+        return result[0] if result else "NOT FOUND"
 
     def load_parents_taxid_from_taxonomic_data(self, taxid):
-        conn = sqlite3.connect(self.sqlite_file)
-        cursor = conn.cursor()
-        cursor.execute(
+        self.cursor.execute(
             "SELECT parent_tax_id FROM nodes WHERE tax_id = ?", (taxid,))
-        result = cursor.fetchone()
-        conn.close()
-
-        if result:
-            return result[0]
-
-        return "NOT FOUND"
+        result = self.cursor.fetchone()
+        return result[0] if result else "NOT FOUND"
 
     def get_taxid_from_accession_number(self, accession):
         return self.load_taxid_from_accession_number(accession)
