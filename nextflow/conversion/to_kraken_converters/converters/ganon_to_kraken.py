@@ -1,3 +1,7 @@
+"""
+Concrete implementation of the AbstractConverter class.
+Converts tre (ganon2 output format to kraken2 report format.
+"""
 from to_kraken_converters.abstract_converter import AbstractConverter
 from Database.taxdb import TaxDB
 from bigtree import dict_to_tree
@@ -9,28 +13,27 @@ class GanonConverter(AbstractConverter):
         self.taxdb = taxdb
 
     def can_convert(self, filename: str) -> bool:
-        with open(filename, 'r') as f:
-            header = f.readline().strip
-            try:
-                root = f.readline().strip().split("\t")[0]
-                if root == "root":
-                    return True
-            except:
-                return False
+        try:
+            with open(filename, 'r', encoding='UTF-8') as infile:
+                infile.readline()
+                line = infile.readline().strip()
+                root = line.split("\t")[0]
+                return root == "root"
+        except Exception:
+            return False
 
     def convert(self, filename: str, output_filename: str) -> str:
         if not self.can_convert(filename):
             raise ValueError(
                 f"The file {filename} cannot be converted.It is not a ganon file.")
 
-        with open(filename, 'r') as infile:
+        with open(filename, 'r', encoding='UTF-8') as infile:
             header = infile.readline().strip()
             unclassified, perc_unc = header.split()[-2:]
             perc_unc = round(float(perc_unc), 2)
             dct = {}
             for line in infile:
                 try:
-                    # columns = re.split(r'\s{2,}', line.strip())
                     columns = line.split('\t')
                     perc_reads = round(float(columns[8].strip()), 2)
                     read_number = columns[7].strip()
@@ -77,7 +80,7 @@ class GanonConverter(AbstractConverter):
                 file, child, level + 1)
 
     def create_output_file(self, tree, percentage_of_unclassified_reads, unclassified_reads, output_filename):
-        with open(output_filename, 'w') as file:
+        with open(output_filename, 'w', encoding='UTF-8') as file:
             file.write(
                 f"{percentage_of_unclassified_reads}\t{unclassified_reads}\t{unclassified_reads}\t{'U'}\t{'0'}\tunclassified\n")
             self.write_data_for_nodes_in_branch(
