@@ -41,7 +41,7 @@ class KrakenSummary(object):
 
                 indent_size = len(re_indent.match(taxa_entry).group())
                 taxa_name = re_indent.sub('', taxa_entry)
-                # Substitute characters which produce errors in Newick format
+                # Substitute characters which may produce errors in Newick format
                 taxa_name = re.sub(r"[():;,']", "_", taxa_name)
 
                 if taxa_name == 'root':
@@ -78,7 +78,7 @@ class KrakenSummary(object):
 
 def main():
     """
-    Wrapper to convert kraken2 report format to Newick format in txt-file.
+    Wrapper to convert kraken2 report format to Newick format and save to txt file.
     """
 
     if len(sys.argv) < 2:
