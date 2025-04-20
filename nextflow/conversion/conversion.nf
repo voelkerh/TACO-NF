@@ -56,7 +56,7 @@ process MERGE_NEWICK {
 
   script:
     """
-    python3 ${projectDir}/conversion/newick_merger/newick_merger.py ${newick_files.join(' ')}
+    python3 ${projectDir}/conversion/newick_merger/newick_merger.py 'merged_newick_tree.txt' ${newick_files.join(' ')}
     """
 }
 

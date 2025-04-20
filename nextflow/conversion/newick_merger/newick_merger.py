@@ -1,30 +1,31 @@
 """
-Description: Merges two or more Newick strings (trees) into one Newick string without distance values
-Input: Two or more Newick strings as .txt files (python newick_merger.py tree1.txt tree2.txt ...)
-Output: .txt file with 1 Newick string without distance values (merged_tree.txt)
-Usage in pipeline: after conversion to kraken-formats, before visualization in Dash
+Merges two or more Newick strings (trees) into one Newick string without distance values.
+Input: Two or more Newick strings as .txt files (python newick_merger.py tree1.txt tree2.txt ...).
+Output: .txt file with 1 Newick string without distance values (merged_tree.txt).
+Usage in pipeline: after conversion to kraken-formats, before visualization in Dash.
 """
 
 import sys
 import re
 from io import StringIO
-from Bio import Phylo
 from copy import deepcopy
+
+from Bio import Phylo
 
 
 def process_program_arguments():
     tree_files = []
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 3:
         print('Please provide at least two files as arguments.')
         sys.exit(1)
-    for arg in sys.argv[1:]:
+    for arg in sys.argv[2:]:
         tree_files.append(arg)
     return tree_files
 
 
 def get_tree_from_file(file):
     newick = ''
-    with open(file, 'r') as file:
+    with open(file, 'r', encoding='UTF-8') as file:
         newick = file.read()
     newick_str = newick.replace(" ", "_")
     handle = StringIO(newick_str)
@@ -64,8 +65,8 @@ def tree_to_newick_no_distance(tree):
     return newick_no_distance
 
 
-def write_newick_to_output_file(newick_str):
-    with open('merged_newick_tree.txt', 'w') as file:
+def write_newick_to_output_file(newick_str, output_filename):
+    with open(output_filename, 'w', encoding='UTF-8') as file:
         file.write(newick_str)
 
 
@@ -73,4 +74,4 @@ tree_files = process_program_arguments()
 trees = [get_tree_from_file(file) for file in tree_files]
 merged_tree = merge_trees(trees)
 newick_no_distance = tree_to_newick_no_distance(merged_tree)
-write_newick_to_output_file(newick_no_distance)
+write_newick_to_output_file(newick_no_distance, sys.argv[1])
