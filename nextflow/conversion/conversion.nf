@@ -23,6 +23,25 @@ process INPUT_TO_KRAKEN {
     """
 }
 
+process ALIGN_TAXONOMIES {
+  container file(params.python_container_path)
+  containerOptions '--bind ${projectDir}:${projectDir}'
+  storeDir params.conversion_workflow_store_dir + '/aligned_taxonomies/'
+  publishDir params.outdir + '/taxonomy_aligned_kraken_files/', mode:'copy'
+
+  input:
+    path input
+
+  output:
+    path "${input.getSimpleName()}_aligned.kraken"
+
+  script:
+    """
+    export PYTHONPATH=\${PYTHONPATH:-}:${projectDir}/conversion
+    python3 ${projectDir}/conversion/align_taxonomies/align_taxonomies.py ${input} ${projectDir}/conversion/Database/database.db ${input.getSimpleName()}_aligned.kraken
+    """
+}
+
 // Additionally convert classification reports from kraken2 report format to tree representation in Newick format
 process KRAKEN_TO_NEWICK {
   container file(params.python_plotly_container_path)
@@ -68,6 +87,9 @@ workflow convert {
     inputChannel.view()
 
     krakenChannel = INPUT_TO_KRAKEN(inputChannel)
+    if ( params.align_taxonomies ) {
+      krakenChannel = ALIGN_TAXONOMIES(krakenChannel)
+    }
     newickChannel = KRAKEN_TO_NEWICK(krakenChannel)
     merged_tree = MERGE_NEWICK(newickChannel.collect())
 
