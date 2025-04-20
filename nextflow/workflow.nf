@@ -52,7 +52,7 @@ workflow {
     exit(0)
   }
 
-  user_input = Channel.fromPath(params.pipeline_input)
+  user_input = Channel.fromPath(params.input_file)
 
   // preparation
   fastq_and_groundtruth = process_sra_accessions(user_input)
