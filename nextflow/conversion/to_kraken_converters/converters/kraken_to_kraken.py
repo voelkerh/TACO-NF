@@ -8,7 +8,7 @@ class KrakenConverter(AbstractConverter):
         self.taxdb = taxdb
 
     def can_convert(self, filename):
-        with open(filename, 'r') as f:
+        with open(filename, 'r', encoding="UTF-8") as f:
             for line in f:
                 columns = line.strip().split('\t')
                 if len(columns) >= 6 and (columns[5] == "root" or columns[5] == "unclassified"):
@@ -20,7 +20,7 @@ class KrakenConverter(AbstractConverter):
             raise ValueError(
                 f"The file {filename} cannot be converted. It is not a kraken file.")
 
-        with open(filename, 'r') as infile:
+        with open(filename, 'r', encoding="UTF-8") as infile:
             lines = infile.readlines()
 
         for i in range(2, len(lines)):
@@ -31,13 +31,13 @@ class KrakenConverter(AbstractConverter):
 
                 tax_id = tax_id.strip()
                 name = name.strip()
-
                 indent = len(parts[5]) - len(parts[5].lstrip())
 
                 # Check, if given name equals name from internal database; ensures consistency.
-                updated_name = self.get_name_from_taxonomic_data(tax_id)
-                if updated_name != name:
-                    name = updated_name
+                if name != "unclassified":
+                    updated_name = self.get_name_from_taxonomic_data(tax_id)
+                    if updated_name != name:
+                        name = updated_name
 
                 lines[i] = f"{perc_reads}\t{read_number}\t{reads}\t{rank}\t{tax_id}\t{' ' * indent}{name}\n"
 
@@ -50,7 +50,7 @@ class KrakenConverter(AbstractConverter):
         return "Conversion successful (kraken to kraken)."
 
     def create_output_file(self, lines, output_filename):
-        with open(output_filename, 'w') as file:
+        with open(output_filename, 'w', encoding="UTF-8") as file:
             for line in lines:
                 file.write(line)
 
