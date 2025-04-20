@@ -1,3 +1,7 @@
+"""
+Concrete implementation of the AbstractConverter class.
+Converts a sequence alignment map (SAM) to kraken2 report format.
+"""
 from Database.taxdb import TaxDB
 from to_kraken_converters.abstract_converter import AbstractConverter
 
@@ -62,7 +66,7 @@ class SAMConverter(AbstractConverter):
         for accession_number in accession_numbers_from_file:
             accession_counts[accession_number] = 0
         for line in lines:
-            if not (line.startswith('@')):
+            if not line.startswith('@'):
                 line_accession = line.split('\t')[2].split('.')[0]
                 if line_accession == '*':
                     continue
