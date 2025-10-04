@@ -1,6 +1,6 @@
 """
 Merges two or more Newick strings (trees) into one Newick string without distance values.
-Input: Two or more Newick strings as .txt files (python newick_merger.py tree1.txt tree2.txt ...).
+Input: Output file description, two or more Newick strings as .txt files (python newick_merger.py tree1.txt tree2.txt ...).
 Output: .txt file with 1 Newick string without distance values (merged_tree.txt).
 Usage in pipeline: after conversion to kraken-formats, before visualization in Dash.
 """
@@ -31,6 +31,8 @@ def get_tree_from_file(file):
     handle = StringIO(newick_str)
     return Phylo.read(handle, "newick")
 
+# There is a mistake between here -- and
+
 
 def merge_two_trees(base_tree, additional_tree):
     merged_tree = deepcopy(base_tree)
@@ -40,13 +42,12 @@ def merge_two_trees(base_tree, additional_tree):
 
 def merge_clades(base_clade, additional_clade):
     reference_clades = {clade.name: clade for clade in base_clade.clades}
-    if reference_clades:
-        for additional_child in additional_clade.clades:
-            if additional_child.name not in reference_clades:
-                base_clade.clades.append(deepcopy(additional_child))
-            else:
-                base_child = reference_clades[additional_child.name]
-                merge_clades(base_child, additional_child)
+    for additional_child in additional_clade.clades:
+        if additional_child.name not in reference_clades:
+            base_clade.clades.append(deepcopy(additional_child))
+        else:
+            base_child = reference_clades[additional_child.name]
+            merge_clades(base_child, additional_child)
 
 
 def merge_trees(trees):
@@ -54,6 +55,7 @@ def merge_trees(trees):
     for tree in trees[1:]:
         merged_tree = merge_two_trees(merged_tree, tree)
     return merged_tree
+# -- and here that leads to the output missing special phyla with tuberculosis and e coli
 
 
 def tree_to_newick_no_distance(tree):

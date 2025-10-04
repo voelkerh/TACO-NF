@@ -10,11 +10,13 @@ Make sure that the newick file has "newick" in its name.
 import sys
 import re
 import pandas as pd
+from io import StringIO
 
 import dash_bootstrap_components as dbc
 from dash import Dash, dcc, html, Input, Output, State
 import plotly.graph_objects as go
 from phylotree import create_phylogenetic_tree
+from Bio import Phylo
 
 
 def get_newick_string():
@@ -55,7 +57,38 @@ def prepare_combined_dataframe(files):
     combined_df = pd.concat(dfs.values(), axis=1, keys=dfs.keys(), sort=False)
     return combined_df.fillna(0)
 
-# Insert sorting mechanism here based on all tree leaves
+
+def sort_dataframe(newick_str, combined_dataframe):
+    """
+    Sort combined_dataframe so that its (stripped) labels follow the
+    left-to-right leaf order of the Newick tree.
+    """
+
+    def norm(s: str) -> str:
+        s = s.strip().lower()
+        s = re.sub(r'[\[\]\(\)]', '_', s)
+        s = re.sub(r'\b(str|subsp|serovar|variant)\._', r'\1_', s)
+        s = re.sub(r'[^0-9a-z]+', '_', s)
+        s = re.sub(r'_+', '_', s).strip('_')
+        return s
+
+    tree = Phylo.read(StringIO(newick_str), "newick")
+    clades = tree.find_clades(order='preorder')
+    names = [norm(clade.name) for clade in clades if clade.name]
+    index_cleaned = [norm(label) for label in combined_dataframe.index]
+    commons = [label for label in index_cleaned if label in names]
+    uncommons = [label for label in index_cleaned if label not in names]
+    print(
+        f"Number of nodes in newick tree: {len(names)},\n Names {names} \n", file=sys.stderr, flush=True)
+    print(
+        f"Length of cleaned cdf index: {len(index_cleaned)}, \n {index_cleaned} \n", file=sys.stderr, flush=True)
+    print(
+        f"Common labels - Number: {len(commons)}, \n Names: {commons}\n", file=sys.stderr, flush=True
+    )
+    print(
+        f"Uncommon labels - Number: {len(uncommons)}, \n Names: {uncommons}", file=sys.stderr, flush=True
+    )
+    return combined_dataframe
 
 
 def get_max_indent(combined_df):
@@ -69,10 +102,11 @@ def get_max_indent(combined_df):
     return max_indent
 
 
-global_files = process_program_arguments()
-global_dataframe = prepare_combined_dataframe(global_files)
-global_max_indent = get_max_indent(global_dataframe)
 global_newick_str = get_newick_string()
+global_files = process_program_arguments()
+global_dataframe_unsorted = prepare_combined_dataframe(global_files)
+global_dataframe = sort_dataframe(global_newick_str, global_dataframe_unsorted)
+global_max_indent = get_max_indent(global_dataframe)
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
@@ -274,4 +308,4 @@ def update_layout(fig, tick_labels):
 
 # Run app
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=False)
