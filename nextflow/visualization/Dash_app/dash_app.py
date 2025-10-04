@@ -6,11 +6,9 @@ It is based on Dash and Plotly as well as the phylotree Plotly extension.
 Usage:
 python dash_app.py <newick_file> <kraken_file> <kraken_file> ...
 Make sure that the newick file has "newick" in its name.
-
-Current usage:
-python dash_app.py sample_files/old/newick_kraken.txt sample_files/old/kraken.report
 """
 import sys
+import re
 import pandas as pd
 
 from dash import Dash, dcc, html, Input, Output
@@ -48,9 +46,11 @@ def prepare_combined_dataframe(files):
     for file in files:
         data = pd.read_csv(file, sep='\t', header=None, usecols=[0, 5])
         file_name = file.split('/')[-1]  # os.basename
+        file_name = re.sub(
+            r'_(converted|aligned)|(merged|cleaned)_|.kraken', '', file_name)
         data.columns = [file_name, 'Phylo_Label']
         data.set_index('Phylo_Label', inplace=True)
-        dfs[file] = data[file_name]
+        dfs[file_name] = data[file_name]
     combined_df = pd.concat(dfs.values(), axis=1, keys=dfs.keys(), sort=False)
     return combined_df.fillna(0)
 
