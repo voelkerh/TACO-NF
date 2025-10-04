@@ -2,15 +2,15 @@
 
 A customizable nextflow pipeline to compare taxonomic classification tools for whole genome sequencing data.
 
-![Pipeline](./Images/pipeline.png)
+![Pipeline](./images/pipeline.png)
 
 ---
 
 ## Table of Content
 
-* [Installation](#installation)
-* [Run the pipeline](#run-the-pipeline)
-* [Integrate an additional taxonomic classification tool](#integrate-an-additional-taxonomic-classification-tool)
+- [Installation](#installation)
+- [Run the pipeline](#run-the-pipeline)
+- [Integrate an additional taxonomic classification tool](#integrate-an-additional-taxonomic-classification-tool)
 
 ---
 
@@ -19,49 +19,56 @@ A customizable nextflow pipeline to compare taxonomic classification tools for w
 Make sure you have [nextflow](https://www.nextflow.io/docs/latest/install.html) and [singularity](https://docs.sylabs.io/guides/latest/admin-guide/installation.html) installed on your Linux system. You may also use [apptainer](https://apptainer.org/docs/admin/main/installation.html) (?).
 
 Clone the repo and cd into the directory:
-  ```bash
-    git clone https://--.git
-    cd --
-  ```
+
+```bash
+  git clone https://--.git
+  cd --
+```
 
 Use Makefile to pull singularity containers from galaxy and build additional python containers:
-  ```bash
-    make buildcontainers
-    make pullcontainers
-  ```
+
+```bash
+  make buildcontainers
+  make pullcontainers
+```
+
 You can delete or delete and rebuild the containers:
-  ```bash
-    make cleancontainers
-    make cleanbuildcontainers
-  ```
+
+```bash
+  make cleancontainers
+  make cleanbuildcontainers
+```
 
 You can also build containers manually:
-  ```bash
-    singularity build python_container.sif python_container.def
-    singularity build python_container_plotly.sif  python_container_plotly.def
-  ```
+
+```bash
+  singularity build python_container.sif python_container.def
+  singularity build python_container_plotly.sif  python_container_plotly.def
+```
 
 In the next step, download the NCBI taxonomy and accession-to-taxid mapping files, then create a local SQLite database required for taxonomy-based conversion in the pipeline.
-  ```bash
-    cd nextflow/conversion/Database/database_utils
-    wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/new_taxdump/new_taxdump.tar.gz
-    tar -xzf new_taxdump.tar.gz
-    wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid.gz
-    gunzip nucl_gb.accession2taxid.gz
-    python3 create_tax_db_file.py create
-  ```
+
+```bash
+  cd nextflow/conversion/Database/database_utils
+  wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/new_taxdump/new_taxdump.tar.gz
+  tar -xzf new_taxdump.tar.gz
+  wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid.gz
+  gunzip nucl_gb.accession2taxid.gz
+  python3 create_tax_db_file.py create
+```
 
 Make sure that **database.db** is correctly located in **nextflow/conversion/Database**, not in a subfolder.
 You can test the result using the test.py file provided in the database_utils subfolder.
 
-  ```bash
-    cd nextflow/conversion/Database/database_utils
-    python3 test.py
-  ```
+```bash
+  cd nextflow/conversion/Database/database_utils
+  python3 test.py
+```
 
 ---
 
 ### Run the pipeline
+
 (TODO: specifiy user input)
 
 With example file:
