@@ -47,12 +47,14 @@ def prepare_combined_dataframe(files):
     dfs = {}
     for file in files:
         data = pd.read_csv(file, sep='\t', header=None, usecols=[0, 5])
-        file_name = file.split('/')[-1]
+        file_name = file.split('/')[-1]  # os.basename
         data.columns = [file_name, 'Phylo_Label']
         data.set_index('Phylo_Label', inplace=True)
         dfs[file] = data[file_name]
     combined_df = pd.concat(dfs.values(), axis=1, keys=dfs.keys(), sort=False)
     return combined_df.fillna(0)
+
+# Insert sorting mechanism here based on all tree leaves
 
 
 def get_max_indent(combined_df):
@@ -154,9 +156,6 @@ def filter_dataframe_by_level(df, level):
 
 
 def update_heatmap(df_level_filtered):
-    """
-    Updates the heatmap.
-    """
     heatmap_labels = format_labels(df_level_filtered.index)
     fig_heatmap = go.Heatmap(
         x=[str(column).split('/')[-1] for column in df_level_filtered.columns],
