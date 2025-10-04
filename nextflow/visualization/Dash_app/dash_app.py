@@ -225,6 +225,7 @@ def update_layout(fig, tick_labels):
     )
 
     # y-axes
+    visible_rows = 10
     fig.update_layout(
         yaxis={
             'showticklabels': True,
@@ -233,7 +234,8 @@ def update_layout(fig, tick_labels):
             'tickvals': list(range(len(tick_labels))),
             'position': 0.6,
             'side': 'left',
-            'autorange': 'reversed',
+            'range': [visible_rows - 0.5, -0.5]
+            # 'autorange': 'reversed',
             # 'fixedrange' : True
         },
     )
