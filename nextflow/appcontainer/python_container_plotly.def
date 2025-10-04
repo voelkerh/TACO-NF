@@ -7,6 +7,7 @@ From: python:3.11-slim
     pip install --no-cache-dir \
         pandas \
         dash \
+        dash-bootstrap-components \
         numpy \
         plotly \
         ete3 \

@@ -11,7 +11,8 @@ import sys
 import re
 import pandas as pd
 
-from dash import Dash, dcc, html, Input, Output
+import dash_bootstrap_components as dbc
+from dash import Dash, dcc, html, Input, Output, State
 import plotly.graph_objects as go
 from phylotree import create_phylogenetic_tree
 
@@ -73,25 +74,32 @@ global_dataframe = prepare_combined_dataframe(global_files)
 global_max_indent = get_max_indent(global_dataframe)
 global_newick_str = get_newick_string()
 
-app = Dash(__name__)
+app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 app.layout = html.Div(
     children=[
         html.Header([
-            html.H1('Comparison of Taxonomic Classification Tools for WGS Data'),
+            dbc.Button("i", id="open", n_clicks=0),
             html.Div(
-                className='treeLevel',
+                className='mainHeader',
                 children=[
-                    html.P("Tree level:"),
-                    dcc.Slider(
-                        id='hierarchy-level-slider',
-                        min=0,
-                        max=global_max_indent,
-                        marks={i: f'{i}' for i in range(
-                            0, global_max_indent + 1, 2)},
-                        value=0,
-                        step=1,
-                        className='slider'
+                    html.H1(
+                        'Comparison of Taxonomic Classification Tools for WGS Data'),
+                    html.Div(
+                        className='treeLevel',
+                        children=[
+                            html.P("Tree level:"),
+                            dcc.Slider(
+                                id='hierarchy-level-slider',
+                                min=0,
+                                max=global_max_indent,
+                                marks={i: f'{i}' for i in range(
+                                    0, global_max_indent + 1, 2)},
+                                value=0,
+                                step=1,
+                                className='slider'
+                            ),
+                        ]
                     )
                 ]
             )
@@ -102,8 +110,32 @@ app.layout = html.Div(
                 dcc.Graph(id="tree"),
             ],
         ),
+        dbc.Modal(
+            [
+                dbc.ModalHeader(dbc.ModalTitle("Important")),
+                dbc.ModalBody(
+                    "This visualization requires running the nextflow pipeline in the background."),
+                dbc.ModalFooter(
+                    dbc.Button("Close", id="close",
+                               className="ms-auto", n_clicks=0)
+                ),
+            ],
+            id="modal",
+            is_open=True,
+        ),
     ],
 )
+
+
+@app.callback(
+    Output("modal", "is_open"),
+    [Input("open", "n_clicks"), Input("close", "n_clicks")],
+    [State("modal", "is_open")],
+)
+def toggle_modal(n1, n2, is_open):
+    if n1 or n2:
+        return not is_open
+    return is_open
 
 
 @app.callback(
@@ -187,7 +219,7 @@ def combine_figures(fig_tree, fig_heatmap):
     """
     fig_tree.add_trace(fig_heatmap)
 
-    # Synchronisiert y-Achse der Heatmap mit der des Dendrogramms
+    # Synchronizes y-axis of heatmap with y-axis of dendrogram
     fig_tree.data[-1].y = fig_tree.layout.yaxis.tickvals
 
     return fig_tree
@@ -235,8 +267,6 @@ def update_layout(fig, tick_labels):
             'position': 0.6,
             'side': 'left',
             'range': [visible_rows - 0.5, -0.5]
-            # 'autorange': 'reversed',
-            # 'fixedrange' : True
         },
     )
     return fig
