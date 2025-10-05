@@ -1,6 +1,6 @@
 # Comparison of Taxonomic Classification Tools for WGS Data
 
-A customizable nextflow pipeline to compare taxonomic classification tools for whole genome sequencing data.
+This repository contains a **customizable pipeline** that provides a **visual comparison of taxonomic classification tools for whole genome sequencing data**, complementing existing benchmarking studies. The pipeline simulates metagenomic samples by merging real, cleanly sequenced, single-organism data from the Sequence Read Archive (SRA). Users can define a set of organisms and their abundances, which the pipeline uses to generate a ground truth and a corresponding synthetic FASTQ file. The latter serves as input for the selected classification tools. The pipeline includes three pre-configured reference tools (Bowtie2, Kraken2, and Ganon2) and allows users to integrate additional ones. The results are presented in a novel visualization that combines a phylogenetic tree and a heatmap in an interactive web application. This approach provides a visual, non-metric-bound comparison of tool performance. The pipeline offers a flexible, user-oriented solution for selecting and comparing taxonomic classification tools in metagenomic research.
 
 ![Pipeline](./images/pipeline.png)
 
@@ -69,26 +69,44 @@ You can test the result using the test.py file provided in the database_utils su
 
 ### Run the pipeline
 
-(TODO: specifiy user input)
+The pipeline automatically creates a ground truth based on the user input. The input must be provided with a txt-file containing the SRR accession and a number of reads. If bowtie2 is used, reference sequences must be specified. These are accession numbers for reference sequences for organisms provided by NCBI in the RefSeq Database.
 
-With example file:
-
-```bash
-    nextflow run workflow.nf -profile singularity
-```
-
-With own accessionFile:
-
-```bash
-    nextflow run workflow.nf -$(ownFile.txt)
-```
-
-You'll find an [example file here](nextflow/sample_files/pipeline_input/sra_accession.txt)
+Find an [example file here](nextflow/sample_files/pipeline_input/sra_accession.txt)
 
 ```txt
 # Accession, number of reads, refseq
 SRR28741185, 100000, NZ_CP074354
 SRR21735255, 2000000, NZ_CP097112
+```
+
+Run the pipeline with the example file:
+
+```bash
+    nextflow run workflow.nf -profile singularity
+```
+
+Run the pipeline with your own accessions file:
+
+```bash
+    nextflow run workflow.nf -profile singularity -$(ownFile.txt)
+```
+
+You can enable provided classification tools for comparison using one or several of the classification parameters (--kraken2, --bowtie2 and --ganon2).
+
+Run the pipleine with classification tools enabled:
+
+```bash
+    nextflow run workflow.nf -profile singularity --kraken2 --bowtie2
+```
+
+You can chose from tool-specific options. For kraken2 and ganon2 the database download can be specified (--kraken2_db, --ganon2_db). Moreover, the report type of ganon2 can be specified (--ganon2_report_type).
+
+As the classification tools work with different databases, their outputs (converted to kraken report format) can show inconsistencies. This problem particularly affects intermediate levels that are present in some reports but not in others. If you face inconsistencies in the visualization, you can try to work with --align_taxonomies. With this parameter you can attempt to align taxonomies by inserting missing parent taxa. This may improve the allover consistency but can introduce new minor inconsistencies in the visualization.
+
+For further information on all available paramterts run:
+
+```bash
+    nextflow run workflow.nf --help
 ```
 
 ---
@@ -97,7 +115,7 @@ SRR21735255, 2000000, NZ_CP097112
 
 To integrate an additional taxonomic classification tool for comparison you will need to make adjustments to the pipeline.
 
-- Move to the classification folder and create a subfolder for the tool. Place the classification workflow here.
+- Navigate to the /nextflow/classification directory and create a subdirectory for the tool. Place a new classification workflow here.
 - If the workflow requires an additional container, add the reference to the Makefile, place the path in the nextflow.config and use the respective parameter in the workflow.
 - Include the new classification workflow in the central workflow.nf. Integrate the output in the concatenation of tool_outputs.
-- Check, if the file format of the classification output is supported by the converter layer. You find the respective converters in nextflow/conversion/to_kraken_converters/converters/. Currently supported: SAM, kraken2 report format, tre. If the required format is not supported, implement a new converter as a subclass of abstract_converter.py and place it in the converters folder.
+- Check, if the file format of the classification output is supported by the converter layer. You find the respective converters in /nextflow/conversion/to_kraken_converters/converters/. Currently supported: SAM, kraken2 report format, tre. If the required format is not supported, implement a new converter as a subclass of abstract_converter.py and place it in the converters folder.
