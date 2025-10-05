@@ -11,6 +11,7 @@ import sys
 import re
 import pandas as pd
 from io import StringIO
+from copy import deepcopy
 
 import dash_bootstrap_components as dbc
 from dash import Dash, dcc, html, Input, Output, State
@@ -48,7 +49,7 @@ def prepare_combined_dataframe(files):
     dfs = {}
     for file in files:
         data = pd.read_csv(file, sep='\t', header=None, usecols=[0, 5])
-        file_name = file.split('/')[-1]  # os.basename
+        file_name = file.split('/')[-1]
         file_name = re.sub(
             r'_(converted|aligned)|(merged|cleaned)_|.kraken', '', file_name)
         data.columns = [file_name, 'Phylo_Label']
@@ -56,39 +57,6 @@ def prepare_combined_dataframe(files):
         dfs[file_name] = data[file_name]
     combined_df = pd.concat(dfs.values(), axis=1, keys=dfs.keys(), sort=False)
     return combined_df.fillna(0)
-
-
-def sort_dataframe(newick_str, combined_dataframe):
-    """
-    Sort combined_dataframe so that its (stripped) labels follow the
-    left-to-right leaf order of the Newick tree.
-    """
-
-    def norm(s: str) -> str:
-        s = s.strip().lower()
-        s = re.sub(r'[\[\]\(\)]', '_', s)
-        s = re.sub(r'\b(str|subsp|serovar|variant)\._', r'\1_', s)
-        s = re.sub(r'[^0-9a-z]+', '_', s)
-        s = re.sub(r'_+', '_', s).strip('_')
-        return s
-
-    tree = Phylo.read(StringIO(newick_str), "newick")
-    clades = tree.find_clades(order='preorder')
-    names = [norm(clade.name) for clade in clades if clade.name]
-    index_cleaned = [norm(label) for label in combined_dataframe.index]
-    commons = [label for label in index_cleaned if label in names]
-    uncommons = [label for label in index_cleaned if label not in names]
-    print(
-        f"Number of nodes in newick tree: {len(names)},\n Names {names} \n", file=sys.stderr, flush=True)
-    print(
-        f"Length of cleaned cdf index: {len(index_cleaned)}, \n {index_cleaned} \n", file=sys.stderr, flush=True)
-    print(
-        f"Common labels - Number: {len(commons)}, \n Names: {commons}\n", file=sys.stderr, flush=True
-    )
-    print(
-        f"Uncommon labels - Number: {len(uncommons)}, \n Names: {uncommons}", file=sys.stderr, flush=True
-    )
-    return combined_dataframe
 
 
 def get_max_indent(combined_df):
@@ -104,9 +72,9 @@ def get_max_indent(combined_df):
 
 global_newick_str = get_newick_string()
 global_files = process_program_arguments()
-global_dataframe_unsorted = prepare_combined_dataframe(global_files)
-global_dataframe = sort_dataframe(global_newick_str, global_dataframe_unsorted)
+global_dataframe = prepare_combined_dataframe(global_files)
 global_max_indent = get_max_indent(global_dataframe)
+global_phylo_tree = Phylo.read(StringIO(global_newick_str), "newick")
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
@@ -167,6 +135,9 @@ app.layout = html.Div(
     [State("modal", "is_open")],
 )
 def toggle_modal(n1, n2, is_open):
+    """
+    Helper function to toggle information on pipline required running in the background.
+    """
     if n1 or n2:
         return not is_open
     return is_open
@@ -182,7 +153,7 @@ def filter_figure(selected_level):
     """
     fig = update_tree(selected_level)
 
-    df_level_filtered = filter_dataframe_by_level(
+    df_level_filtered = filter_dataframe_by_current_leaves(
         global_dataframe, selected_level)
     fig_heatmap, heatmap_labels = update_heatmap(df_level_filtered)
     combined_figure = combine_figures(fig, fig_heatmap)
@@ -202,26 +173,92 @@ def update_tree(selected_level):
     return fig_tree
 
 
-def filter_dataframe_by_level(df, level):
+def filter_dataframe_by_current_leaves(df, selected_level):
     """
-    Filters the dataframe by the selected level.
+    Filter mechanism based on leaves of current tree level.
+    Ensures congruent heatmap index and phylotree leaves.
     """
-    levels = df.index.map(lambda x: (len(x) - len(x.lstrip(' '))) // 2)
-    df_filter = []
+    leaves_order = get_leaves_from_tree(selected_level)
+    df_norm = df.copy()
+    df_norm.index = df_norm.index.map(normalize_string)
+    df_norm = df_norm[~df_norm.index.duplicated(keep='first')]
+    present = [leaf for leaf in leaves_order if leaf in df_norm.index]
 
-    for idx, label in enumerate(df.index):
-        if levels[idx] == level:
-            df_filter.append(label)
-            continue
-        if idx < len(levels) - 1:
-            if levels[idx] > levels[idx+1] and levels[idx] < level:
-                df_filter.append(label)
-                continue
+    return df_norm.loc[present]
 
-    return df.loc[df_filter]
+
+def normalize_string(s: str) -> str:
+    """
+    Ensure strings in index and leaves have same format.
+    Required to make dataframe filter by leaves upon level selection stable.
+    """
+    s = s.strip().lower()
+    s = re.sub(r'[\[\]\(\)]', '_', s)
+    s = re.sub(r'\b(str|subsp|serovar|variant)\._', r'\1_', s)
+    s = re.sub(r'[^0-9a-z]+', '_', s)
+    s = re.sub(r'_+', '_', s).strip('_')
+    return s
+
+
+def get_leaves_from_tree(level):
+    """
+    Trim tree to selected level and extract leaves in current order.
+    Extracted leaves serve as a basis to filter heatmap by level. 
+    """
+    try:
+        tree_trimmed = deepcopy(global_phylo_tree)
+        tree_trimmed.root = _set_root_node(tree_trimmed)
+        unclassified = _cut_unclassified_clade(tree_trimmed)
+
+        if level == 0:
+            candidates = [tree_trimmed.root]
+            if unclassified is not None:
+                candidates.append(unclassified)
+            return [normalize_string(c.name) for c in candidates if c.name]
+
+        _trim_tree_to_display_level(tree_trimmed.root, 0, level)
+        leaves = tree_trimmed.get_terminals()
+        names = [normalize_string(
+            leaf.name) for leaf in leaves if leaf.name]
+        return names
+    except Exception as e:
+        raise ValueError(f"Invalid Newick format: {e}") from e
+
+
+def _set_root_node(tree):
+    for clade in tree.find_clades(order="level"):
+        if clade.name == "root":
+            tree.root = clade
+            break
+    else:
+        tree.root.name = tree.root.name or "root"
+    return tree.root
+
+
+def _cut_unclassified_clade(tree):
+    for clade in tree.root.clades:
+        if normalize_string(clade.name) == "unclassified":
+            unclassified = clade
+            tree.root.clades.remove(unclassified)
+            tree.root.clades.extend(unclassified.clades)
+            unclassified.clades = []
+            return unclassified
+    return None
+
+
+def _trim_tree_to_display_level(clade, current_level, display_level):
+    if current_level >= display_level:
+        clade.clades = []
+    else:
+        for child in clade.clades:
+            _trim_tree_to_display_level(
+                child, current_level + 1, display_level)
 
 
 def update_heatmap(df_level_filtered):
+    """
+    Update heatmap based on level filtered dataframe upon selection of tree level.
+    """
     heatmap_labels = format_labels(df_level_filtered.index)
     fig_heatmap = go.Heatmap(
         x=[str(column).split('/')[-1] for column in df_level_filtered.columns],
@@ -237,6 +274,9 @@ def update_heatmap(df_level_filtered):
 
 
 def format_labels(heatmap_labels):
+    """
+    Adds dashes for shorter labels to better visually connect to phylo tree leaves.
+    """
     stripped_labels = [label.strip() for label in heatmap_labels]
     max_label_length = max(len(label) for label in stripped_labels)
     formatted_labels = []
