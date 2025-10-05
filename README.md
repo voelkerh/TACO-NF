@@ -101,13 +101,21 @@ Run the pipleine with classification tools enabled:
 
 You can chose from tool-specific options. For kraken2 and ganon2 the database download can be specified (--kraken2_db, --ganon2_db). Moreover, the report type of ganon2 can be specified (--ganon2_report_type).
 
-As the classification tools work with different databases, their outputs (converted to kraken report format) can show inconsistencies. This problem particularly affects intermediate levels that are present in some reports but not in others. If you face inconsistencies in the visualization, you can try to work with --align_taxonomies. With this parameter you can attempt to align taxonomies by inserting missing parent taxa. This may improve the allover consistency but can introduce new minor inconsistencies in the visualization.
+As the classification tools work with different databases, their outputs (converted to kraken report format) can show inconsistencies. This problem particularly affects intermediate levels that are present in some reports but not in others. If you face inconsistencies in the visualization, you can try to work with --align_taxonomies (default: True). With this parameter you can attempt to align taxonomies by inserting missing parent taxa. This may improve the allover consistency but can introduce new minor inconsistencies in the visualization.
 
 For further information on all available paramterts run:
 
 ```bash
     nextflow run workflow.nf --help
 ```
+
+You can access the interactive visualization in your browser via:
+
+```bash
+    http://127.0.0.1:8050/
+```
+
+Make sure that the pipeline keeps running in the background, while working with the visualization. To move the elements and explore the visualization use the "Pan" tool and "Zoom in/ Zoom out" in the upper left corner of the visualization area.
 
 ---
 
