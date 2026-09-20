@@ -21,7 +21,7 @@ Make sure you have [nextflow](https://www.nextflow.io/docs/latest/install.html) 
 Clone the repo and cd into the directory:
 
 ```bash
-  git clone https://--.git
+  git clone https://github.com/voelkerh/TACO-NF.git
   cd --
 ```
 
