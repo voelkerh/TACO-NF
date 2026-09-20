@@ -1,4 +1,4 @@
-# Comparison of Taxonomic Classification Tools for WGS Data
+# TACO-NF: Comparison of Taxonomic Classification Tools for WGS Data
 
 This repository contains a **customizable pipeline** that provides a **visual comparison of taxonomic classification tools for whole genome sequencing data**, complementing existing benchmarking studies. The pipeline simulates metagenomic samples by merging real, cleanly sequenced, single-organism data from the Sequence Read Archive (SRA). Users can define a set of organisms and their abundances, which the pipeline uses to generate a ground truth and a corresponding synthetic FASTQ file. The latter serves as input for the selected classification tools. The pipeline includes three pre-configured reference tools (Bowtie2, Kraken2, and Ganon2) and allows users to integrate additional ones. The results are presented in a novel visualization that combines a phylogenetic tree and a heatmap in an interactive web application. This approach provides a visual, non-metric-bound comparison of tool performance. The pipeline offers a flexible, user-oriented solution for selecting and comparing taxonomic classification tools in metagenomic research.
 
@@ -16,7 +16,7 @@ This repository contains a **customizable pipeline** that provides a **visual co
 
 ### Installation
 
-Make sure you have [nextflow](https://www.nextflow.io/docs/latest/install.html) and [singularity](https://docs.sylabs.io/guides/latest/admin-guide/installation.html) installed on your Linux system. You may also use [apptainer](https://apptainer.org/docs/admin/main/installation.html) (?).
+Make sure you have [nextflow](https://www.nextflow.io/docs/latest/install.html) and [singularity](https://docs.sylabs.io/guides/latest/admin-guide/installation.html) installed on your Linux system. You may also use [apptainer](https://apptainer.org/docs/admin/main/installation.html).
 
 Clone the repo and cd into the directory:
 
@@ -127,3 +127,15 @@ To integrate an additional taxonomic classification tool for comparison you will
 - If the workflow requires an additional container, add the reference to the Makefile, place the path in the nextflow.config and use the respective parameter in the workflow.
 - Include the new classification workflow in the central workflow.nf. Integrate the output in the concatenation of tool_outputs.
 - Check, if the file format of the classification output is supported by the converter layer. You find the respective converters in /nextflow/conversion/to_kraken_converters/converters/. Currently supported: SAM, kraken2 report format, tre. If the required format is not supported, implement a new converter as a subclass of abstract_converter.py and place it in the converters folder.
+
+---
+
+### License
+
+Taco-NF is marked with the MIT License.
+
+---
+
+### Co-Authors
+
+This project was developed at HTW Berlin under the supervision of Prof. Piotr Wojciech Dabrowski. Among others, David Kirchner, Lutritia Dürr, and Kevin Lisse were involved in the project.
