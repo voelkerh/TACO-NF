@@ -22,7 +22,6 @@ Clone the repo and cd into the directory:
 
 ```bash
   git clone https://github.com/voelkerh/TACO-NF.git
-  cd --
 ```
 
 Use Makefile to pull singularity containers from galaxy and build additional python containers:
